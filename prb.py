@@ -230,121 +230,212 @@ class Solution:
     # LC 1122. Relative Sort Array (Easy)
     # https://leetcode.com/problems/relative-sort-array/
     def relativeSortArray(self, arr1: List[int], arr2: List[int]) -> List[int]:
-        dic = {}
-        for val in arr1:
-            if val in dic.keys():
-                dic[val] += 1
-            else:
-                dic[val] = 1
+        # # With dict
+        # dic = {}
+        # for val in arr1:
+        #     if val in dic.keys():
+        #         dic[val] += 1
+        #     else:
+        #         dic[val] = 1
+        # res = []
+        # for val in arr2:
+        #     res += [val] * dic[val]
+        #     del dic[val]
+        # for val in sorted(dic.keys()):
+        #     res += [val] * dic[val]
+        # return res
+
+        # Without dict
         res = []
-        for val in arr2:
-            res += [val] * dic[val]
-            del dic[val]
-
-        for val in sorted(dic.keys()):
-            res += [val] * dic[val]
-
+        for num in arr2:
+            while num in arr1:
+                arr1.remove(num)
+                res.append(num)
+        res += sorted(arr1)
         return res
 
-    # (WTF) LC 897. Increasing Order Search Tree
-    # https://leetcode.com/problems/increasing-order-search-tree/submissions/
+    # (WTF) LC 897. Increasing Order Search Tree (Easy)
+    # https://leetcode.com/problems/increasing-order-search-tree/
     def increasingBST(self, root: TreeNode) -> TreeNode:
-        def inorder(node):
-            if node:
-                yield from inorder(node.left)
-                yield node.val
-                yield from inorder(node.right)
+        # # O(n)T and O(n)S
+        # def inorder(node):
+        #     if node:
+        #         yield from inorder(node.left)
+        #         yield node.val
+        #         yield from inorder(node.right)
+        # ans = cur = TreeNode(None)
+        # for v in inorder(root):
+        #     cur.right = TreeNode(v)
+        #     cur = cur.right
+        # return ans.right
 
-        ans = cur = TreeNode(None)
-        for v in inorder(root):
-            cur.right = TreeNode(v)
-            cur = cur.right
-        return ans.right
+        # O(n)T and O(1)S with Morris in-order traversal #WOW
+        # https://leetcode.com/problems/increasing-order-search-tree/solutions/958187/morris-in-order-traversal-python-3-o-n-time-o-1-space/
+        dummy = tail = TreeNode()
+        node = root
+        while node is not None:
+            if node.left is not None:
+                predecessor = node.left
+                while predecessor.right is not None:
+                    predecessor = predecessor.right
+                predecessor.right = node
+                left, node.left = node.left, None
+                node = left
+            else:
+                tail.right = node
+                tail = node
+                node = node.right
+        return dummy.right
 
-    # LC 1200. Minimum Absolute Difference
+    # LC 1200. Minimum Absolute Difference (Easy)
     # https://leetcode.com/problems/minimum-absolute-difference/
     def minimumAbsDifference(self, arr: List[int]) -> List[List[int]]:
-        sorted_arr = sorted(arr)
-        N = len(sorted_arr)
-        min_diff = sorted_arr[1] - sorted_arr[0]
-        for i in range(2, N):
-            min_diff = min(min_diff, sorted_arr[i] - sorted_arr[i - 1])
-        res = []
-        for i in range(1, N):
-            if sorted_arr[i] - sorted_arr[i - 1] == min_diff:
-                res.append([sorted_arr[i - 1], sorted_arr[i]])
-        return res
+        # # Sort arr + two passes
+        # sorted_arr = sorted(arr)
+        # N = len(sorted_arr)
+        # min_diff = sorted_arr[1] - sorted_arr[0]
+        # for i in range(2, N):
+        #     min_diff = min(min_diff, sorted_arr[i] - sorted_arr[i - 1])
+        # res = []
+        # for i in range(1, N):
+        #     if sorted_arr[i] - sorted_arr[i - 1] == min_diff:
+        #         res.append([sorted_arr[i - 1], sorted_arr[i]])
+        # return res
 
-        # Three liner
-        # arr.sort()
-        # mn = min(b - a for a, b in zip(arr, arr[1:]))
-        # return [[a, b] for a, b in zip(arr, arr[1:]) if b - a == mn]
+        # Same but in 3 lines
+        arr.sort()
+        mn = min(b - a for a, b in zip(arr, arr[1:]))
+        return [[a, b] for a, b in zip(arr, arr[1:]) if b - a == mn]
 
-    # (WTF) LC 883. Projection Area of 3D Shapes
+        # # Sort arr + one pass
+        # arr = sorted(arr)
+        # if len(arr) == 2:
+        #     return [arr]
+        # res = [[arr[0], arr[1]]]
+        # min_diff = arr[1] - arr[0]
+        # for i in range(2, len(arr)):
+        #     cur_diff = arr[i] - arr[i - 1]
+        #     if cur_diff == min_diff:
+        #         res.append([arr[i - 1], arr[i]])
+        #     elif cur_diff < min_diff:
+        #         min_diff = cur_diff
+        #         res = [[arr[i - 1], arr[i]]]
+        # return res
+
+    # (WTF) LC 883. Projection Area of 3D Shapes (Easy)
     # https://leetcode.com/problems/projection-area-of-3d-shapes/
     def projectionArea(self, grid: List[List[int]]) -> int:
-        xy = sum(map(bool, sum(grid, [])))
-        yz = sum(map(max, zip(*grid)))
-        zx = sum(map(max, grid))
-        return xy + yz + zx
+        # # 3 passes
+        # xy = sum(map(bool, sum(grid, [])))
+        # xz = sum(map(max, grid))
+        # yz = sum(map(max, zip(*grid)))
+        # return xy + yz + zx
 
-        # One liner
-        # return sum([1 for i in G for j in i if j != 0]+[max(i) for i in G]+[max(i) for i in list(zip(*G))])
+        # # 3 passes - one liner
+        # return sum([1 for i in grid for j in i if j != 0]+[max(i) for i in grid]+[max(i) for i in list(zip(*grid))])
 
-    # LC 559. Maximum Depth of N-ary Tree
+        # # Single pass
+        a = 0
+        for i in range(len(grid)):
+            numMax, numMax1 = 0, 0
+            for j in range(len(grid)):
+                if grid[i][j] > 0:
+                    a += 1
+                if grid[i][j] > numMax:
+                    numMax = grid[i][j]
+                if grid[j][i] > numMax1:
+                    numMax1 = grid[j][i]
+            a += numMax + numMax1
+        return a
+
+    # LC 559. Maximum Depth of N-ary Tree (Easy)
     # https://leetcode.com/problems/maximum-depth-of-n-ary-tree/
     def maxDepth(self, root: "Node") -> int:
+        # BFS (iterative)
         if not root:
             return 0
-        self.max_level = 0
+        nodes = deque()
+        nodes.append((root, 1))
+        maxx = 0
+        while nodes:
+            cur, val = nodes.popleft()
+            maxx = val
+            if cur.children:
+                for child in cur.children:
+                    nodes.append((child, val + 1))
+        return maxx
 
-        def dfs(node, level):
-            self.max_level = max(self.max_level, level)
-            if not node.children:
-                return
-            for child in node.children:
-                dfs(child, level + 1)
+        # # DFS (recursion with helper function)
+        # if not root:
+        #     return 0
+        # self.max_level = 0
+        # def dfs(node, level):
+        #     self.max_level = max(self.max_level, level)
+        #     if not node.children:
+        #         return
+        #     for child in node.children:
+        #         dfs(child, level + 1)
+        # dfs(root, 1)
+        # return self.max_level
 
-        dfs(root, 1)
-        return self.max_level
+        # # DFS (recursion without helper function)
+        # if not root:
+        #     return 0
+        # if root.children:
+        #     return 1 + max([self.maxDepth(x) for x in root.children])
+        # else:
+        #     return 1
 
-    # LC 811. Subdomain Visit Count
+    # LC 811. Subdomain Visit Count (Easy)
     # https://leetcode.com/problems/subdomain-visit-count/
     def subdomainVisits(self, cpdomains: List[str]) -> List[str]:
-        dic = {}
+        # My solution
+        dic = defaultdict(int)
         c = "."
         for cpdomain in cpdomains:
             [count, domain] = cpdomain.split(" ")
             count = int(count)
-            if domain in dic:
-                dic[domain] += count
-            else:
-                dic[domain] = count
+            dic[domain] += count
             index = domain.index(c) + 1 if c in domain else -1
             while index != -1:
                 print(domain)
                 domain = domain[index:]
-                if domain in dic:
-                    dic[domain] += count
-                else:
-                    dic[domain] = count
+                dic[domain] += count
                 index = domain.index(c) + 1 if c in domain else -1
         res = []
-        for domain in dic.keys():
-            res.append(str(dic[domain]) + " " + domain)
-        return res
+        # for domain in dic.keys():
+        #     res.append(str(dic[domain]) + " " + domain)
+        # return res
+        for domain, count in dic.items():
+            yield f"{count} {domain}"
 
-    # LC 509. Fibonacci Number
+        # # Leetcode solution
+        # d = defaultdict(int)
+        # for s in cpdomains:
+        #     cnt, s = s.split()
+        #     cnt = int(cnt)
+        #     d[s] += cnt
+        #     pos = s.find('.') + 1
+        #     while pos > 0:
+        #         d[s[pos:]] += cnt
+        #         pos = s.find('.', pos) + 1
+        # for x, i in d.items():
+        #     yield f'{i} {x}'
+
+    # LC 509. Fibonacci Number (Easy)
     # https://leetcode.com/problems/fibonacci-number/
-    def fib(self, N: int) -> int:
-        a, b = 0, 1
-        for _ in range(N):
-            a, b = b, a + b
-        return a
-        # One liner #ez but exponential time
-        # return N if N < 2 else self.fib(N-1) + self.fib(N-2)
-        # Using math LMAO
-        # return int((((1 + 5 ** 0.5) / 2) ** N + 1) / 5 ** 0.5)
+    def fib(self, n: int) -> int:
+        # # Recursive (exponential time) - one liner
+        # return n if n < 2 else self.fib(n-1) + self.fib(n-2)
+
+        # # Iterative (linear time)
+        # a, b = 0, 1
+        # for _ in range(n):
+        #     a, b = b, a + b
+        # return a
+
+        # Using math #WOW
+        return int((((1 + 5 ** 0.5) / 2) ** n + 1) / 5 ** 0.5)
 
     # LC 965. Univalued Binary Tree
     # https://leetcode.com/problems/univalued-binary-tree/
