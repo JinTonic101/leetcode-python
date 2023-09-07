@@ -3,15 +3,8 @@
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "python.formatting.provider": "black",
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": false,
   "[javascript]": {
     "editor.tabSize": 2
-  },
-  "[javascriptreact, typescriptreact]": {
-    "source.fixAll.stylelint": false,
-    "source.fixAll.eslint": true
   },
   "[json]": {
     "editor.tabSize": 2
@@ -20,7 +13,8 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     },
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "eslint.workingDirectories": ["."],
   "python.analysis.extraPaths": ["."]
