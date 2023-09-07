@@ -1,11 +1,9 @@
-# from itertools import permutations
-# from collections import Counter
-# import operator
 import re
+from collections import Counter, defaultdict, deque
+from functools import reduce
+from itertools import permutations
+from operator import xor
 from typing import List
-
-# <
-# >
 
 
 # Definition for a binary tree node.
@@ -350,7 +348,7 @@ class Solution:
 
     # LC 559. Maximum Depth of N-ary Tree (Easy)
     # https://leetcode.com/problems/maximum-depth-of-n-ary-tree/
-    def maxDepth(self, root: "Node") -> int:
+    def maxDepth(self, root: TreeNode) -> int:
         # BFS (iterative)
         if not root:
             return 0
@@ -435,28 +433,42 @@ class Solution:
         # return a
 
         # Using math #WOW
-        return int((((1 + 5 ** 0.5) / 2) ** n + 1) / 5 ** 0.5)
+        return int((((1 + 5**0.5) / 2) ** n + 1) / 5**0.5)
 
     # LC 965. Univalued Binary Tree
     # https://leetcode.com/problems/univalued-binary-tree/
     def isUnivalTree(self, root: TreeNode) -> bool:
-        if not root:
-            return True
-        if root.left:
-            if root.val != root.left.val:
-                return False
-        if root.right:
-            if root.val != root.right.val:
-                return False
-        return self.isUnivalTree(root.left) and self.isUnivalTree(root.right)
+        # # DFS (recursive)
+        # if not root:
+        #     return True
+        # if root.left and root.left.val != root.val:
+        #     return False
+        # if root.right and root.right.val != root.val:
+        #     return False
+        # return self.isUnivalTree(root.left) and self.isUnivalTree(root.right)
 
-    # LC 1222. Queens That Can Attack the King
-    # https://leetcode.com/contest/weekly-contest-158/problems/queens-that-can-attack-the-king/
+        # BFS (iterative)
+        nodes = deque()
+        nodes.append(root)
+        while nodes:
+            node = nodes.popleft()
+            if node.left:
+                if node.left.val != node.val:
+                    return False
+                nodes.append(node.left)
+            if node.right:
+                if node.right.val != node.val:
+                    return False
+                nodes.append(node.right)
+        return True
+
+    # LC 1222. Queens That Can Attack the King (Medium)
+    # https://leetcode.com/problems/queens-that-can-attack-the-king/
     def queensAttacktheKing(
         self, queens: List[List[int]], king: List[int]
     ) -> List[List[int]]:
         res = []
-        queens = {(i, j) for i, j in queens}
+        queens = {(x, y) for x, y in queens}
         for i in [-1, 0, 1]:
             for j in [-1, 0, 1]:
                 for k in range(1, 8):
@@ -466,6 +478,7 @@ class Solution:
                         break
         return res
 
+        # # Newbie solution
         # N = 8
         # board = [ [ 0 for i in range(N) ] for j in range(N) ]
         # for queen in queens:
@@ -550,44 +563,52 @@ class Solution:
         # # print (res)
         # return res
 
-    # LC 1221. Split a String in Balanced Strings
-    # https://leetcode.com/contest/weekly-contest-158/problems/split-a-string-in-balanced-strings/
+    # LC 1221. Split a String in Balanced Strings (Easy)
+    # https://leetcode.com/problems/split-a-string-in-balanced-strings/
     def balancedStringSplit(self, s: str) -> int:
-        total_count = 0
-        l = 0
-        for v in s:
-            if v == "L":
-                l += 1
-            else:
-                l -= 1
-            if l == 0:
-                total_count += 1
-        return total_count
+        # # Basic approach with "local" counter
+        # counter = 0
+        # res = 0
+        # for char in s:
+        #     counter += 1 if char == "R" else -1
+        #     if counter == 0:
+        #         res += 1
+        # return res
+
+        # 3-liner with dict and without if
+        c, res, dic = 0, 0, {"L": -1, "R": 1}
+        for char in s:
+            c, res = c + dic[char], res + (c == 0)
+        return res
 
     # LC 922. Sort Array By Parity II
     # https://leetcode.com/problems/sort-array-by-parity-ii/
-    def sortArrayByParityII(self, A: List[int]) -> List[int]:
-        # e = len(A)-1  # index of most left odd number
-        # for i in range(len(A)-1)[::-2]:
-        #     while (A[i] % 2): # while A[i] is an odd number
-        #         A[i], A[e] = A[e], A[i]
+    def sortArrayByParityII(self, nums: List[int]) -> List[int]:
+        # # In-place sorting solution, but I have no idea why I did in reverse order
+        # e = len(nums)-1  # index of most left odd number
+        # for i in range(len(nums)-1)[::-2]:
+        #     while (nums[i] % 2): # while nums[i] is an odd number
+        #         nums[i], nums[e] = nums[e], nums[i]
         #         e -= 2
         #         if e == -1:
         #             # We correctly placed every odd numbers, by induction the even numbers are correctly placed as well
         #             # So no need to continue the for loop
         #             break
-        # return A
-        j = 1
-        for i in range(0, len(A), 2):
-            if A[i] % 2:
-                while A[j] % 2:
-                    j += 2  # Little improvement can be done here by breaking the fo loop if j is greater than len(A)
-                A[i], A[j] = A[j], A[i]
-        return A
+        # return nums
 
-    # LC 1160. Find Words That Can Be Formed by Characters
+        # In-place sorting with 2 pointers and increamenting them 2 by 2
+        j = 1
+        for i in range(0, len(nums), 2):
+            if nums[i] % 2:
+                while nums[j] % 2:
+                    j += 2
+                nums[i], nums[j] = nums[j], nums[i]
+        return nums
+
+    # LC 1160. Find Words That Can Be Formed by Characters (Easy)
     # https://leetcode.com/problems/find-words-that-can-be-formed-by-characters/
     def countCharacters(self, words: List[str], chars: str) -> int:
+        # # Initial solution
         # res = 0
         # for word in words:
         #     tmp_chars = list(chars)
@@ -601,14 +622,29 @@ class Solution:
         #     if valid:
         #         res += len(word)
         # return res
+
+        # # Initial solution simplified
+        # res = 0
+        # for word in words:
+        #     valid = True
+        #     for i in word:
+        #         if word.count(i) > chars.count(i):
+        #             valid = False
+        #             break
+        #     if valid:
+        #         res += len(word)
+        # return res
+
+        # Saving chars frequencies in a dict to avoid recounting
         res = 0
+        freq = defaultdict(lambda: 0)
+        for c in chars:
+            freq[c] += 1
         for word in words:
-            valid = True
-            for i in word:
-                if word.count(i) > chars.count(i):
-                    valid = False
+            for char in word:
+                if freq[char] < word.count(char):
                     break
-            if valid:
+            else:
                 res += len(word)
         return res
 
@@ -636,7 +672,7 @@ class Solution:
 
     # LC 590. N-ary Tree Postorder Traversal
     # https://leetcode.com/problems/n-ary-tree-postorder-traversal/
-    def postorder(self, root: "Node") -> List[int]:
+    def postorder(self, root: TreeNode) -> List[int]:
         if not root:
             return []
         res = []
@@ -647,7 +683,7 @@ class Solution:
 
     # LC 589. N-ary Tree Preorder Traversal
     # https://leetcode.com/problems/n-ary-tree-preorder-traversal/
-    def preorder(self, root: "Node") -> List[int]:
+    def preorder(self, root: TreeNode) -> List[int]:
         if not root:
             return []
         res = []
