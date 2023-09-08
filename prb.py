@@ -935,27 +935,36 @@ class Solution:
         # Or one liner #EASY
         # return sorted([a * a for a in A])
 
-    # LC 657. Robot Return to Origin
+    # LC 657. Robot Return to Origin (Easy)
+    # https://leetcode.com/problems/robot-return-to-origin/
     def judgeCircle(self, moves: str) -> bool:
         dic = {"D": 0, "U": 0, "L": 0, "R": 0}
         for i in moves:
             dic[i] += 1
-            return dic["U"] == dic["D"] and dic["L"] == dic["R"]
+        return dic["U"] == dic["D"] and dic["L"] == dic["R"]
 
         # Or one liner #EASY
         # return moves.count('U') == moves.count('D') and moves.count('L') == moves.count('R')
 
-    # LC 961. N-Repeated Element in Size 2N Array
-    def repeatedNTimes(self, A: List[int]) -> int:
-        N = len(A) / 2
-        keys = set()
+    # LC 961. N-Repeated Element in Size 2N Array (Easy)
+    # https://leetcode.com/problems/n-repeated-element-in-size-2n-array/
+    def repeatedNTimes(self, nums: List[int]) -> int:
+        # # With Counter
+        # n = len(nums) / 2
+        # for num, count in Counter(nums).items():
+        #     if count == n:
+        #         return num
 
-        for i in A:
-            if i in keys:
-                return i
-            keys.add(i)
+        # With dict and early stop
+        n = len(nums) / 2
+        d = defaultdict(lambda: 0)
+        for num in nums:
+            d[num] += 1
+            if d[num] == n:
+                return num
 
-    ########## LC 905. Sort Array By Parity
+    ########## LC 905. Sort Array By Parity (Easy)
+    # https://leetcode.com/problems/sort-array-by-parity/
 
     # use custom sort
     def sortArrayByParity0(self, A: List[int]) -> List[int]:  # 96 ms
@@ -1005,31 +1014,31 @@ class Solution:
 
     ##########
 
-    # LC 832. Flipping an Image
-    def flipAndInvertImage(self, A: List[List[int]]) -> List[List[int]]:
-        # I, J, odd_size = len(A), len(A[0]), len(A[0]) % 2 == 1
+    # LC 832. Flipping an Image (Easy)
+    # https://leetcode.com/problems/flipping-an-image/submissions/
+    def flipAndInvertImage(self, image: List[List[int]]) -> List[List[int]]:
+        # # In-place update
+        # for i in range(len(image)):
+        #     image[i] = [b ^ 1 for b in reversed(image[i])]
+        # return image
 
-        # for i in range(I):
-        #     for j in range(int(J/2)):
-        #         A[i][j], A[i][-j] = 1 - A[i][-j], 1 - A[i][j]
-        #     if odd_size:
-        #         A[i][J//2] = 1 - A[i][J/2]
+        # # One liner
+        # return [[1-i for i in row[::-1]] for row in image] # WOW
+        # return [[1 ^ i for i in row[::-1]] for row in image]
 
-        for row in A:
+        for row in image:
             for i in range((len(row) + 1) // 2):
                 row[i], row[~i] = 1 - row[~i], 1 - row[i]  # WOW tilde operator
-        return A
+        return image
 
-        # One liner
-        # return [[1-i for i in row[::-1]] for row in A] # WOW
-        # return [[1 ^ i for i in row[::-1]] for row in A]
-
-    # LC 1207
+    # LC 1207. Unique Number of Occurrences (Easy)
+    # https://leetcode.com/problems/unique-number-of-occurrences/
     def uniqueOccurrences(self, arr: List[int]) -> bool:
         occurence_values = Counter(arr).values()
         return len(occurence_values) == len(set(occurence_values))  # WOW
 
-    # LC 1079
+    # LC 1079. Letter Tile Possibilities (Medium)
+    # https://leetcode.com/problems/letter-tile-possibilities/
     def numTilePossibilities(self, tiles: str) -> int:
         count = 0
         for i in range(1, len(tiles) + 1):
@@ -1037,10 +1046,28 @@ class Solution:
             count += len(set(p))
         return count
 
-    # LC 1021
-    def removeOuterParentheses(self, S: str) -> str:
+        # One-liner
+        # return sum([len(set(permutations(tiles, i))) for i in range(1, len(tiles)+1)])
+
+    # LC 1021 . Remove Outermost Parentheses (Easy)
+    # https://leetcode.com/problems/remove-outermost-parentheses/
+    def removeOuterParentheses(self, s: str) -> str:
+        # # With 2 counters in a dict
+        # res = tmp = ""
+        # dic = defaultdict(lambda: 0)  # opening & closing counters
+        # for c in s:
+        #     dic[c] += 1
+        #     if c == ")" and dic["("] == dic[")"]:
+        #         res += tmp[1:]
+        #         dic = defaultdict(lambda: 0)
+        #         tmp = ""
+        #         continue
+        #     tmp += c
+        # return res
+
+        # With a single counter
         cnt, res = 0, []
-        for c in S:
+        for c in s:
             if c == ")":
                 cnt -= 1
             if cnt != 0:
@@ -1049,11 +1076,51 @@ class Solution:
                 cnt += 1
         return "".join(res)
 
-    # LC
+    # LC 804. Unique Morse Code Words
+    # https://leetcode.com/problems/unique-morse-code-words/
     def uniqueMorseRepresentations(self, words: List[str]) -> int:
-        return
+        char_map = {
+            "a": ".-",
+            "b": "-...",
+            "c": "-.-.",
+            "d": "-..",
+            "e": ".",
+            "f": "..-.",
+            "g": "--.",
+            "h": "....",
+            "i": "..",
+            "j": ".---",
+            "k": "-.-",
+            "l": ".-..",
+            "m": "--",
+            "n": "-.",
+            "o": "---",
+            "p": ".--.",
+            "q": "--.-",
+            "r": ".-.",
+            "s": "...",
+            "t": "-",
+            "u": "..-",
+            "v": "...-",
+            "w": ".--",
+            "x": "-..-",
+            "y": "-.--",
+            "z": "--..",
+        }
+        res = set()
+        for word in words:
+            tmp = ""
+            for c in word:
+                tmp += char_map[c]
+            res.add(tmp)
+        return len(res)
 
-    # LC 88. Merge Sorted Array
+        # # Two-liner
+        # a=[".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."]
+        # return len(set(["".join([a[ord(i)-97] for i in j]) for j in words]))
+
+    # LC 88. Merge Sorted Array (Easy)
+    # https://leetcode.com/problems/merge-sorted-array/
     def merge88(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
         """
         Do not return anything, modify nums1 in-place instead.
@@ -1075,7 +1142,8 @@ class Solution:
 
         return nums1
 
-    # LC 9. Palindrome Number
+    # LC 9. Palindrome Number (Easy)
+    # https://leetcode.com/problems/palindrome-number/
     def isPalindrome(self, x: int) -> bool:
         # # One-line code
         # return str(x) == str(x)[::-1]
@@ -1100,6 +1168,7 @@ class Solution:
         return n == reversed_x
 
     # LC 28. Find the Index of the First Occurrence in a String (Easy)
+    # https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/
     def strStr(self, haystack: str, needle: str) -> int:
         # # One-liner
         # return haystack.find(needle)
@@ -1115,6 +1184,7 @@ class Solution:
         return -1
 
     # LC 20. Valid Parentheses (Easy)
+    # https://leetcode.com/problems/valid-parentheses/
     def isValidParentheses(self, s: str) -> bool:
         maps = {")": "(", "}": "{", "]": "["}
         pipe = []
