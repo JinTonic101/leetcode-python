@@ -875,7 +875,8 @@ class Solution:
             map[val] = map.get(val - difference, 0) + 1
         return max(map.values())
 
-    # 461. Hamming Distance
+    # LC 461. Hamming Distance (Easy)
+    # https://leetcode.com/problems/hamming-distance/description/
     def hammingDistance(self, x: int, y: int) -> int:
         x_bin = str(bin(x))[2:]
         y_bin = str(bin(y))[2:]
@@ -899,12 +900,13 @@ class Solution:
         # One liner #WOW
         # return bin(x ^ y).count("1")
 
-    # LC 728. Self Dividing Numbers
+    # LC 728. Self Dividing Numbers (Easy)
+    # https://leetcode.com/problems/self-dividing-numbers/
     def selfDividingNumbers(self, left: int, right: int) -> List[int]:
         res = []
         for i in range(left, right + 1):
             for char in str(i):
-                if int(char) == 0 or i % int(char) != 0:
+                if char == "0" or i % int(char):
                     break
             else:
                 res.append(i)
@@ -913,21 +915,22 @@ class Solution:
         # One liner (less elegant)
         # return [x for x in range(left, right+1) if '0' not in str(x) and all([x % int(digit)==0 for digit in str(x)])]
 
-    # LC 977. Squares of a Sorted Array
-    # Time : O(N) with Two pointers or O(N log(N)) with sort
-    # Space : O(N)
+    # LC 977. Squares of a Sorted Array (Easy)
+    # https://leetcode.com/problems/squares-of-a-sorted-array/
     def sortedSquares(self, A: List[int]) -> List[int]:
-        answer = [0] * len(A)
-        l, r = 0, len(A) - 1
+        # Time : O(N) with Two pointers or O(N log(N)) with sort
+        # Space : O(N)
+        res = [0] * len(nums)
+        l, r = 0, len(nums) - 1
         while l <= r:
-            left, right = abs(A[l]), abs(A[r])
+            left, right = abs(nums[l]), abs(nums[r])
             if left > right:
-                answer[r - l] = left * left
+                res[r - l] = left**2
                 l += 1
             else:
-                answer[r - l] = right * right
+                res[r - l] = right**2
                 r -= 1
-        return answer
+        return res
 
         # Or one liner #EASY
         # return sorted([a * a for a in A])
