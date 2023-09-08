@@ -1,4 +1,5 @@
 import re
+from bisect import bisect_left
 from collections import Counter, defaultdict, deque
 from functools import reduce
 from itertools import permutations
@@ -648,7 +649,7 @@ class Solution:
                 res += len(word)
         return res
 
-    # LC 1051. Height Checker
+    # LC 1051. Height Checker (Easy)
     # https://leetcode.com/problems/height-checker/
     def heightChecker(self, heights: List[int]) -> int:
         heights_sort = sorted(heights)
@@ -658,19 +659,36 @@ class Solution:
                 count += 1
         return count
 
-    # LC 929. Unique Email Addresses
+        # # 1-liner
+        # return sum(a != b for a, b in zip(heights, sorted(heights)))
+
+    # LC 929. Unique Email Addresses (Easy)
     # https://leetcode.com/problems/unique-email-addresses/
     def numUniqueEmails(self, emails: List[str]) -> int:
-        email_set = set()
-        for email in emails:
-            [name, domain] = email.split("@")
-            name = name.split("+")[0].replace(
-                ".", ""
-            )  # ignore what's after '+' and remove '.'
-            email_set.add(name + "@" + domain)
-        return len(email_set)
+        # # Basic solution
+        # res = set()
+        # for email in emails:
+        #     local_name, domain_name = email.split("@")
+        #     local_name = local_name.split("+")[0].replace(".", "")
+        #     res.add(f"{local_name}@{domain_name}")
+        # return len(res)
 
-    # LC 590. N-ary Tree Postorder Traversal
+        # Basic solution with single pass for each email
+        res = set()
+        for email in emails:
+            local, domain = email.split("@")
+            tmp = []
+            for c in local:
+                if c == ".":
+                    continue
+                elif c == "+":
+                    break
+                else:
+                    tmp.append(c)
+            res.add("".join(tmp + ["@", domain]))
+        return len(res)
+
+    # LC 590. N-ary Tree Postorder Traversal (Easy)
     # https://leetcode.com/problems/n-ary-tree-postorder-traversal/
     def postorder(self, root: TreeNode) -> List[int]:
         if not root:
@@ -681,18 +699,32 @@ class Solution:
         res.append(root.val)
         return res
 
-    # LC 589. N-ary Tree Preorder Traversal
+    # LC 589. N-ary Tree Preorder Traversal (Easy)
     # https://leetcode.com/problems/n-ary-tree-preorder-traversal/
     def preorder(self, root: TreeNode) -> List[int]:
+        # # Recursive
+        # if not root:
+        #     return []
+        # res = []
+        # res.append(root.val)
+        # for s in root.children:
+        #     res += self.preorder(s)
+        # return res
+
+        # Iterative
         if not root:
             return []
         res = []
-        res.append(root.val)
-        for s in root.children:
-            res += self.preorder(s)
+        nodes = deque()
+        nodes.append(root)
+        while nodes:
+            node = nodes.popleft()
+            res.append(node.val)
+            for c in reversed(node.children):
+                nodes.appendleft(c)
         return res
 
-    # LC 700. Search in a Binary Search Tree
+    # LC 700. Search in a Binary Search Tree (Easy)
     # https://leetcode.com/problems/search-in-a-binary-search-tree/
     def searchBST(self, root: TreeNode, val: int) -> TreeNode:
         cur = root
@@ -707,117 +739,141 @@ class Solution:
         # One liner
         # return root if not root or val == root.val else (self.searchBST(root.left, val) if val < root.val else self.searchBST(root.right, val))
 
-    # LC 1028. Recover a Tree From Preorder Traversal
+    # LC 1028. Recover a Tree From Preorder Traversal (Hard)
     # https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/
     def recoverFromPreorder(self, S: str) -> TreeNode:
-        hash_array = [[] for i in range(1000)]  # index = depth
+        # # First solution
+        # hash_array = [[] for i in range(1000)]
+        # splitted = re.findall(r"\d+|\-+", traversal)
+        # root = TreeNode(splitted[0]) # Setting the depth 0
+        # hash_array[0].append(root)
+        # depth = 1
+        # for val in splitted[1:]:
+        #     if val.isdigit():
+        #         node = TreeNode(val)
+        #         parent = hash_array[depth-1][-1]
+        #         if not parent.left:
+        #             parent.left = node
+        #         elif not parent.right:
+        #             parent.right = node
+        #         hash_array[depth].append(node)
+        #     else:
+        #         depth = len(val)
+        # return root
 
-        splitted = re.findall(r"\d+|\-+", S)
-        print(splitted)
-
-        # Setting the depth "0"
-        root = TreeNode(splitted[0])
-        hash_array[0].append(root)
-
-        depth = 1
-        for i in range(1, len(splitted)):
-            val = splitted[i]
-            if val.isdigit():
-                node = TreeNode(val)
-                parent = hash_array[depth - 1][-1]  # last one
-                if not parent.left:
-                    parent.left = node
-                elif not parent.right:
-                    parent.right = node
-                else:
-                    # shouldn't happend
-                    print("WTF")
-
-                hash_array[depth].append(node)
+        # Best solution (without hash array nor recursion)
+        traversal = traversal.split("-")
+        root = TreeNode(int(traversal[0]))
+        parent = root
+        for val in traversal[1:]:
+            if val == "":
+                parent = parent.right if parent.right else parent.left
             else:
-                depth = len(val)
-
+                if not parent.left:
+                    parent.left = TreeNode(int(val))
+                else:
+                    parent.right = TreeNode(int(val))
+                parent = root  # Restart from top
         return root
 
-    # LC 944. Delete Columns to Make Sorted
+    # LC 944. Delete Columns to Make Sorted (Easy)
     # https://leetcode.com/problems/delete-columns-to-make-sorted/
-    def minDeletionSize(self, A: List[str]) -> int:
-        return sum([sorted(a) != list(a) for a in zip(*A)])
+    def minDeletionSize(self, strs: List[str]) -> int:
+        sum([sorted(s) != list(s) for s in zip(*strs)])
 
-    # LC 942. DI String Match
+    # LC 942. DI String Match (Easy)
     # https://leetcode.com/problems/di-string-match/
-    def diStringMatch(self, S: str) -> List[int]:
-        left, right = 0, len(S)
-        arr = []
-        for char in S:
-            if char == "I":
-                arr.append(left)
-                left += 1
+    def diStringMatch(self, s: str) -> List[int]:
+        per = []
+        lower = 0
+        upper = len(s)
+        for i in s:
+            if i == "I":
+                per.append(lower)
+                lower += 1
             else:
-                arr.append(right)
-                right -= 1
-        return arr
+                per.append(upper)
+                upper -= 1
+        if s[len(s) - 1] == "I":
+            per.append(upper)
+        else:
+            per.append(lower)
+        return per
 
-    # LC 561. Array Partition I
+    # LC 561. Array Partition I (Easy)
+    # https://leetcode.com/problems/array-partition/
     def arrayPairSum(self, nums: List[int]) -> int:
         return sum(sorted(nums)[::2])
 
-    # LC 852. Peak Index in a Mountain Array
-    def peakIndexInMountainArray(self, A: List[int]) -> int:
-        for i in range(len(A)):
-            if A[i + 1] < A[i]:
-                return i
+    # LC 852. Peak Index in a Mountain Array (Medium)
+    # https://leetcode.com/problems/peak-index-in-a-mountain-array/
+    def peakIndexInMountainArray(self, arr: List[int]) -> int:
+        # # Basic solution - O(N)T
+        # for i in range(len(arr)):
+        #     if arr[i + 1] < arr[i]:
+        #         return i
 
-        # One liner (takes more time)
-        # index, _value = max(enumerate(A), key=operator.itemgetter(1))
+        # # 1-liner (takes more time) - O(N)T
+        # index, _value = max(enumerate(arr), key=operator.itemgetter(1))
         # return index
 
-    # LC 1217 https://leetcode.com/contest/weekly-contest-157/problems/play-with-chips/
-    def minCostToMoveChips(self, chips: List[int]) -> int:
-        even_numbers = 0
-        odd_numbers = 0
-        for number in chips:
-            if number % 2 == 0:
-                even_numbers += 1
-            else:
-                odd_numbers += 1
+        # # 1-liner - O(N)T
+        # return arr.index(max(arr))
 
-        if even_numbers == 0 or odd_numbers == 0:
-            return 0
+        # # Binary search - O(log(N))T
+        # l, r = 1, len(arr)-2  # 0, len(arr)-1
+        # while l<=r:
+        #     m = (l+r)//2
+        #     if arr[m+1] < arr[m] and arr[m-1] < arr[m]: return m
+        #     if arr[m+1] > arr[m]: l = m+1
+        #     else: r = m
 
-        return min(even_numbers, odd_numbers)
+        # 1-liner binary search - O(log(N))T
+        return bisect_left(range(len(arr) - 1), 1, key=lambda x: arr[x + 1] < arr[x])
 
-    # LC 5214 https://leetcode.com/contest/weekly-contest-157/problems/longest-arithmetic-subsequence-of-given-difference/
+    # LC 1217. Minimum Cost to Move Chips to The Same Position (Easy)
+    # https://leetcode.com/contest/weekly-contest-157/problems/play-with-chips/
+    def minCostToMoveChips(self, position: List[int]) -> int:
+        # # Greedy approach
+        # even_numbers = 0
+        # odd_numbers = 0
+        # for pos in position:
+        #     if pos % 2:
+        #         odd_numbers += 1
+        #     else:
+        #         even_numbers += 1
+        # if even_numbers == 0 or odd_numbers == 0:
+        #     return 0
+        # return min(even_numbers, odd_numbers)
+
+        # # 2-liner - O(N)T O(N)S
+        # d = collections.Counter([p % 2 for p in position])
+        # return min(d[0], d[1])
+
+        # O(N)T O(1)S
+        dic = defaultdict(int)
+        for n in position:
+            dic[n % 2] += 1
+        return min(dic[0], dic[1])
+
+    # LC 5214. Longest Arithmetic Subsequence of Given Difference
+    # https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/description/
     def longestSubsequence(self, arr: List[int], difference: int) -> int:
-        # Wrong solution :
-        a, n, d = arr, len(arr), difference
+        # # See https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/solutions/3761478/python-it-s-all-about-expectations-explained/
+        # subseqs = {}
+        # for n in arr:
+        #     cnt_prev = subseqs.get(n, 0)
+        #     cnt_next = subseqs.get(n + difference, 0)
+        #     subseqs[n + difference] = max(cnt_prev + 1, cnt_next)
+        # return max(subseqs.values())
 
-        # key = starting element of an AP,
-        # value = length of AP
-        m = dict()
-
-        # since the length of longest AP is at least
-        # one i.e. the number itself.
-        maxt = 1
-
-        # if element a[i]'s starting element(i.e., a[i]-i*d)
-        # is not in map then its value is 1 else there already
-        # exists a starting element of an AP of which a[i]
-        # can be a part.
-        for i in range(n):
-            if (a[i] - d) in m:
-                m[a[i] - d] += 1
-            else:
-                m[a[i] - d] = 1
-
-        # In this it variable will be
-        # storing key value of dictionary.
-        for it in m:
-            if m[it] > maxt:
-                # calculating the length of longest AP.
-                maxt = m[it]
-
-        return maxt
+        # See https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/solutions/3762641/4-line-python-hashmap-dp-two-sum-variation/
+        # Main Intuition comes from problem "Two Sum"
+        # Simply Hash previously seen values and the count of ongoing AP Length
+        map = {}
+        for val in arr:
+            map[val] = map.get(val - difference, 0) + 1
+        return max(map.values())
 
     # 461. Hamming Distance
     def hammingDistance(self, x: int, y: int) -> int:
