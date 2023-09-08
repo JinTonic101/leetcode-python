@@ -1195,3 +1195,41 @@ class Solution:
             if not pipe or pipe.pop() != maps[char]:
                 return False
         return not pipe
+
+    # LC 118. Pascal's Triangle
+    def generate(self, numRows: int) -> List[List[int]]:
+        """Return the numRows first rows of Pascal's Triangle"""
+        # # DP
+        # res = []
+        # for i in range(numRows):
+        #     row = [1] * (i + 1)
+        #     for j in range(1, i):
+        #         row[j] = res[i-1][j-1] + res[i-1][j]
+        #     res.append(row)
+        # return res
+
+        # # Recursion
+        # if numRows == 0:
+        #     return []
+        # triangle = [[1]]
+        # for i in range(1, numRows):
+        #     prev_row = triangle[-1]
+        #     new_row = [1]
+        #     for j in range(1, len(prev_row)):
+        #         new_row.append(prev_row[j-1] + prev_row[j])
+        #     new_row.append(1)
+        #     triangle.append(new_row)
+        # return triangle
+
+        # Math: Combinatorics
+        # (n
+        #  k)
+        import math
+
+        triangle = []
+        for n in range(numRows):
+            row = []
+            for k in range(n + 1):
+                row.append(math.comb(n, k))
+            triangle.append(row)
+        return triangle
