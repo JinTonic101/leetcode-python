@@ -2,7 +2,7 @@ import re
 from bisect import bisect_left
 from collections import Counter, defaultdict, deque
 from functools import reduce
-from itertools import permutations
+from itertools import combinations_with_replacement, permutations
 from operator import xor
 from typing import List
 
@@ -1196,7 +1196,8 @@ class Solution:
                 return False
         return not pipe
 
-    # LC 118. Pascal's Triangle
+    # LC 118. Pascal's Triangle (Easy)
+    # https://leetcode.com/problems/pascals-triangle/
     def generate(self, numRows: int) -> List[List[int]]:
         """Return the numRows first rows of Pascal's Triangle"""
         # # DP
@@ -1233,3 +1234,112 @@ class Solution:
                 row.append(math.comb(n, k))
             triangle.append(row)
         return triangle
+
+    # LC 119. Pascal's Triangle II (Easy)
+    # https://leetcode.com/problems/pascals-triangle-ii/
+    def getRow(self, rowIndex: int) -> List[int]:
+        # # DP
+        # res = []
+        # for i in range(numRows):
+        #     row = [1] * (i + 1)
+        #     for j in range(1, i):
+        #         row[j] = res[i-1][j-1] + res[i-1][j]
+        #     res.append(row)
+        # return res[numRows]
+
+        # # Math: Combinatorics
+        # # (n
+        # #  k)
+        # import math
+
+        # return [math.comb(rowIndex, k) for k in range(rowIndex + 1)]
+
+        # Math: Combinatorics without import
+        row = [1] * (rowIndex + 1)
+        for i in range(1, rowIndex):
+            row[i] = row[i - 1] * (rowIndex - i + 1) // i
+        return row
+
+    # 377. Combination Sum IV
+    # https://leetcode.com/problems/combination-sum-iv/
+    def combinationSum4(self, nums: List[int], target: int) -> int:
+        # # Brute force TO #shame
+        # count = 0
+        # # Remove nums greater than target
+        # nums = [n for n in nums if n <= target]
+        # if not nums:
+        #     return 0
+
+        # for i in range(1, target + 1):
+        #     for c in combinations_with_replacement(nums, i):
+        #         if sum(c) == target:
+        #             count += len(set(permutations(c)))
+        # return count
+
+        # # DP
+        # dp = [0] * (target + 1)
+        # dp[0] = 1
+        # for i in range(1, target + 1):
+        #     for num in nums:
+        #         if i - num >= 0:
+        #             dp[i] += dp[i - num]
+        # return dp[target]
+
+        # Memoization with recursion
+        nums.sort()
+        memo = {}
+
+        def helper(n):
+            if n in memo:
+                return memo[n]
+            if n == 0:
+                return 1
+            if n < nums[0]:
+                return 0
+
+            count = 0
+            for num in nums:
+                if n - num < 0:
+                    break
+                count += helper(n - num)
+
+            memo[n] = count
+            return count
+
+        return helper(target)
+
+    # LC 392. Is Subsequence (Easy)
+    # https://leetcode.com/problems/is-subsequence/
+    def isSubsequence(self, s: str, t: str) -> bool:
+        # O(s*t)T, O(1)S
+        ls, lt = len(s), len(t)
+        if s == 0 or t == 0 or ls > lt:
+            return False
+        i, j = 0, 0
+        while i < ls and j < lt:
+            if s[i] == t[j]:
+                i += 1
+            j += 1
+        return i == ls
+
+    # LC 1646. Get Maximum in Generated Array (Easy)
+    # https://leetcode.com/problems/get-maximum-in-generated-array/
+    def getMaximumGenerated(self, n: int) -> int:
+        dp = [0, 1]
+        if n <= 1:
+            return dp[n]
+        for i in range(2, n + 1):
+            if i % 2 == 0:
+                dp.append(dp[i // 2])
+            else:
+                dp.append(dp[i // 2] + dp[(i // 2) + 1])
+        return max(dp)
+
+        # # With & and >> operator
+        # dp = [0, 1]
+        # for i in range(2, n + 1):
+        #     if i & 1:
+        #         dp += dp[(i - 1) >> 1] + dp[(i + 1) >> 1]
+        #     else:
+        #         dp += dp[i >> 1]
+        # return max(dp) if n else dp[n]

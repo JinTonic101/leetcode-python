@@ -136,12 +136,21 @@ class Test(unittest.TestCase):
         # self.assertEqual(solution.strStr("sadbutsad", "but"), 3)
         # self.assertEqual(solution.strStr("leetcode", "leeto"), -1)
 
-        self.assertEqual(solution.isValidParentheses("()"), True)
-        self.assertEqual(solution.isValidParentheses("()[]{}"), True)
-        self.assertEqual(solution.isValidParentheses("(]"), False)
-        self.assertEqual(solution.isValidParentheses("([{}])"), True)
-        self.assertEqual(solution.isValidParentheses("{(}"), False)
-        self.assertEqual(solution.isValidParentheses("([)]"), False)
+        # self.assertEqual(solution.isValidParentheses("()"), True)
+        # self.assertEqual(solution.isValidParentheses("()[]{}"), True)
+        # self.assertEqual(solution.isValidParentheses("(]"), False)
+        # self.assertEqual(solution.isValidParentheses("([{}])"), True)
+        # self.assertEqual(solution.isValidParentheses("{(}"), False)
+        # self.assertEqual(solution.isValidParentheses("([)]"), False)
+
+        # self.assertEqual(solution.combinationSum4([1, 2, 3], 4), 7)
+        # self.assertEqual(solution.combinationSum4([9], 3), 0)
+        # self.assertEqual(solution.combinationSum4([1, 2, 3], 9), 149)
+        # self.assertEqual(solution.combinationSum4([5, 1, 8], 24), 982)
+
+        self.assertEqual(solution.getMaximumGenerated(7), 3)
+        self.assertEqual(solution.getMaximumGenerated(2), 1)
+        self.assertEqual(solution.getMaximumGenerated(3), 2)
 
 
 if __name__ == "__main__":
