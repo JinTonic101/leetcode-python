@@ -148,9 +148,22 @@ class Test(unittest.TestCase):
         # self.assertEqual(solution.combinationSum4([1, 2, 3], 9), 149)
         # self.assertEqual(solution.combinationSum4([5, 1, 8], 24), 982)
 
-        self.assertEqual(solution.getMaximumGenerated(7), 3)
-        self.assertEqual(solution.getMaximumGenerated(2), 1)
-        self.assertEqual(solution.getMaximumGenerated(3), 2)
+        # self.assertEqual(solution.getMaximumGenerated(7), 3)
+        # self.assertEqual(solution.getMaximumGenerated(2), 1)
+        # self.assertEqual(solution.getMaximumGenerated(3), 2)
+
+        # fmt: off
+        # self.assertEqual(solution.minExtraChar("abc", ["abc"]), 0)
+        # self.assertEqual(solution.minExtraChar("abc", ["abcd"]), 3)
+        # self.assertEqual(solution.minExtraChar("leetscode", ["leet", "code", "leetcode"]), 1)
+        # self.assertEqual(solution.minExtraChar("sayhelloworld", ["hello", "world"]), 3)
+        # self.assertEqual(solution.minExtraChar("dwmodizxvvbosxxw", ["ox","lb","diz","gu","v","ksv","o","nuq","r","txhe","e","wmo","cehy","tskz","ds","kzbu"]), 7) # noqa E501
+        # self.assertEqual(solution.minExtraChar("ecolloycollotkvzqpdaumuqgs", ["flbri","uaaz","numy","laper","ioqyt","tkvz","ndjb","gmg","gdpbo","x","collo","vuh","qhozp","iwk","paqgn","m","mhx","jgren","qqshd","qr","qpdau","oeeuq","c","qkot","uxqvx","lhgid","vchsk","drqx","keaua","yaru","mla","shz","lby","vdxlv","xyai","lxtgl","inz","brhi","iukt","f","lbjou","vb","sz","ilkra","izwk","muqgs","gom","je"]), 2)
+        # self.assertEqual(solution.minExtraChar("kevlplxozaizdhxoimmraiakbak", ["yv","bmab","hv","bnsll","mra","jjqf","g","aiyzi","ip","pfctr","flr","ybbcl","biu","ke","lpl","iak","pirua","ilhqd","zdhx","fux","xaw","pdfvt","xf","t","wq","r","cgmud","aokas","xv","jf","cyys","wcaz","rvegf","ysg","xo","uwb","lw","okgk","vbmi","v","mvo","fxyx","ad","e"]), 9)
+        # self.assertEqual(solution.minExtraChar("voctvochpgutoywpnafylzelqsnzsbandjcqdciyoefi", ["tf","v","wadrya","a","cqdci","uqfg","voc","zelqsn","band","b","yoefi","utoywp","herqqn","umra","frfuyj","vczatj","sdww"]), 11)
+        # self.assertEqual(solution.minExtraChar("nbxhpyyawmcsnuycfvoxhmxjclqadablucgikep", ["yaw","nbxhpy","arpqfg","bluc","thxpp","ox","a","zdaru","kmd","flckz","hnnn","dldal","yqssxn","ycf","lctpj","hmxjc","dv","cs","sxt","am","irfij","dbtg","cjnybn","ab","dngs","azbq","qa","mrx","mljbq","hphmy","b","hu","s","g"]), 10)
+        self.assertEqual(solution.minExtraChar("aakodubkrlauvfkzje", ["ix","qoqw","ax","ar","v","hxpl","nxcg","thr","kod","pns","cdo","euy","es","rf","bxcx","xe","ua","vws","vumr","zren","bzt","qwxn","ami","rrbk","ak","uan","g","vfk","jxmg","fhb","nqgd","fau","rl","h","r","jxvo","tv","smfp","lmck","od"]), 9)
+        # fmt: on
 
 
 if __name__ == "__main__":

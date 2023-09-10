@@ -1,8 +1,10 @@
 import re
 from bisect import bisect_left
 from collections import Counter, defaultdict, deque
+from copy import deepcopy
 from functools import reduce
 from itertools import combinations_with_replacement, permutations
+from math import factorial, inf
 from operator import xor
 from typing import List
 
@@ -1343,3 +1345,141 @@ class Solution:
         #     else:
         #         dp += dp[i >> 1]
         # return max(dp) if n else dp[n]
+
+    # LC 1359. Count All Valid Pickup and Delivery Options (Hard)
+    # https://leetcode.com/problems/count-all-valid-pickup-and-delivery-options/
+    def countOrders(self, n: int) -> int:
+        MOD = 10**9 + 7
+
+        # # DP - O(n)T, O(1)S
+        # res = 1
+        # for i in range(2, n+1):
+        #     res = (res * (2*i - 1) * i) % MOD
+        # return res
+
+        # # Resursion with memoization - O(n)T, O(n)S
+        # memo = {}
+        # def helper(i):
+        #     if i == 1:
+        #         return 1
+        #     if i in memo:
+        #         return memo[i]
+        #     res = (helper(i-1)*(2*i-1)*i) % MOD
+        #     memo[i] = res
+        #     return res
+        # return helper(n)
+
+        # Math - O(n)T, O(1)S
+        # res = (2n)! / 2**n
+        return (factorial(2 * n) * pow(2, -n, MOD)) % MOD
+
+    # LC 338. Counting Bits (Easy)
+    # https://leetcode.com/problems/counting-bits/submissions/
+    def countBits(self, n: int) -> List[int]:
+        # # Naive solution - O(n*log(n))T, O(n)S
+        # res = []
+        # for i in range(n+1):
+        #     res.append(sum([int(b) for b in bin(i)[2:]]))
+        # return res
+
+        # DP with bit operators (AND and SHIFT) - O(n)T, O(n)S
+        res = [0] * (n + 1)
+        for i in range(1, n + 1):
+            res[i] = (i & 1) + res[i >> 1]
+        return res
+
+        # # DP with offset - O(n)T, O(n)S
+        # res = [0] * (n + 1)
+        # offset = 1
+        # for i in range(1, n + 1):
+        #     if offset * 2 == i:
+        #         offset *= 2
+        #     res[i] = res[i - offset] + 1
+        # return res
+
+    # LC 2707. Extra Characters in a String (Medium)
+    # https://leetcode.com/problems/extra-characters-in-a-string/
+    def minExtraChar(self, s: str, dictionary: List[str]) -> int:
+        # # DP (comparison based on words) - O(n*m)T, O(n)S
+        # dp = [0] * (len(s) + 1)
+        # dictionary = set(dictionary)  # test sets contains lots of duplicates
+        # for i in range(1, len(s) + 1):
+        #     dp[i] = dp[i - 1] + 1
+        #     for w in dictionary:
+        #         if i >= len(w) and s[i - len(w) : i] == w:
+        #             dp[i] = min(dp[i], dp[i - len(w)])
+        # return dp[-1]
+
+        # DP (comparison based on s) - O(n*n)T, O(n)S
+        dp = [inf] * (len(s) + 1)
+        dp[0] = 0
+        dictionary = set(dictionary)  # test sets contains lots of duplicates
+        for i in range(1, len(s) + 1):
+            dp[i] = dp[i - 1] + 1
+            for j in range(1, i + 1):
+                if s[i - j : i] in dictionary:
+                    dp[i] = min(dp[i], dp[i - j])
+        return dp[-1]
+
+        # # DP with Trie - O(n*m)T, O(n+k)S
+        # Trie = lambda: defaultdict(Trie)
+        # trie = Trie()
+        # for word in dictionary:
+        #     t = trie
+        #     for c in word: t = t[c]
+        #     t[' ']
+        # dp = defaultdict(lambda: inf)
+        # dp[len(s)] = 0
+        # for start in reversed(range(len(s))):
+        #     dp[start] = dp[start + 1] + 1
+        #     node = trie
+        #     for i, end in enumerate(s[start:]):
+        #         if end not in node:
+        #             break
+        #         node = node[end]
+        #         if ' ' in node:
+        #             dp[start] = min(dp[start], dp[start + i + 1])
+        # return dp[0]
+
+        # # =====
+        # # Bad solution
+        # fc = defaultdict(lambda: set())
+        # for w in dictionary:
+        #     fc[w[0]].add(w)
+        # windows = []
+        # ls = len(s)
+        # for i in range(ls):
+        #     if s[i] not in fc:
+        #         continue
+        #     for w in fc[s[i]]:
+        #         if i + len(w) <= ls and s[i : i + len(w)] == w:
+        #             windows.append([i, i + len(w) - 1])
+        #             print(w, i, i + len(w) - 1)
+        # windows.sort(key=lambda x: (x[0], x[1]))
+        # # get biggest windows subsets without merging overlapping windows
+        # biggest_windows = []
+        # prev = [-1, -1]
+        # for w in windows:
+        #     print(w, prev)
+        #     if w[0] > prev[1]:
+        #         biggest_windows.append(deepcopy(w))
+        #         prev = w
+        #     elif w[0] <= prev[1] and w[1] - w[0] > prev[1] - prev[0]:
+        #         biggest_windows[-1] = deepcopy(w)
+        #         prev = w
+        # # loop through biggest_windows, if a w from windows is strictly between two consecusive windows in biggest_windows, add w to biggest_windows
+        # for i in range(len(biggest_windows) - 1):
+        #     for w in windows:
+        #         if biggest_windows[i][1] < w[0] and w[1] < biggest_windows[i + 1][0]:
+        #             biggest_windows.insert(i + 1, deepcopy(w))
+        # # count all indexes covered by merged windows
+        # print("--")
+        # print(windows)
+        # print(biggest_windows)
+        # count = 0
+        # for w in biggest_windows:
+        #     count += w[1] - w[0] + 1
+        # #     print(w[0], w[1], "-", w[1] - w[0] + 1, count)
+        # # print(ls, count, ls - count)
+        # print("--------")
+        # return ls - count
