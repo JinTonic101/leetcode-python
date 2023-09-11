@@ -4,9 +4,9 @@ from collections import Counter, defaultdict, deque
 from copy import deepcopy
 from functools import reduce
 from itertools import combinations_with_replacement, permutations
-from math import factorial, inf
+from math import comb, factorial, inf
 from operator import xor
-from typing import List
+from typing import List, Optional
 
 
 # Definition for a binary tree node.
@@ -18,6 +18,21 @@ class TreeNode:
 
     def __str__(self):
         return str(self.val) + ", " + str(self.left) + ", " + str(self.right)
+
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+
+# Definition for a Node.
+class Node:
+    def __init__(self, x: int, next: "Node" = None, random: "Node" = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
 
 
 class Solution:
@@ -1483,3 +1498,199 @@ class Solution:
         # # print(ls, count, ls - count)
         # print("--------")
         # return ls - count
+
+    # LC 1282. Group the People Given the Group Size They Belong To (Medium)
+    # https://leetcode.com/problems/group-the-people-given-the-group-size-they-belong-to/
+    def groupThePeople(self, groupSizes: List[int]) -> List[List[int]]:
+        # Greedy solution
+        d = defaultdict(lambda: [[]])
+        for i, gs in enumerate(groupSizes):
+            if len(d[gs][-1]) == gs:
+                d[gs].append([i])
+            else:
+                d[gs][-1].append(i)
+        return sum(d.values(), [])
+
+    # LC 62. Unique Paths (Medium)
+    # https://leetcode.com/problems/unique-paths/
+    def uniquePaths(self, m: int, n: int) -> int:
+        # # Recursion with memoization - O(m*n)TS
+        # memo = {}
+        # def helper(i, j):
+        #     if (i, j) in memo:
+        #         return memo[(i, j)]
+        #     if i==m or j==n:
+        #         return 0
+        #     if i==m-1 and j==n-1:
+        #         return 1
+        #     res = helper(i+1,j) + helper(i,j+1)
+        #     memo[(i,j)] = res
+        #     return res
+        # return helper(0, 0)
+
+        # # DP with hash matrix - O(m*n)TS
+        # dp = [[1 if i==0 or j==0 else 0 for j in range(n)] for i in range(m)]
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        # return dp[-1][-1]
+
+        # # DP with only prev row and cur row - O(m*n)T, O(n)S
+        # curr_row = [1] * n
+        # prev_row = [1] * n
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         curr_row[j] = curr_row[j - 1] + prev_row[j]
+        #     curr_row, prev_row = prev_row, curr_row
+        # return prev_row[-1]
+
+        # Math (comb)
+        return comb(m + n - 2, m - 1)  # = comb(m + n - 2, n - 1)
+
+    # LC 141. Linked List Cycle (Easy)
+    # https://leetcode.com/problems/linked-list-cycle/
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        # # Hash table - O(n)TS
+        # visited_nodes = set()
+        # current_node = head
+        # while current_node:
+        #     if current_node in visited_nodes:
+        #         return True
+        #     visited_nodes.add(current_node)
+        #     current_node = current_node.next
+        # return False
+
+        # Double cursors fast and slow - O(n)T, O(1)S
+        fast = head
+        slow = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if fast == slow:
+                return True
+        return False
+
+    # LC 138. Copy List with Random Pointer (Medium)
+    # https://leetcode.com/problems/copy-list-with-random-pointer/
+    def copyRandomList(self, head: Optional[Node]) -> Optional[Node]:
+        # # Cheating with built-in function
+        # return deepcopy(head)
+
+        # # Hash table - O(n)TS
+        # if not head:
+        #     return None
+        # h = {}
+        # curr = head
+        # while curr:
+        #     h[curr] = Node(curr.val)
+        #     curr = curr.next
+        # curr = head
+        # while curr:
+        #     h[curr].next = h.get(curr.next, None)
+        #     h[curr].random = h.get(curr.random, None)
+        #     curr = curr.next
+        # return h[head]
+
+        # Interweaving - O(n)T, O(1)S
+        if not head:
+            return None
+        curr = head
+        while curr:
+            new_node = Node(curr.val, curr.next)
+            curr.next = new_node
+            curr = new_node.next
+        curr = head
+        while curr:
+            if curr.random:
+                curr.next.random = curr.random.next
+            curr = curr.next.next
+        old_head = head
+        new_head = head.next
+        curr_old = old_head
+        curr_new = new_head
+        while curr_old:
+            curr_old.next = curr_old.next.next
+            curr_new.next = curr_new.next.next if curr_new.next else None
+            curr_old = curr_old.next
+            curr_new = curr_new.next
+        return new_head
+
+    # LC 725. Split Linked List in Parts (Medium)
+    # https://leetcode.com/problems/split-linked-list-in-parts/
+    def splitListToParts(
+        self, head: Optional[ListNode], k: int
+    ) -> List[Optional[ListNode]]:
+        # Two pass solution - O(n)T, O(k)S
+        res = [None] * k
+        count, curr = 0, head
+        while curr:
+            count += 1
+            curr = curr.next
+        q, rem = divmod(count, k)  # quotient, remainder
+        prev = head
+        curr = head
+        for i in range(min(k, count)):
+            res[i] = curr
+            for _ in range(q + (rem > 0)):
+                prev, curr = curr, curr.next
+            prev.next = None
+            rem -= 1
+        return res
+
+    # LC 206. Reverse Linked List (Easy)
+    # https://leetcode.com/problems/reverse-linked-list
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # One pass solution - O(n)T, O(1)S
+        prev = None
+        curr = head
+        while curr:
+            dummy = curr.next
+            curr.next = prev
+            prev = curr
+            curr = dummy
+        return prev
+
+    # LC 92. Reverse Linked List II (Medium)
+    # https://leetcode.com/problems/reverse-linked-list-ii/
+    def reverseBetween(
+        self, head: Optional[ListNode], left: int, right: int
+    ) -> Optional[ListNode]:
+        # # My solution (one-pass) - O(n)T, O(1)S
+        # left -= 1
+        # right -= 1
+        # if right == left == 0:
+        #     return head
+        # prev_original, curr = None, head
+        # i = 0
+        # while i < left:
+        #     prev_original, curr = curr, curr.next
+        #     i += 1
+        # last_to_place = curr
+        # prev = prev_original
+        # while i <= right:
+        #     dummy = curr.next
+        #     curr.next = prev
+        #     prev = curr
+        #     curr = dummy
+        #     i += 1
+        # if prev_original:
+        #     prev_original.next = prev
+        # last_to_place.next = curr
+        # return head if left else prev
+
+        # Only two pointers (one-pass) - O(n)T, O(1)S
+        if not head or left == right:
+            return head
+        dummy = ListNode(0, head)
+        prev = dummy
+        for _ in range(left - 1):
+            prev = prev.next
+        current = prev.next
+        for _ in range(right - left):
+            next_node = current.next
+            current.next, next_node.next, prev.next = (
+                next_node.next,
+                prev.next,
+                next_node,
+            )
+        return dummy.next
