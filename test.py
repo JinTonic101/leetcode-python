@@ -1,5 +1,6 @@
 import unittest
 
+from leetcode import Solution as SolutionLeetCode
 from prb import Solution, TreeNode
 
 
@@ -162,8 +163,52 @@ class Test(unittest.TestCase):
         # self.assertEqual(solution.minExtraChar("kevlplxozaizdhxoimmraiakbak", ["yv","bmab","hv","bnsll","mra","jjqf","g","aiyzi","ip","pfctr","flr","ybbcl","biu","ke","lpl","iak","pirua","ilhqd","zdhx","fux","xaw","pdfvt","xf","t","wq","r","cgmud","aokas","xv","jf","cyys","wcaz","rvegf","ysg","xo","uwb","lw","okgk","vbmi","v","mvo","fxyx","ad","e"]), 9)
         # self.assertEqual(solution.minExtraChar("voctvochpgutoywpnafylzelqsnzsbandjcqdciyoefi", ["tf","v","wadrya","a","cqdci","uqfg","voc","zelqsn","band","b","yoefi","utoywp","herqqn","umra","frfuyj","vczatj","sdww"]), 11)
         # self.assertEqual(solution.minExtraChar("nbxhpyyawmcsnuycfvoxhmxjclqadablucgikep", ["yaw","nbxhpy","arpqfg","bluc","thxpp","ox","a","zdaru","kmd","flckz","hnnn","dldal","yqssxn","ycf","lctpj","hmxjc","dv","cs","sxt","am","irfij","dbtg","cjnybn","ab","dngs","azbq","qa","mrx","mljbq","hphmy","b","hu","s","g"]), 10)
-        self.assertEqual(solution.minExtraChar("aakodubkrlauvfkzje", ["ix","qoqw","ax","ar","v","hxpl","nxcg","thr","kod","pns","cdo","euy","es","rf","bxcx","xe","ua","vws","vumr","zren","bzt","qwxn","ami","rrbk","ak","uan","g","vfk","jxmg","fhb","nqgd","fau","rl","h","r","jxvo","tv","smfp","lmck","od"]), 9)
+        # self.assertEqual(solution.minExtraChar("aakodubkrlauvfkzje", ["ix","qoqw","ax","ar","v","hxpl","nxcg","thr","kod","pns","cdo","euy","es","rf","bxcx","xe","ua","vws","vumr","zren","bzt","qwxn","ami","rrbk","ak","uan","g","vfk","jxmg","fhb","nqgd","fau","rl","h","r","jxvo","tv","smfp","lmck","od"]), 9)
         # fmt: on
+
+        # self.assertEqual(solution.minDeletions("aab"), 0)
+        # self.assertEqual(solution.minDeletions("aaabbbcc"), 2)
+        # self.assertEqual(solution.minDeletions("ceabaacb"), 2)
+
+    def test_leetcode(self):
+        s = SolutionLeetCode()
+        # self.assertEqual(s.lengthOfLongestSubstring("abcabcbb"), 3)
+        # self.assertEqual(s.lengthOfLongestSubstring("bbbbb"), 1)
+        # self.assertEqual(s.lengthOfLongestSubstring("pwwkew"), 3)
+        # self.assertEqual(s.lengthOfLongestSubstring(" "), 1)
+        # self.assertEqual(s.lengthOfLongestSubstring("au"), 2)
+        # self.assertEqual(s.lengthOfLongestSubstring("abba"), 2)
+        # self.assertEqual(s.lengthOfLongestSubstring("aabaab!bb"), 3)
+
+        # self.assertEqual(s.longestPalindrome("a"), "a")
+        # self.assertEqual(s.longestPalindrome("aa"), "aa")
+        # self.assertEqual(s.longestPalindrome("ab"), "a")
+        # self.assertEqual(s.longestPalindrome("babad"), "bab")
+        # self.assertEqual(s.longestPalindrome("cbbd"), "bb")
+        # self.assertEqual(s.longestPalindrome("cbbc"), "cbbc")
+
+        self.assertEqual(
+            [
+                s.convert("PAYPALISHIRING", 4),
+                s.convert("PAYPALISHIRING", 3),
+                s.convert("A", 1),
+                s.convert("AB", 1),
+                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4),
+                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5),
+                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10),
+                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 15),
+            ],
+            [
+                "PINALSIGYAHRPI",
+                "PAHNAPLSIIGYIR",
+                "A",
+                "AB",
+                "AGMSYBFHLNRTXZCEIKOQUWDJPV",
+                "AIQYBHJPRXZCGKOSWDFLNTVEMU",
+                "ASBRTCQUDPVEOWFNXGMYHLZIKJ",
+                "ABCDZEYFXGWHVIUJTKSLRMQNPO",
+            ],
+        )
 
 
 if __name__ == "__main__":
