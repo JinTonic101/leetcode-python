@@ -934,7 +934,7 @@ class Solution:
 
     # LC 977. Squares of a Sorted Array (Easy)
     # https://leetcode.com/problems/squares-of-a-sorted-array/
-    def sortedSquares(self, A: List[int]) -> List[int]:
+    def sortedSquares(self, nums: List[int]) -> List[int]:
         # Time : O(N) with Two pointers or O(N log(N)) with sort
         # Space : O(N)
         res = [0] * len(nums)
@@ -1694,3 +1694,32 @@ class Solution:
                 next_node,
             )
         return dummy.next
+
+    # LC 1647. Minimum Deletions to Make Character Frequencies Unique (Medium)
+    # https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/
+    def minDeletions(self, s: str) -> int:
+        # # Initial solution - O(|s|)T, O(|s|)S
+        # d = defaultdict(int)
+        # for c in s:
+        #     d[c] += 1
+        # freq = [0] * (max(d.values()) + 1)
+        # for c in d:
+        #     freq[d[c]] += 1
+        # count = 0
+        # for i in range(len(freq) - 1, 0, -1):
+        #     while freq[i] > 1:
+        #         freq[i] -= 1
+        #         freq[i - 1] += 1
+        #         count += 1
+        # return count
+
+        # Same but with counters & less loops
+        freq = Counter(Counter(s).values())
+        count = 0
+        for i in range(max(freq), 0, -1):
+            if freq[i] > 1:
+                diff = freq[i] - 1
+                freq[i] = 1
+                freq[i - 1] += diff
+                count += diff
+        return count
