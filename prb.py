@@ -1796,3 +1796,33 @@ class Solution:
         cur = []
         backtrack(0, cur)
         return ans
+
+    # LC 58. Length of Last Word (Easy)
+    # https://leetcode.com/problems/length-of-last-word/
+    def lengthOfLastWord(self, s: str) -> int:
+        return len(s.split()[-1])
+
+    # LC 66. Plus One (Easy)
+    # https://leetcode.com/problems/plus-one/
+    def plusOne(self, digits: List[int]) -> List[int]:
+        # # One-liner - O(n)T, O(n)S
+        # return [int(c) for c in str(int("".join([str(d) for d in digits])) + 1)]
+
+        # With carry - O(n)T, O(1)S
+        carry = 1
+        for i in range(len(digits) - 1, -1, -1):
+            if digits[i] + carry == 10:
+                digits[i] = 0
+                carry = 1
+            else:
+                digits[i] += carry
+                carry = 0
+        if carry:
+            digits.insert(0, 1)
+        return digits
+
+    # LC 67. Add Binary (Easy)
+    # https://leetcode.com/problems/add-binary/
+    def addBinary(self, a: str, b: str) -> str:
+        # One-liner - O(n)T, O(1)S
+        return bin(int(a, 2) + int(b, 2))[2:]
