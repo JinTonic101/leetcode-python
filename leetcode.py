@@ -775,3 +775,17 @@ class Solution:
             if n == len(needle):
                 return h - n + 1
         return -1
+
+    # LC 29. Divide Two Integers (Medium)
+    # https://leetcode.com/problems/divide-two-integers/
+    def divide(self, dividend: int, divisor: int) -> int:
+        # # With bit manipulation: TODO
+        # With len(range())
+        sign = 1
+        if (dividend >= 0 and divisor < 0) or (dividend < 0 and divisor >= 0):
+            sign = -1
+        dividend, divisor = abs(dividend), abs(divisor)
+        res = len(range(0, dividend - divisor + 1, divisor))
+        if sign == -1:
+            res = -res
+        return min(max(res, -(2**31)), 2**31 - 1)
