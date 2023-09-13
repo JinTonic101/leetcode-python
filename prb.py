@@ -1187,17 +1187,46 @@ class Solution:
     # LC 28. Find the Index of the First Occurrence in a String (Easy)
     # https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/
     def strStr(self, haystack: str, needle: str) -> int:
-        # # One-liner
+        # # One-liner - O(|haystack|*|needle|)T, O(1)S
         # return haystack.find(needle)
 
-        # # Without built-in function
-        # # Double pointers
-        i, j = 0, len(needle)
-        while j <= len(haystack):
-            if haystack[i:j] == needle:
-                return i
-            i += 1
-            j += 1
+        # # Sliding window - O(|haystack|*|needle|)T, O(1)S
+        # i, j = 0, len(needle)
+        # while j <= len(haystack):
+        #     if haystack[i:j] == needle:
+        #         return i
+        #     i += 1
+        #     j += 1
+        # return -1
+
+        # KMP algorithm - O(|haystack|+|needle|)T, O(|needle|)S
+        if not needle:
+            return 0
+        if not haystack:
+            return -1
+        n, m = len(haystack), len(needle)
+        lps = [0] * m
+        i, j = 1, 0
+        while i < m:
+            if needle[i] == needle[j]:
+                lps[i] = j + 1
+                i += 1
+                j += 1
+            elif j > 0:
+                j = lps[j - 1]
+            else:
+                i += 1
+        i, j = 0, 0
+        while i < n:
+            if haystack[i] == needle[j]:
+                if j == m - 1:
+                    return i - j
+                i += 1
+                j += 1
+            elif j > 0:
+                j = lps[j - 1]
+            else:
+                i += 1
         return -1
 
     # LC 20. Valid Parentheses (Easy)
