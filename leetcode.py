@@ -1,6 +1,6 @@
 import re
 from bisect import bisect_left
-from collections import Counter, defaultdict, deque
+from collections import Counter, OrderedDict, defaultdict, deque
 from copy import deepcopy
 from functools import reduce
 from itertools import combinations_with_replacement, permutations
@@ -202,3 +202,281 @@ class Solution:
         for i in range(numRows):
             rows[i] = "".join(rows[i])
         return "".join(rows)
+
+    # LC 8. String to Integer (atoi) (Medium)
+    # https://leetcode.com/problems/string-to-integer-atoi/
+    def myAtoi(self, s):
+        # Lots of edge cases, not worth doing it so here is the final solution
+        i = 0
+        n = len(s)
+        while i < n and s[i] == " ":  # skipping space characters at the beginning
+            i += 1
+        positive = 0
+        negative = 0
+        if i < n and s[i] == "+":
+            positive += 1  # number of positive signs at the start in string
+            i += 1
+        if i < n and s[i] == "-":
+            negative += 1  # number of negative signs at the start in string
+            i += 1
+        ans = 0.0
+        while i < n and "0" <= s[i] <= "9":
+            ans = ans * 10 + (ord(s[i]) - ord("0"))  # converting character to integer
+            i += 1
+        if negative > 0:  # if negative sign exists
+            ans = -ans
+        if (
+            positive > 0 and negative > 0
+        ):  # if both +ve and -ve signs exist, Example: +-12
+            return 0
+        INT_MAX = 2**31 - 1
+        INT_MIN = -(2**31)
+        if ans > INT_MAX:  # if ans > 2^31 - 1
+            ans = INT_MAX
+        if ans < INT_MIN:  # if ans < -2^31
+            ans = INT_MIN
+        return int(ans)
+
+    # LC 9. Palindrome Number (Easy)
+    # https://leetcode.com/problems/palindrome-number/
+    def isPalindrome(self, x: int) -> bool:
+        # # One-line code
+        # return str(x) == str(x)[::-1]
+
+        # # Half str check
+        # from math import floor, ceil
+        # s = str(x)
+        # mid = len(s) / 2
+        # left = floor(mid)
+        # right = ceil(mid)
+        # return s[:left] == s[right:][::-1]
+
+        # Without str convertion
+        if x < 0:
+            return False
+        reversed_x = 0
+        n = x
+        while x > 0:
+            last_digit = x % 10
+            x = x // 10
+            reversed_x = reversed_x * 10 + last_digit
+        return n == reversed_x
+
+    # LC 10. Regular Expression Matching (Hard)
+    # https://leetcode.com/problems/regular-expression-matching/
+    def isMatch(self, s: str, p: str) -> bool:
+        # # Cheating with built-in function
+        # p = p.replace("**", "")
+        # return re.fullmatch(p, s)
+
+        # DP - O(mn)TS
+        m, n = len(s), len(p)
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[0][0] = True
+        for j in range(1, n + 1):
+            if p[j - 1] == "*":
+                dp[0][j] = dp[0][j - 2]
+            else:
+                dp[0][j] = j > 1 and p[j - 2] == "*" and dp[0][j - 2]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if p[j - 1] == s[i - 1] or p[j - 1] == ".":
+                    dp[i][j] = dp[i - 1][j - 1]
+                elif p[j - 1] == "*":
+                    dp[i][j] = (
+                        dp[i][j - 2]
+                        or (p[j - 2] == s[i - 1] or p[j - 2] == ".")
+                        and dp[i - 1][j]
+                    )
+                else:
+                    dp[i][j] = False
+        return dp[m][n]
+
+    # LC 11. Container With Most Water (Medium)
+    # https://leetcode.com/problems/container-with-most-water/
+    def maxArea(self, height: List[int]) -> int:
+        # O(n)T, O(1)S
+        maxi, start, end = 0, 0, len(height) - 1
+        while start != end:
+            cur_area = min(height[start], height[end]) * (end - start)
+            maxi = max(maxi, cur_area)
+            if height[start] < height[end]:
+                start += 1
+            else:
+                end -= 1
+        return maxi
+
+    # LC 12. Integer to Roman (Medium)
+    # https://leetcode.com/problems/integer-to-roman/
+    def intToRoman(self, num: int) -> str:
+        d = OrderedDict(
+            {
+                1000: "M",
+                900: "CM",
+                500: "D",
+                400: "CD",
+                100: "C",
+                90: "XC",
+                50: "L",
+                40: "XL",
+                10: "X",
+                9: "IX",
+                5: "V",
+                4: "IV",
+                1: "I",
+            }
+        )
+        res = ""
+        for n in d.keys():
+            while n <= num:
+                res += d[n]
+                num -= n
+        return res
+
+    # LC 13. Roman to Integer (Easy)
+    # https://leetcode.com/problems/roman-to-integer/
+    def romanToInt(self, s: str) -> int:
+        # Constraint: 1 <= num <= 3999
+        d = {
+            "I": 1,
+            "V": 5,
+            "X": 10,
+            "L": 50,
+            "C": 100,
+            "D": 500,
+            "M": 1000,
+            "IV": 4,
+            "IX": 9,
+            "XL": 40,
+            "XC": 90,
+            "CD": 400,
+            "CM": 900,
+        }
+        i, res = 0, 0
+        while i < len(s):
+            val = d.get(s[i : i + 2], 0)
+            if val:
+                res += val
+                i += 2
+                continue
+            res += d[s[i : i + 1]]
+            i += 1
+        return res
+
+    # LC 14. Longest Common Prefix
+    # https://leetcode.com/problems/longest-common-prefix/
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        # # First solution: sort by s lengths and compare all to s0
+        # if len(strs) == 1:
+        #     return strs[0]
+        # strs = sorted(strs, key=len)
+        # res = strs[0]
+        # ls0 = len(res)
+        # if ls0 == 0:
+        #     return res
+        # for s in strs[1:]:
+        #     tmp = ""
+        #     for j in range(len(res)):
+        #         if res[j] == s[j]:
+        #             tmp += s[j]
+        #         else:
+        #             break
+        #     res = tmp
+        # return res
+
+        # LC solution: sort alphabetically and compare first & last
+        ans = ""
+        v = sorted(strs)
+        first = v[0]
+        last = v[-1]
+        for i in range(min(len(first), len(last))):
+            if first[i] != last[i]:
+                return ans
+            ans += first[i]
+        return ans
+
+    # LC 15. 3Sum (Medium)
+    # https://leetcode.com/problems/3sum/
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        # # O(n^2) with sort
+        # nums.sort()
+        # answer = []
+        # for i in range(len(nums) - 2):
+        #     if nums[i] > 0:
+        #         break
+        #     if i > 0 and nums[i] == nums[i - 1]:
+        #         continue
+        #     l = i + 1
+        #     r = len(nums) - 1
+        #     while l < r:
+        #         total = nums[i] + nums[l] + nums[r]
+        #         if total < 0:
+        #             l += 1
+        #         elif total > 0:
+        #             r -= 1
+        #         else:
+        #             triplet = [nums[i], nums[l], nums[r]]
+        #             answer.append(triplet)
+        #             while l < r and nums[l] == triplet[1]:
+        #                 l += 1
+        #             while l < r and nums[r] == triplet[2]:
+        #                 r -= 1
+        # return answer
+
+        # Solution with triple lists (negatives, zeros, positives)
+        res = set()
+        # 1. Split nums into three lists: negative numbers, positive numbers, and zeros
+        n, p, z = [], [], []
+        for num in nums:
+            if num > 0:
+                p.append(num)
+            elif num < 0:
+                n.append(num)
+            else:
+                z.append(num)
+        # 2. Create a separate set for negatives and positives for O(1) look-up times
+        N, P = set(n), set(p)
+        # 3. If there is at least 1 zero in the list, add all cases where -num exists in N and num exists in P
+        #   i.e. (-3, 0, 3) = 0
+        if z:
+            for num in P:
+                if -1 * num in N:
+                    res.add((-1 * num, 0, num))
+        # 3. If there are at least 3 zeros in the list then also include (0, 0, 0) = 0
+        if len(z) >= 3:
+            res.add((0, 0, 0))
+        # 4. For all pairs of negative numbers (-3, -1), check to see if their complement (4)
+        #   exists in the positive number set
+        for i in range(len(n)):
+            for j in range(i + 1, len(n)):
+                target = -1 * (n[i] + n[j])
+                if target in P:
+                    res.add(tuple(sorted([n[i], n[j], target])))
+        # 5. For all pairs of positive numbers (1, 1), check to see if their complement (-2)
+        #   exists in the negative number set
+        for i in range(len(p)):
+            for j in range(i + 1, len(p)):
+                target = -1 * (p[i] + p[j])
+                if target in N:
+                    res.add(tuple(sorted([p[i], p[j], target])))
+        return res
+
+    # LC 16. 3Sum Closest
+    # https://leetcode.com/problems/3sum-closest/
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        # Double pointers solution
+        closest = float("inf")
+        nums.sort()
+        for i in range(len(nums) - 2):
+            l, r = i + 1, len(nums) - 1
+            while l < r:
+                sum3 = nums[i] + nums[l] + nums[r]
+                if sum3 == target:
+                    return target
+                elif sum3 < target:
+                    l += 1
+                else:
+                    r -= 1
+                if abs(sum3 - target) < abs(closest - target):
+                    closest = sum3
+        return closest

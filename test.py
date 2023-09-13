@@ -229,6 +229,17 @@ class Test(unittest.TestCase):
         #     ],
         # )
 
+        # self.assertEqual(s.intToRoman(3), "III")
+        # self.assertEqual(s.intToRoman(58), "LVIII")
+        # self.assertEqual(s.intToRoman(1994), "MCMXCIV")
+
+        self.assertEqual(s.longestCommonPrefix(["flower", "flow", "flight"]), "fl")
+        self.assertEqual(s.longestCommonPrefix(["ab", "a"]), "a")
+        self.assertEqual(s.longestCommonPrefix(["a"]), "a")
+        self.assertEqual(s.longestCommonPrefix([""]), "")
+        self.assertEqual(s.longestCommonPrefix(["", "", ""]), "")
+        self.assertEqual(s.longestCommonPrefix(["cir", "car"]), "c")
+
 
 if __name__ == "__main__":
     unittest.main()
