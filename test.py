@@ -170,6 +170,25 @@ class Test(unittest.TestCase):
         # self.assertEqual(solution.minDeletions("aaabbbcc"), 2)
         # self.assertEqual(solution.minDeletions("ceabaacb"), 2)
 
+        self.assertEqual(
+            [
+                solution.candy([1]),
+                solution.candy([1, 0, 2]),
+                solution.candy([1, 2, 2]),
+                solution.candy([1, 0, 2, 0, 0, 1, 1, 2, 1]),
+                solution.candy([1, 1, 1]),
+                solution.candy([1, 2, 87, 87, 87, 2, 1]),
+            ],
+            [
+                1,
+                5,
+                4,
+                13,
+                3,
+                13,
+            ],
+        )
+
     def test_leetcode(self):
         s = SolutionLeetCode()
         # self.assertEqual(s.lengthOfLongestSubstring("abcabcbb"), 3)
@@ -187,28 +206,28 @@ class Test(unittest.TestCase):
         # self.assertEqual(s.longestPalindrome("cbbd"), "bb")
         # self.assertEqual(s.longestPalindrome("cbbc"), "cbbc")
 
-        self.assertEqual(
-            [
-                s.convert("PAYPALISHIRING", 4),
-                s.convert("PAYPALISHIRING", 3),
-                s.convert("A", 1),
-                s.convert("AB", 1),
-                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4),
-                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5),
-                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10),
-                s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 15),
-            ],
-            [
-                "PINALSIGYAHRPI",
-                "PAHNAPLSIIGYIR",
-                "A",
-                "AB",
-                "AGMSYBFHLNRTXZCEIKOQUWDJPV",
-                "AIQYBHJPRXZCGKOSWDFLNTVEMU",
-                "ASBRTCQUDPVEOWFNXGMYHLZIKJ",
-                "ABCDZEYFXGWHVIUJTKSLRMQNPO",
-            ],
-        )
+        # self.assertEqual(
+        #     [
+        #         s.convert("PAYPALISHIRING", 4),
+        #         s.convert("PAYPALISHIRING", 3),
+        #         s.convert("A", 1),
+        #         s.convert("AB", 1),
+        #         s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4),
+        #         s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5),
+        #         s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10),
+        #         s.convert("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 15),
+        #     ],
+        #     [
+        #         "PINALSIGYAHRPI",
+        #         "PAHNAPLSIIGYIR",
+        #         "A",
+        #         "AB",
+        #         "AGMSYBFHLNRTXZCEIKOQUWDJPV",
+        #         "AIQYBHJPRXZCGKOSWDFLNTVEMU",
+        #         "ASBRTCQUDPVEOWFNXGMYHLZIKJ",
+        #         "ABCDZEYFXGWHVIUJTKSLRMQNPO",
+        #     ],
+        # )
 
 
 if __name__ == "__main__":
