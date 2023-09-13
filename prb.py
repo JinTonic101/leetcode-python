@@ -1200,33 +1200,24 @@ class Solution:
         # return -1
 
         # KMP algorithm - O(|haystack|+|needle|)T, O(|needle|)S
-        if not needle:
-            return 0
-        if not haystack:
-            return -1
-        n, m = len(haystack), len(needle)
-        lps = [0] * m
-        i, j = 1, 0
-        while i < m:
-            if needle[i] == needle[j]:
-                lps[i] = j + 1
-                i += 1
-                j += 1
-            elif j > 0:
-                j = lps[j - 1]
-            else:
-                i += 1
-        i, j = 0, 0
-        while i < n:
-            if haystack[i] == needle[j]:
-                if j == m - 1:
-                    return i - j
-                i += 1
-                j += 1
-            elif j > 0:
-                j = lps[j - 1]
-            else:
-                i += 1
+        lps = [0] * len(needle)
+        # Preprocessing
+        pre = 0
+        for i in range(1, len(needle)):
+            while pre > 0 and needle[i] != needle[pre]:
+                pre = lps[pre - 1]
+            if needle[pre] == needle[i]:
+                pre += 1
+                lps[i] = pre
+        # Main algorithm
+        n = 0  # needle index
+        for h in range(len(haystack)):
+            while n > 0 and needle[n] != haystack[h]:
+                n = lps[n - 1]
+            if needle[n] == haystack[h]:
+                n += 1
+            if n == len(needle):
+                return h - n + 1
         return -1
 
     # LC 20. Valid Parentheses (Easy)
