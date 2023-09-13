@@ -1,3 +1,6 @@
+import collections
+import heapq
+import itertools
 import re
 from bisect import bisect_left
 from collections import Counter, OrderedDict, defaultdict, deque
@@ -480,3 +483,295 @@ class Solution:
                 if abs(sum3 - target) < abs(closest - target):
                     closest = sum3
         return closest
+
+    # LC 17. Letter Combinations of a Phone Number (Medium)
+    # https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return []
+        h = {
+            "2": ["a", "b", "c"],
+            "3": ["d", "e", "f"],
+            "4": ["g", "h", "i"],
+            "5": ["j", "k", "l"],
+            "6": ["m", "n", "o"],
+            "7": ["p", "q", "r", "s"],
+            "8": ["t", "u", "v"],
+            "9": ["w", "x", "y", "z"],
+        }
+        res = []
+        for l in itertools.product(*[h[d] for d in digits]):
+            res.append("".join(l))
+        return res
+
+    # LC 18. 4Sum (Medium)
+    # https://leetcode.com/problems/4sum/
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        if len(nums) < 4:
+            return []
+        nums.sort()
+        res = []
+        for i in range(len(nums) - 3):
+            if i and nums[i] == nums[i - 1]:
+                continue
+            for j in range(i + 1, len(nums) - 2):
+                if j != i + 1 and nums[j] == nums[j - 1]:
+                    continue
+                l, r = j + 1, len(nums) - 1
+                while l < r:
+                    sum4 = nums[i] + nums[j] + nums[l] + nums[r]
+                    if sum4 == target:
+                        res.append([nums[i], nums[j], nums[l], nums[r]])
+                        while l < r and nums[l] == nums[l + 1]:
+                            l += 1
+                        while l < r and nums[r] == nums[r - 1]:
+                            r -= 1
+                        l += 1
+                        r -= 1
+                    elif sum4 < target:
+                        l += 1
+                    else:
+                        r -= 1
+        return res
+
+    # LC 19. Remove Nth Node From End of List (Medium)
+    # https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+        # # One-pass with array to save nodes - O(|list|)TS
+        # dummy = ListNode()
+        # dummy.next = head
+        # arr = []
+        # curr = dummy
+        # while curr:
+        #     arr.append(curr)
+        #     curr = curr.next
+        # arr[-n-1].next = arr[-n].next
+        # return dummy.next
+
+        # Two pointers fast & slow - O(|list|)T, O(1)S
+        # Send a fast pointer n steps ahead and then start iterating with slow pointer till the fast pointer reaches the end
+        fast = head
+        slow = head
+        for i in range(n):
+            fast = fast.next
+        if not fast:
+            return head.next
+        while fast.next:
+            slow = slow.next
+            fast = fast.next
+        slow.next = slow.next.next
+        return head
+
+    # LC 20. Valid Parentheses (Easy)
+    # https://leetcode.com/problems/valid-parentheses/
+    def isValidParentheses(self, s: str) -> bool:
+        maps = {")": "(", "}": "{", "]": "["}
+        pipe = []
+        for char in s:
+            if char not in maps:
+                pipe.append(char)
+                continue
+            if not pipe or pipe.pop() != maps[char]:
+                return False
+        return not pipe
+
+    # LC 21. Merge Two Sorted Lists (Easy)
+    # https://leetcode.com/problems/merge-two-sorted-lists/
+    def mergeTwoLists(self, list1: ListNode, list2: ListNode) -> ListNode:
+        # O(n)T, O(1)S
+        dummy = ListNode()
+        curr = dummy
+        while list1 and list2:
+            if list1.val < list2.val:
+                curr.next = list1
+                list1 = list1.next
+            else:
+                curr.next = list2
+                list2 = list2.next
+            curr = curr.next
+        curr.next = list1 or list2
+        return dummy.next
+
+    # LC 22. Generate Parentheses (Medium)
+    # https://leetcode.com/problems/generate-parentheses/
+    def generateParenthesis(self, n: int) -> List[str]:
+        # DP
+        dp = []
+        dp.append([""])
+        for i in range(1, n + 1):
+            cur = []
+            for j in range(i):
+                left = dp[j]
+                right = dp[i - j - 1]
+                for l in left:
+                    for r in right:
+                        cur.append("(" + l + ")" + r)
+            dp.append(cur)
+        return dp[n]
+
+    # LC 23. Merge k Sorted Lists (Hard)
+    # https://leetcode.com/problems/merge-k-sorted-lists/
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        # In-place sorting using heappush and heappop - O(nlogk)T, O(k)S
+        if not lists or all(not nd for nd in lists):
+            return None
+        h = []
+        for nd in lists:
+            if nd:
+                heapq.heappush(h, (nd.val, id(nd), nd))
+        _, _, head = heapq.heappop(h)
+        curr = head
+        if curr.next:
+            heapq.heappush(h, (curr.next.val, id(curr.next), curr.next))
+        while h:
+            _, _, curr.next = heapq.heappop(h)
+            curr = curr.next
+            if curr.next:
+                heapq.heappush(h, (curr.next.val, id(curr.next), curr.next))
+        return head
+
+    # LC 24. Swap Nodes in Pairs (Medium)
+    # https://leetcode.com/problems/swap-nodes-in-pairs/
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = ListNode()
+        cur = dummy.next = head
+        prev = dummy
+        while cur and cur.next:
+            prev.next = cur.next
+            cur.next = cur.next.next
+            prev.next.next = cur
+            prev, cur = cur, cur.next
+        return dummy.next
+
+        # # More readable
+        # dummy = ListNode()
+        # dummy.next = head
+        # curr = dummy
+        # while curr.next and curr.next.next:
+        #     first = curr.next
+        #     second = curr.next.next
+        #     first.next = second.next
+        #     second.next = first
+        #     curr.next = second
+        #     curr = first
+        # return dummy.next
+
+    # LC 25. Reverse Nodes in k-Group (Hard)
+    # https://leetcode.com/problems/reverse-nodes-in-k-group/
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # # Recursive solution - O(n)T, O(n/k)S
+        # curr = head
+        # count = 0
+        # while curr and count != k:
+        #     curr = curr.next
+        #     count += 1
+        # if count == k:
+        #     curr = self.reverseKGroup(curr, k)
+        #     while count:
+        #         tmp = head.next
+        #         head.next = curr
+        #         curr = head
+        #         head = tmp
+        #         count -= 1
+        #     head = curr
+        # return head
+
+        # Iterative solution - O(n)T, O(1)S
+        dummy = jump = ListNode()
+        dummy.next = l = r = head
+        while True:
+            count = 0
+            while r and count < k:
+                r = r.next
+                count += 1
+            if count == k:
+                pre, cur = r, l
+                for _ in range(k):
+                    cur.next, cur, pre = pre, cur.next, cur
+                jump.next, jump, l = pre, l, r
+            else:
+                return dummy.next
+
+    # LC 26. Remove Duplicates from Sorted Array (Easy)
+    # https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+    def removeDuplicates(self, nums: List[int]) -> int:
+        # # In-place sorting - O(n log n)T, O(n)S
+        # nums[:] = sorted(set(nums))
+        # return len(nums)
+
+        # Two pointers - O(n)T, O(1)S
+        j = 0
+        for i in range(1, len(nums)):
+            if nums[j] != nums[i]:
+                j += 1
+                nums[j] = nums[i]
+        return j + 1
+
+        # # Using .pop() - O(n)T, O(1)S
+        # i = 1
+        # while i < len(nums):
+        #     if nums[i] == nums[i - 1]:
+        #         nums.pop(i)
+        #     else:
+        #         i += 1
+        # return len(nums)
+
+        # # Using OrderedDict.fromkeys() - O(n)T, O(n)S
+        # nums[:] =  collections.OrderedDict.fromkeys(nums)
+        # return len(nums)
+
+    # LC 27. Remove Element (Easy)
+    # https://leetcode.com/problems/remove-element/
+    def removeElement(self, nums: List[int], val: int) -> int:
+        # # Using .pop() - O(n)T, O(1)S
+        # i = 0
+        # while i < len(nums):
+        #     if nums[i] == val:
+        #         nums.pop(i)
+        #     else:
+        #         i += 1
+        # return len(nums)
+
+        # Two pointers - O(n)T, O(1)S
+        j = 0
+        for i in range(len(nums)):
+            if nums[i] != val:
+                nums[j] = nums[i]
+                j += 1
+        return j
+
+    # LC 28. Find the Index of the First Occurrence in a String (Easy)
+    # https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/
+    def strStr(self, haystack: str, needle: str) -> int:
+        # # One-liner - O(|haystack|*|needle|)T, O(1)S
+        # return haystack.find(needle)
+
+        # # Sliding window - O(|haystack|*|needle|)T, O(1)S
+        # i, j = 0, len(needle)
+        # while j <= len(haystack):
+        #     if haystack[i:j] == needle:
+        #         return i
+        #     i += 1
+        #     j += 1
+        # return -1
+
+        # KMP algorithm - O(|haystack|+|needle|)T, O(|needle|)S
+        lps = [0] * len(needle)
+        # Preprocessing
+        pre = 0
+        for i in range(1, len(needle)):
+            while pre > 0 and needle[i] != needle[pre]:
+                pre = lps[pre - 1]
+            if needle[pre] == needle[i]:
+                pre += 1
+                lps[i] = pre
+        # Main algorithm
+        n = 0  # needle index
+        for h in range(len(haystack)):
+            while n > 0 and needle[n] != haystack[h]:
+                n = lps[n - 1]
+            if needle[n] == haystack[h]:
+                n += 1
+            if n == len(needle):
+                return h - n + 1
+        return -1

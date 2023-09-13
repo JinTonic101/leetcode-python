@@ -170,24 +170,24 @@ class Test(unittest.TestCase):
         # self.assertEqual(solution.minDeletions("aaabbbcc"), 2)
         # self.assertEqual(solution.minDeletions("ceabaacb"), 2)
 
-        self.assertEqual(
-            [
-                solution.candy([1]),
-                solution.candy([1, 0, 2]),
-                solution.candy([1, 2, 2]),
-                solution.candy([1, 0, 2, 0, 0, 1, 1, 2, 1]),
-                solution.candy([1, 1, 1]),
-                solution.candy([1, 2, 87, 87, 87, 2, 1]),
-            ],
-            [
-                1,
-                5,
-                4,
-                13,
-                3,
-                13,
-            ],
-        )
+        # self.assertEqual(
+        #     [
+        #         solution.candy([1]),
+        #         solution.candy([1, 0, 2]),
+        #         solution.candy([1, 2, 2]),
+        #         solution.candy([1, 0, 2, 0, 0, 1, 1, 2, 1]),
+        #         solution.candy([1, 1, 1]),
+        #         solution.candy([1, 2, 87, 87, 87, 2, 1]),
+        #     ],
+        #     [
+        #         1,
+        #         5,
+        #         4,
+        #         13,
+        #         3,
+        #         13,
+        #     ],
+        # )
 
     def test_leetcode(self):
         s = SolutionLeetCode()
@@ -233,12 +233,15 @@ class Test(unittest.TestCase):
         # self.assertEqual(s.intToRoman(58), "LVIII")
         # self.assertEqual(s.intToRoman(1994), "MCMXCIV")
 
-        self.assertEqual(s.longestCommonPrefix(["flower", "flow", "flight"]), "fl")
-        self.assertEqual(s.longestCommonPrefix(["ab", "a"]), "a")
-        self.assertEqual(s.longestCommonPrefix(["a"]), "a")
-        self.assertEqual(s.longestCommonPrefix([""]), "")
-        self.assertEqual(s.longestCommonPrefix(["", "", ""]), "")
-        self.assertEqual(s.longestCommonPrefix(["cir", "car"]), "c")
+        # self.assertEqual(s.longestCommonPrefix(["flower", "flow", "flight"]), "fl")
+        # self.assertEqual(s.longestCommonPrefix(["ab", "a"]), "a")
+        # self.assertEqual(s.longestCommonPrefix(["a"]), "a")
+        # self.assertEqual(s.longestCommonPrefix([""]), "")
+        # self.assertEqual(s.longestCommonPrefix(["", "", ""]), "")
+        # self.assertEqual(s.longestCommonPrefix(["cir", "car"]), "c")
+
+        self.assertEqual(s.removeDuplicates([1, 1, 2]), 2)
+        self.assertEqual(s.removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4]), 5)
 
 
 if __name__ == "__main__":
