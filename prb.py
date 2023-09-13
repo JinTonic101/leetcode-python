@@ -1200,7 +1200,7 @@ class Solution:
         # return -1
 
         # KMP algorithm - O(|haystack|+|needle|)T, O(|needle|)S
-        lps = [0] * len(needle)
+        lps = [0] * len(needle)  # "longest proper prefix that is also a suffix"
         # Preprocessing
         pre = 0
         for i in range(1, len(needle)):
