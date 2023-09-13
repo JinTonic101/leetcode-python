@@ -1753,3 +1753,26 @@ class Solution:
                 up, down = 0, down + 1
                 ret += 1 + down - int(peak >= down)
         return ret
+
+    # LC 46. Permutations
+    # https://leetcode.com/problems/permutations/
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        # # return itertools.permutations(nums)
+        # Solution with backtracking & bitmask
+        n = len(nums)
+        Mask = (1 << n) - 1
+        ans = []
+
+        def backtrack(mask, cur):
+            if mask == Mask:
+                ans.append(cur[:])
+                return
+            for i in range(n):
+                if mask & (1 << i) == 0:
+                    cur.append(nums[i])
+                    backtrack(mask | (1 << i), cur[:])
+                    cur.pop()
+
+        cur = []
+        backtrack(0, cur)
+        return ans
