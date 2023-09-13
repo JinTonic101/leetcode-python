@@ -142,7 +142,7 @@ class Solution:
         #                 ans=s[i:j+1]
         # return ans
 
-        # Recursive (expand from center solution) - O(n²)T, O(1)T
+        # Recursive (expand from center solution) - O(n²)T, O(n)S
         def expand(l, r):
             while l >= 0 and r < len(s) and s[l] == s[r]:
                 l -= 1
