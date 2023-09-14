@@ -1826,3 +1826,30 @@ class Solution:
     def addBinary(self, a: str, b: str) -> str:
         # One-liner - O(n)T, O(1)S
         return bin(int(a, 2) + int(b, 2))[2:]
+
+    # LC 332. Reconstruct Itinerary
+    # https://leetcode.com/problems/reconstruct-itinerary/
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        # # DFS (Recursive) - O(n)T, O(n)S
+        # graph = defaultdict(list)
+        # for src, dst in sorted(tickets, reverse=True):
+        #     graph[src].append(dst)
+        # itinerary = []
+        # def dfs(airport):
+        #     while graph[airport]:
+        #         dfs(graph[airport].pop())
+        #     itinerary.append(airport)
+        # dfs("JFK")
+        # return itinerary[::-1]
+
+        # DFS (Iterative) - O(n)T, O(n)S
+        graph = defaultdict(list)
+        for src, dst in sorted(tickets, reverse=True):
+            graph[src].append(dst)
+        stack = ["JFK"]
+        itinerary = []
+        while stack:
+            while graph[stack[-1]]:
+                stack.append(graph[stack[-1]].pop())
+            itinerary.append(stack.pop())
+        return itinerary[::-1]
