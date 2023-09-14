@@ -1866,3 +1866,18 @@ class Solution:
         # In-place & stop at middle
         for i in range(len(s) // 2):
             s[i], s[-i - 1] = s[-i - 1], s[i]
+
+    # LC 459. Repeated Substring Pattern (Easy)
+    # https://leetcode.com/problems/repeated-substring-pattern/
+    def repeatedSubstringPattern(self, s: str) -> bool:
+        # # Brute force
+        # n = len(s)
+        # for i in range(1, n//2 + 1):
+        #     if n % i == 0:
+        #         substring = s[:i]
+        #         if substring * (n // i) == s:
+        #             return True
+        # return False
+
+        # String rotation
+        return s in (s + s)[1:-1]
