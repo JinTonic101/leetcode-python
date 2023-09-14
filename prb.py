@@ -1853,3 +1853,16 @@ class Solution:
                 stack.append(graph[stack[-1]].pop())
             itinerary.append(stack.pop())
         return itinerary[::-1]
+
+    # LC 344. Reverse String (Easy)
+    # https://leetcode.com/problems/reverse-string/
+    def reverseString(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        # # One-liner
+        # s[:] = s[::-1]
+
+        # In-place & stop at middle
+        for i in range(len(s) // 2):
+            s[i], s[-i - 1] = s[-i - 1], s[i]
