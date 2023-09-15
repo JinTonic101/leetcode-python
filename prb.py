@@ -7,6 +7,35 @@ from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from operator import xor
 from typing import List, Optional
+import heapq
+
+
+def manhattan_distance(p1: List[int], p2: List[int]) -> int:
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+
+class UnionFind:
+    def __init__(self, n):
+        self.parent = [i for i in range(n)]
+        self.rank = [0 for _ in range(n)]
+
+    def find(self, u):
+        if self.parent[u] == u:
+            return u
+        self.parent[u] = self.find(self.parent[u])
+        return self.parent[u]
+
+    def union(self, u, v):
+        u = self.find(u)
+        v = self.find(v)
+        if u == v:
+            return False
+        if self.rank[u] > self.rank[v]:
+            u, v = v, u
+        self.parent[u] = v
+        if self.rank[u] == self.rank[v]:
+            self.rank[v] += 1
+        return True
 
 
 # Definition for a binary tree node.
@@ -1881,3 +1910,49 @@ class Solution:
 
         # String rotation
         return s in (s + s)[1:-1]
+
+    # 1584. Min Cost to Connect All Points (Medium)
+    # https://leetcode.com/problems/min-cost-to-connect-all-points/
+    def minCostConnectPoints(self, points: List[List[int]]) -> int:
+        # # Prim's algorithm - O(n²log(⁡n)), O(n)S
+        # n = len(points)
+        # dist = [inf] * n
+        # dist[0] = 0
+        # visited = set()
+        # res = 0
+        # while len(visited) < n:
+        #     min_dist = inf
+        #     min_idx = -1
+        #     for i in range(n):
+        #         if i not in visited and dist[i] < min_dist:
+        #             min_dist = dist[i]
+        #             min_idx = i
+        #     res += min_dist
+        #     visited.add(min_idx)
+        #     for i in range(n):
+        #         if i not in visited:
+        #             dist[i] = min(
+        #                 dist[i],
+        #                 abs(points[i][0] - points[min_idx][0])
+        #                 + abs(points[i][1] - points[min_idx][1]),
+        #             )
+        # return res
+
+        # Kruskal's algorithm - O(n²log(⁡n)), O(n²)S
+        n = len(points)
+        uf = UnionFind(n)
+        edges = []
+        for i in range(n):
+            for j in range(i + 1, n):
+                distance = manhattan_distance(points[i], points[j])
+                heapq.heappush(edges, (distance, i, j))
+        mst_weight = 0
+        mst_edges = 0
+        while edges:
+            w, u, v = heapq.heappop(edges)
+            if uf.union(u, v):
+                mst_weight += w
+                mst_edges += 1
+                if mst_edges == n - 1:
+                    break
+        return mst_weight
