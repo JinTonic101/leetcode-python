@@ -1956,3 +1956,27 @@ class Solution:
                 if mst_edges == n - 1:
                     break
         return mst_weight
+
+    # 1631. Path With Minimum Effort
+    # https://leetcode.com/problems/path-with-minimum-effort/
+    def minimumEffortPath(self, heights: List[List[int]]) -> int:
+        # Dijkstra's algorithm - O(m*n*log(m*n)), O(m*n)S
+        m, n = len(heights), len(heights[0])
+        dist = [[inf] * n for _ in range(m)]
+        dist[0][0] = 0
+        visited = set()
+        heap = [(0, 0, 0)]
+        while heap:
+            d, x, y = heapq.heappop(heap)
+            if x == m - 1 and y == n - 1:
+                return d
+            if (x, y) in visited:
+                continue
+            visited.add((x, y))
+            for dx, dy in ((0, 1), (1, 0), (0, -1), (-1, 0)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n:
+                    new_dist = max(d, abs(heights[nx][ny] - heights[x][y]))
+                    if new_dist < dist[nx][ny]:
+                        dist[nx][ny] = new_dist
+                        heapq.heappush(heap, (new_dist, nx, ny))
