@@ -1980,3 +1980,42 @@ class Solution:
                     if new_dist < dist[nx][ny]:
                         dist[nx][ny] = new_dist
                         heapq.heappush(heap, (new_dist, nx, ny))
+
+    # 847. Shortest Path Visiting All Nodes
+    # https://leetcode.com/problems/shortest-path-visiting-all-nodes/
+    def shortestPathLength(self, graph: List[List[int]]) -> int:
+        # # BFS - O(n*2^n), O(n*2^n)S
+        # n = len(graph)
+        # queue = deque((1 << i, i) for i in range(n))
+        # dist = defaultdict(lambda: inf)
+        # for i in range(n):
+        #     dist[(1 << i, i)] = 0
+        # while queue:
+        #     cover, head = queue.popleft()
+        #     d = dist[(cover, head)]
+        #     if cover == 2 ** n - 1:
+        #         return d
+        #     for child in graph[head]:
+        #         new_cover = cover | (1 << child)
+        #         if d + 1 < dist[(new_cover, child)]:
+        #             dist[(new_cover, child)] = d + 1
+        #             queue.append((new_cover, child))
+
+        # DP with bitmask - O(n*2^n), O(n*2^n)S
+        n = len(graph)
+        dp = [[inf] * n for _ in range(1 << n)]
+        for i in range(n):
+            dp[1 << i][i] = 0
+        for cover in range(1 << n):
+            repeat = True
+            while repeat:
+                repeat = False
+                for head, d in enumerate(dp[cover]):
+                    for child in graph[head]:
+                        new_cover = cover | (1 << child)
+                        if d + 1 < dp[new_cover][child]:
+                            dp[new_cover][child] = d + 1
+                            if new_cover == cover:
+                                repeat = True
+        res = min(dp[-1])
+        return res
