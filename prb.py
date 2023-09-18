@@ -1958,7 +1958,7 @@ class Solution:
                     break
         return mst_weight
 
-    # 1631. Path With Minimum Effort
+    # 1631. Path With Minimum Effort (Medium)
     # https://leetcode.com/problems/path-with-minimum-effort/
     def minimumEffortPath(self, heights: List[List[int]]) -> int:
         # Dijkstra's algorithm - O(m*n*log(m*n)), O(m*n)S
@@ -1982,7 +1982,7 @@ class Solution:
                         dist[nx][ny] = new_dist
                         heapq.heappush(heap, (new_dist, nx, ny))
 
-    # 847. Shortest Path Visiting All Nodes
+    # 847. Shortest Path Visiting All Nodes (Hard)
     # https://leetcode.com/problems/shortest-path-visiting-all-nodes/
     def shortestPathLength(self, graph: List[List[int]]) -> int:
         # # BFS - O(n*2^n), O(n*2^n)S
@@ -2021,9 +2021,21 @@ class Solution:
         res = min(dp[-1])
         return res
 
-    # 1337. The K Weakest Rows in a Matrix
+    # 1337. The K Weakest Rows in a Matrix (Easy)
     # https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/
     def kWeakestRows(self, mat: List[List[int]], k: int) -> List[int]:
         # Counters - O(m*n)T, O(m)S
         counts = [(i, sum(mat[i])) for i in range(len(mat))]
         return sorted(counts, key=operator.itemgetter(0))[:k]
+
+    # 219. Contains Duplicate II (Easy)
+    # https://leetcode.com/problems/contains-duplicate-ii/
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        if len(nums) <= 1:
+            return False
+        d = defaultdict(lambda: [])
+        for i, num in enumerate(nums):
+            if num in d and i - d[num] <= k:
+                return True
+            d[num] = i
+        return False
