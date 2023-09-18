@@ -8,6 +8,7 @@ from math import comb, factorial, inf
 from operator import xor
 from typing import List, Optional
 import heapq
+import operator
 
 
 def manhattan_distance(p1: List[int], p2: List[int]) -> int:
@@ -2019,3 +2020,10 @@ class Solution:
                                 repeat = True
         res = min(dp[-1])
         return res
+
+    # 1337. The K Weakest Rows in a Matrix
+    # https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/
+    def kWeakestRows(self, mat: List[List[int]], k: int) -> List[int]:
+        # Counters - O(m*n)T, O(m)S
+        counts = [(i, sum(mat[i])) for i in range(len(mat))]
+        return sorted(counts, key=operator.itemgetter(0))[:k]
