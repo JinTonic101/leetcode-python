@@ -1912,7 +1912,7 @@ class Solution:
         # String rotation
         return s in (s + s)[1:-1]
 
-    # 1584. Min Cost to Connect All Points (Medium)
+    # LC 1584. Min Cost to Connect All Points (Medium)
     # https://leetcode.com/problems/min-cost-to-connect-all-points/
     def minCostConnectPoints(self, points: List[List[int]]) -> int:
         # # Prim's algorithm - O(n²log(⁡n)), O(n)S
@@ -1958,7 +1958,7 @@ class Solution:
                     break
         return mst_weight
 
-    # 1631. Path With Minimum Effort (Medium)
+    # LC 1631. Path With Minimum Effort (Medium)
     # https://leetcode.com/problems/path-with-minimum-effort/
     def minimumEffortPath(self, heights: List[List[int]]) -> int:
         # Dijkstra's algorithm - O(m*n*log(m*n)), O(m*n)S
@@ -1982,7 +1982,7 @@ class Solution:
                         dist[nx][ny] = new_dist
                         heapq.heappush(heap, (new_dist, nx, ny))
 
-    # 847. Shortest Path Visiting All Nodes (Hard)
+    # LC 847. Shortest Path Visiting All Nodes (Hard)
     # https://leetcode.com/problems/shortest-path-visiting-all-nodes/
     def shortestPathLength(self, graph: List[List[int]]) -> int:
         # # BFS - O(n*2^n), O(n*2^n)S
@@ -2021,14 +2021,14 @@ class Solution:
         res = min(dp[-1])
         return res
 
-    # 1337. The K Weakest Rows in a Matrix (Easy)
+    # LC 1337. The K Weakest Rows in a Matrix (Easy)
     # https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/
     def kWeakestRows(self, mat: List[List[int]], k: int) -> List[int]:
         # Counters - O(m*n)T, O(m)S
         counts = [(i, sum(mat[i])) for i in range(len(mat))]
         return sorted(counts, key=operator.itemgetter(0))[:k]
 
-    # 219. Contains Duplicate II (Easy)
+    # LC 219. Contains Duplicate II (Easy)
     # https://leetcode.com/problems/contains-duplicate-ii/
     def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
         if len(nums) <= 1:
@@ -2040,7 +2040,7 @@ class Solution:
             d[num] = i
         return False
 
-    # 287. Find the Duplicate Number (Medium)
+    # LC 287. Find the Duplicate Number (Medium)
     # https://leetcode.com/problems/find-the-duplicate-number/
     def findDuplicate(self, nums: List[int]) -> int:
         # Floyd's Tortoise and Hare (Cycle Detection with double pointers slow and fast) - O(n)T, O(1)S
@@ -2056,7 +2056,7 @@ class Solution:
             slow, fast = nums[slow], nums[fast]
         return slow
 
-    # 205. Isomorphic Strings
+    # LC 205. Isomorphic Strings
     # https://leetcode.com/problems/isomorphic-strings/
     def isIsomorphic(self, s: str, t: str) -> bool:
         # One-liner - O(n)T, O(n)S
