@@ -2062,3 +2062,11 @@ class Solution:
         # One-liner - O(n)T, O(n)S
         return len(set(s))==len(set(t))==len(set(zip(s,t)))
         # return [*map(s.index, s)] == [*map(t.index, t)]
+
+    # LC 414. Third Maximum Number (Easy)
+    # https://leetcode.com/problems/third-maximum-number/
+    def thirdMax(self, nums: List[int]) -> int:
+        s = set(nums)
+        if len(s) < 3:
+            return max(s)
+        return sorted(s, reverse=True)[2] # Third max
