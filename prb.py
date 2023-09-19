@@ -1610,7 +1610,7 @@ class Solution:
         #     current_node = current_node.next
         # return False
 
-        # Double cursors fast and slow - O(n)T, O(1)S
+        # Floyd's Tortoise and Hare (Cycle Detection with double cursors fast and slow) - O(n)T, O(1)S
         fast = head
         slow = head
         while fast and fast.next:
@@ -2039,3 +2039,19 @@ class Solution:
                 return True
             d[num] = i
         return False
+
+    # 287. Find the Duplicate Number (Medium)
+    # https://leetcode.com/problems/find-the-duplicate-number/
+    def findDuplicate(self, nums: List[int]) -> int:
+        # Floyd's Tortoise and Hare (Cycle Detection with double pointers slow and fast) - O(n)T, O(1)S
+        slow = fast = nums[0]
+        # find cycle
+        while True:
+            slow, fast = nums[slow], nums[nums[fast]]
+            if slow == fast:
+                break
+        # find cycle entry point
+        slow = nums[0]
+        while slow != fast:
+            slow, fast = nums[slow], nums[fast]
+        return slow
