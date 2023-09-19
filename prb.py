@@ -2055,3 +2055,10 @@ class Solution:
         while slow != fast:
             slow, fast = nums[slow], nums[fast]
         return slow
+
+    # 205. Isomorphic Strings
+    # https://leetcode.com/problems/isomorphic-strings/
+    def isIsomorphic(self, s: str, t: str) -> bool:
+        # One-liner - O(n)T, O(n)S
+        return len(set(s))==len(set(t))==len(set(zip(s,t)))
+        # return [*map(s.index, s)] == [*map(t.index, t)]
