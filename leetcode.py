@@ -1,6 +1,8 @@
+import bisect
 import collections
 import heapq
 import itertools
+import math
 import re
 from bisect import bisect_left
 from collections import Counter, OrderedDict, defaultdict, deque
@@ -10,7 +12,6 @@ from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from operator import xor
 from typing import List, Optional
-import bisect
 
 
 # Definition for a binary tree node.
@@ -1629,3 +1630,217 @@ class Solution:
             k %= fact[i]
             res.append(str(nums.pop(idx)))
         return "".join(res)
+
+    # LC 61. Rotate List (Medium)
+    # https://leetcode.com/problems/rotate-list/
+    def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # My solution - O(n)T, O(1)S
+        if not head:
+            return head
+        # find last node and connect with head
+        # also get list length (n)
+        last, n = head, 1
+        while last.next:
+            last = last.next
+            n += 1
+        last.next = head
+        # doing k or k%n rotations give the same results
+        k = k % n
+        # find how many nodes to skip based on k
+        skip = n - k
+        cur = head
+        # get the new "last" node, save the next node (new "first" node)
+        # set last.next to None and return the saved node
+        for i in range(skip - 1):
+            cur = cur.next
+        new_head = cur.next
+        cur.next = None
+        return new_head
+
+    # LC 62. Unique Paths (Medium)
+    # https://leetcode.com/problems/unique-paths/
+    def uniquePaths(self, m: int, n: int) -> int:
+        # # Recursion with memoization - O(m*n)TS
+        # memo = {}
+        # def helper(i, j):
+        #     if (i, j) in memo:
+        #         return memo[(i, j)]
+        #     if i==m or j==n:
+        #         return 0
+        #     if i==m-1 and j==n-1:
+        #         return 1
+        #     res = helper(i+1,j) + helper(i,j+1)
+        #     memo[(i,j)] = res
+        #     return res
+        # return helper(0, 0)
+
+        # # DP with hash matrix - O(m*n)TS
+        # dp = [[1 if i==0 or j==0 else 0 for j in range(n)] for i in range(m)]
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        # return dp[-1][-1]
+
+        # # DP with only prev row and cur row - O(m*n)T, O(n)S
+        # curr_row = [1] * n
+        # prev_row = [1] * n
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         curr_row[j] = curr_row[j - 1] + prev_row[j]
+        #     curr_row, prev_row = prev_row, curr_row
+        # return prev_row[-1]
+
+        # Math (comb) - O(1)T, O(1)S
+        return math.comb(m + n - 2, m - 1)  # or n-1
+
+    # LC 63. Unique Paths II (Medium)
+    # https://leetcode.com/problems/unique-paths-ii/
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        # Recursion with memoization - O(m*n)TS
+        # m, n = len(obstacleGrid), len(obstacleGrid[0])
+        # memo = {}
+        # def helper(i, j):
+        #     if (i, j) in memo:
+        #         return memo[(i, j)]
+        #     if i==m or j==n or obstacleGrid[i][j]==1:
+        #         return 0
+        #     if i==m-1 and j==n-1:
+        #         return 1
+        #     res = helper(i+1,j) + helper(i,j+1)
+        #     memo[(i,j)] = res
+        #     return res
+        # return helper(0, 0)
+
+        # # DP with hash matrix - O(m*n)TS
+        # m, n = len(obstacleGrid), len(obstacleGrid[0])
+        # dp = [[0 for _ in range(n)] for _ in range(m)]
+        # for i in range(m):
+        #     if obstacleGrid[i][0] == 1:
+        #         break
+        #     dp[i][0] = 1
+        # for j in range(n):
+        #     if obstacleGrid[0][j] == 1:
+        #         break
+        #     dp[0][j] = 1
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         if obstacleGrid[i][j] != 1:
+        #             dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+        # return dp[-1][-1]
+
+        # DP with only prev row and cur row - O(m*n)T, O(n)S
+        m, n = len(obstacleGrid), len(obstacleGrid[0])
+        curr_row = [0] * n
+        prev_row = [0] * n
+        for i in range(m):
+            for j in range(n):
+                if obstacleGrid[i][j] == 1:
+                    curr_row[j] = 0
+                elif i == 0 and j == 0:
+                    curr_row[j] = 1
+                elif i == 0:
+                    curr_row[j] = curr_row[j - 1]
+                elif j == 0:
+                    curr_row[j] = prev_row[j]
+                else:
+                    curr_row[j] = curr_row[j - 1] + prev_row[j]
+            curr_row, prev_row = prev_row, curr_row
+        return prev_row[-1]
+
+    # LC 64. Minimum Path Sum (Medium)
+    # https://leetcode.com/problems/minimum-path-sum/
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        # # Recursion with memoization - O(m*n)TS
+        # m, n = len(grid), len(grid[0])
+        # memo = {}
+        # def helper(i, j):
+        #     if (i, j) in memo:
+        #         return memo[(i, j)]
+        #     if i == m or j == n:
+        #         return float("inf")
+        #     if i == m - 1 and j == n - 1:
+        #         return grid[i][j]
+        #     res = grid[i][j] + min(helper(i + 1, j), helper(i, j + 1))
+        #     memo[(i, j)] = res
+        #     return res
+        # return helper(0, 0)
+
+        # # DP with hash matrix - O(m*n)TS
+        # m, n = len(grid), len(grid[0])
+        # dp = [[0 for _ in range(n)] for _ in range(m)]
+        # dp[0][0] = grid[0][0]
+        # for i in range(1, m):
+        #     dp[i][0] = grid[i][0] + dp[i - 1][0]
+        # for j in range(1, n):
+        #     dp[0][j] = grid[0][j] + dp[0][j - 1]
+        # for i in range(1, m):
+        #     for j in range(1, n):
+        #         dp[i][j] = grid[i][j] + min(dp[i - 1][j], dp[i][j - 1])
+        # return dp[-1][-1]
+
+        # DP with only prev row and cur row - O(m*n)T, O(n)S
+        m, n = len(grid), len(grid[0])
+        curr_row = [0] * n
+        prev_row = [0] * n
+        for i in range(m):
+            for j in range(n):
+                if i == 0 and j == 0:
+                    curr_row[j] = grid[i][j]
+                elif i == 0:
+                    curr_row[j] = curr_row[j - 1] + grid[i][j]
+                elif j == 0:
+                    curr_row[j] = prev_row[j] + grid[i][j]
+                else:
+                    curr_row[j] = grid[i][j] + min(curr_row[j - 1], prev_row[j])
+            curr_row, prev_row = prev_row, curr_row
+        return prev_row[-1]
+
+    # LC 65. Valid Number (Hard)
+    # https://leetcode.com/problems/valid-number/
+    def isNumber(self, s: str) -> bool:
+        # # Minimal code - O(n)T, O(1)S
+        # if "inf" in s or "Inf" in s or s == "nan":
+        #     return False  # BS
+        # try:
+        #     float(s)
+        #     return True
+        # except:
+        #     return False
+
+        # DFA - O(n)T, O(1)S
+        # Define DFA state transition tables
+        states = [
+            {},
+            # State (1) - initial state (scan ahead thru blanks)
+            {"blank": 1, "sign": 2, "digit": 3, ".": 4},
+            # State (2) - found sign (expect digit/dot)
+            {"digit": 3, ".": 4},
+            # State (3) - digit consumer (loop until non-digit)
+            {"digit": 3, ".": 5, "e": 6, "blank": 9},
+            # State (4) - found dot (only a digit is valid)
+            {"digit": 5},
+            # State (5) - after dot (expect digits, e, or end of valid input)
+            {"digit": 5, "e": 6, "blank": 9},
+            # State (6) - found 'e' (only a sign or digit valid)
+            {"sign": 7, "digit": 8},
+            # State (7) - sign after 'e' (only digit)
+            {"digit": 8},
+            # State (8) - digit after 'e' (expect digits or end of valid input)
+            {"digit": 8, "blank": 9},
+            # State (9) - Terminal state (fail if non-blank found)
+            {"blank": 9},
+        ]
+        currentState = 1
+        for c in s:
+            if c.isdigit():
+                c = "digit"
+            elif c in ["+", "-"]:
+                c = "sign"
+            elif c == " ":
+                c = "blank"
+            elif c in ["E", "e"]:
+                c = "e"
+            if c not in states[currentState]:
+                return False
+            currentState = states[currentState][c]
+        return currentState in [3, 5, 8, 9]
