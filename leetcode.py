@@ -10,6 +10,7 @@ from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from operator import xor
 from typing import List, Optional
+import bisect
 
 
 # Definition for a binary tree node.
@@ -789,3 +790,296 @@ class Solution:
         if sign == -1:
             res = -res
         return min(max(res, -(2**31)), 2**31 - 1)
+
+    # LC 30. Substring with Concatenation of All Words (Hard)
+    # https://leetcode.com/problems/substring-with-concatenation-of-all-words/
+    def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        # LC solution
+        # Words counters - O(|s|*|words|)T, O(|words|)S
+        wordLength = len(words[0])
+        substrLength = wordLength * len(words)
+        expectedWordCounts = collections.Counter(words)
+        result = []
+        # Trying each way to split `s`
+        # into consecutive words of length `substrLength`
+        for offset in range(wordLength):
+            wordCounts = {word: 0 for word in expectedWordCounts.keys()}
+            # Start with counting words in the first substring
+            for i in range(offset, substrLength + offset, wordLength):
+                word = s[i : i + wordLength]
+                if word in wordCounts:
+                    wordCounts[word] += 1
+            if wordCounts == expectedWordCounts:
+                result.append(offset)
+            # Then iterate the other substrings
+            # by adding a word at the end and removing the first word
+            for start in range(
+                offset + wordLength,
+                len(s) - substrLength + 1,
+                wordLength,
+            ):
+                removedWord = s[start - wordLength : start]
+                addedWord = s[start + substrLength - wordLength : start + substrLength]
+                if removedWord in wordCounts:
+                    wordCounts[removedWord] -= 1
+                if addedWord in wordCounts:
+                    wordCounts[addedWord] += 1
+                if wordCounts == expectedWordCounts:
+                    result.append(start)
+        return result
+
+    # LC 31. Next Permutation (Medium)
+    # https://leetcode.com/problems/next-permutation/
+    def nextPermutation(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        # # LC solutions
+
+        # # Brute force - O(n!)T, O(n)S
+        # def swap(i, j):
+        #     nums[i], nums[j] = nums[j], nums[i]
+        # def reverse(i):
+        #     nums[i:] = reversed(nums[i:])
+        # n = len(nums)
+        # i = n - 2
+        # while i >= 0 and nums[i] >= nums[i + 1]:
+        #     i -= 1
+        # if i >= 0:
+        #     j = n - 1
+        #     while j >= 0 and nums[i] >= nums[j]:
+        #         j -= 1
+        #     swap(i, j)
+        # reverse(i + 1)
+
+        # Single pass - O(n)T, O(1)S
+        n = len(nums)
+        i = n - 2
+        while i >= 0 and nums[i] >= nums[i + 1]:
+            i -= 1
+        if i >= 0:
+            j = n - 1
+            while j >= 0 and nums[i] >= nums[j]:
+                j -= 1
+            nums[i], nums[j] = nums[j], nums[i]
+        i += 1
+        j = n - 1
+        while i < j:
+            nums[i], nums[j] = nums[j], nums[i]
+            i += 1
+            j -= 1
+
+    # LC 32. Longest Valid Parentheses (Hard)
+    # https://leetcode.com/problems/longest-valid-parentheses/
+    def longestValidParentheses(self, s: str) -> int:
+        # Stack - O(n)T, O(n)S
+        maxans = 0
+        stack = [-1]
+        for i in range(len(s)):
+            if s[i] == "(":
+                stack.append(i)
+            else:
+                stack.pop()
+                if not stack:
+                    stack.append(i)
+                else:
+                    maxans = max(maxans, i - stack[-1])
+        return maxans
+
+    # LC 33. Search in Rotated Sorted Array (Medium)
+    # https://leetcode.com/problems/search-in-rotated-sorted-array/
+    def search(self, nums: List[int], target: int) -> int:
+        # Binary search - O(log n)T, O(1)S
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            mid = (r + l) // 2
+            if nums[mid] == target:
+                return mid
+            # Check if left half is sorted
+            if nums[l] <= nums[mid]:
+                if nums[l] <= target <= nums[mid]:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            # Otherwise, right half is sorted
+            else:
+                if nums[mid] <= target <= nums[r]:
+                    l = mid + 1
+                else:
+                    r = mid - 1
+        return -1
+
+    # LC 34. Find First and Last Position of Element in Sorted Array (Medium)
+    # https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        # # Binary search - O(log n)T, O(1)S
+        # l, r = 0, len(nums) - 1
+        # while l <= r:
+        #     mid = (l + r) // 2
+        #     if nums[mid] == target:
+        #         l, r = mid - 1, mid + 1
+        #         while l >= 0 and nums[l] == target:
+        #             l -= 1
+        #         while r < len(nums) and nums[r] == target:
+        #             r += 1
+        #         return [l+1, r-1]
+        #     elif nums[mid] < target:
+        #         l = mid + 1
+        #     else:
+        #         r = mid - 1
+        # return [-1, -1]
+
+        # # Two binary searches - O(log n)T, O(1)S
+        # def search(n):
+        #     l, r = 0, len(nums)
+        #     while l < r:
+        #         mid = (l + r) // 2
+        #         if nums[mid] >= n:
+        #             r = mid
+        #         else:
+        #             l = mid + 1
+        #     return l
+        # l = search(target)
+        # if l == len(nums) or nums[l] != target:
+        #     return [-1, -1]
+        # return [l, search(target + 1) - 1]
+
+        # # One-liner - O(log n)T, O(1)S
+        # return [nums.index(target), nums.index(target)+nums.count(target)-1] if target in nums else [-1, -1]
+
+        # With bisect module - O(log n)T, O(1)S
+        l = bisect.bisect_left(nums, target)
+        if l == len(nums) or nums[l] != target:
+            return [-1, -1]
+        return [l, bisect.bisect_right(nums, target) - 1]
+
+    # LC 35. Search Insert Position (Easy)
+    # https://leetcode.com/problems/search-insert-position/
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        # # One-liner - O(log n)T, O(1)S
+        # return bisect.bisect_left(nums, target)
+
+        # Binary search (bisect_left) - O(log n)T, O(1)S
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            mid = (l + r) // 2
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                l = mid + 1
+            else:
+                r = mid - 1
+        return l
+
+    # LC 36. Valid Sudoku (Medium)
+    # https://leetcode.com/problems/valid-sudoku/
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        # Brute force - O(1)T, O(1)S
+        seen = set()
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] != ".":
+                    cur = board[i][j]
+                    if (
+                        (i, cur) in seen
+                        or (cur, j) in seen
+                        or (i // 3, j // 3, cur) in seen
+                    ):
+                        return False
+                    seen.add((i, cur))
+                    seen.add((cur, j))
+                    seen.add((i // 3, j // 3, cur))
+        return True
+
+    # LC 37. Sudoku Solver (Hard)
+    # https://leetcode.com/problems/sudoku-solver/
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+
+        # Brute force - O(1)T, O(1)S
+        def is_valid(row, col, num):
+            for i in range(9):
+                if board[row][i] == num:
+                    return False
+                if board[i][col] == num:
+                    return False
+                if board[3 * (row // 3) + i // 3][3 * (col // 3) + i % 3] == num:
+                    return False
+            return True
+
+        def solve():
+            for row in range(9):
+                for col in range(9):
+                    if board[row][col] == ".":
+                        for num in "123456789":
+                            if is_valid(row, col, num):
+                                board[row][col] = num
+                                if solve():
+                                    return True
+                                board[row][col] = "."
+                        return False
+            return True
+
+        solve()
+
+    # LC 38. Count and Say (Easy)
+    # https://leetcode.com/problems/count-and-say/
+    def countAndSay(self, n: int) -> str:
+        # # With itertools.groupby - O(n*2^n)T, O(2^n)S
+        # res = "1"
+        # for _ in range(n-1):
+        #     r = []
+        #     for val, arr in itertools.groupby(res):
+        #         r.append(str(len(list(arr))))
+        #         r.append(val)
+        #     res = "".join(r)
+        # return res
+
+        # With re - O(n*2^n)T, O(2^n)S
+        res = "1"
+        for _ in range(n-1):
+            res = re.sub(r"(.)\1*", lambda m: str(len(m.group(0))) + m.group(1), res)
+        return res
+
+    # LC 39. Combination Sum (Medium)
+    # https://leetcode.com/problems/combination-sum/
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        # Backtracking - O(n^target)T, O(target)S
+        res = []
+        def backtrack(remain, comb, start):
+            if remain == 0:
+                res.append(list(comb))
+                return
+            elif remain < 0:
+                return
+            for i in range(start, len(candidates)):
+                comb.append(candidates[i])
+                backtrack(remain - candidates[i], comb, i)
+                comb.pop()
+        backtrack(target, [], 0)
+        return res
+
+    # LC 40. Combination Sum II (Medium)
+    # https://leetcode.com/problems/combination-sum-ii/
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        # Backtracking - O(n^target)T, O(target)S
+        res = []
+        candidates.sort()
+        def backtrack(remain, comb, start):
+            if remain == 0:
+                res.append(list(comb))
+                return
+            elif remain < 0:
+                return
+            for i in range(start, len(candidates)):
+                if i > start and candidates[i] == candidates[i-1]:
+                    continue
+                if candidates[i] > target:
+                    break
+                comb.append(candidates[i])
+                backtrack(remain - candidates[i], comb, i+1)
+                comb.pop()
+        backtrack(target, [], 0)
+        return res
