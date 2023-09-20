@@ -1087,3 +1087,284 @@ class Solution:
 
         backtrack(target, [], 0)
         return res
+
+    # LC 41. First Missing Positive (Hard)
+    # https://leetcode.com/problems/first-missing-positive/
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        # == Smallest positive integer that is not in the array [1, len(nums)]
+
+        # Set conversion - O(n*log(n))T, O(n)S
+        # nums = set(nums)
+        # for i in range(1, len(nums) + 1):
+        #     if i not in nums:
+        #         return i
+        # return len(nums) + 1
+
+        # Optimized solution with swapping - O(n)T, O(1)S
+        n = len(nums)
+        for i in range(n):
+            correctPos = nums[i] - 1
+            while 1 <= nums[i] <= n and nums[i] != nums[correctPos]:
+                nums[i], nums[correctPos] = nums[correctPos], nums[i]
+                correctPos = nums[i] - 1
+        for i in range(n):
+            if i + 1 != nums[i]:
+                return i + 1
+        return n + 1
+
+    # LC 42. Trapping Rain Water (Hard)
+    # https://leetcode.com/problems/trapping-rain-water/
+    def trap(self, height: List[int]) -> int:
+        # # Brute force - O(n^2)T, O(1)S
+        # res = 0
+        # for i in range(1, len(height) - 1):
+        #     leftMax = max(height[:i])
+        #     rightMax = max(height[i + 1 :])
+        #     minHeight = min(leftMax, rightMax)
+        #     if minHeight > height[i]:
+        #         res += minHeight - height[i]
+        # return res
+
+        # # DP - O(n)T, O(n)S
+        # if not height:
+        #     return 0
+        # n = len(height)
+        # leftMax = [0] * n
+        # rightMax = [0] * n
+        # leftMax[0] = height[0]
+        # rightMax[-1] = height[-1]
+        # for i in range(1, n):
+        #     leftMax[i] = max(height[i], leftMax[i - 1])
+        # for i in range(n - 2, -1, -1):
+        #     rightMax[i] = max(height[i], rightMax[i + 1])
+        # res = 0
+        # for i in range(1, n - 1):
+        #     res += min(leftMax[i], rightMax[i]) - height[i]
+        # return res
+
+        # Two pointers - O(n)T, O(1)S
+        if not height:
+            return 0
+        n = len(height)
+        l, r = 0, n - 1
+        leftMax = rightMax = res = 0
+        while l < r:
+            if height[l] < height[r]:
+                if height[l] >= leftMax:
+                    leftMax = height[l]
+                else:
+                    res += leftMax - height[l]
+                l += 1
+            else:
+                if height[r] >= rightMax:
+                    rightMax = height[r]
+                else:
+                    res += rightMax - height[r]
+                r -= 1
+        return res
+
+    # LC 43. Multiply Strings (Medium)
+    # https://leetcode.com/problems/multiply-strings/
+    def multiply(self, num1: str, num2: str) -> str:
+        # # One-liner - O(n*m)T, O(n+m)S
+        # return str(int(num1) * int(num2))
+
+        # Grade school algorithm - O(n*m)T, O(n+m)S
+        if num1 == "0" or num2 == "0":
+            return "0"
+        res = [0] * (len(num1) + len(num2))
+        for i, n1 in enumerate(reversed(num1)):
+            for j, n2 in enumerate(reversed(num2)):
+                res[i + j] += int(n1) * int(n2)
+                res[i + j + 1] += res[i + j] // 10
+                res[i + j] %= 10
+        while res[-1] == 0:
+            res.pop()
+        return "".join(map(str, res[::-1]))
+
+    # LC 44. Wildcard Matching (Hard)
+    # https://leetcode.com/problems/wildcard-matching/
+    def isMatch(self, s: str, p: str) -> bool:
+        # # DP - O(n*m)T, O(n*m)S
+        # n, m = len(s), len(p)
+        # dp = [[False] * (m + 1) for _ in range(n + 1)]
+        # # Base case
+        # dp[0][0] = True
+        # for j in range(1, m + 1):
+        #     if p[j - 1] == "*":
+        #         dp[0][j] = True
+        #     else:
+        #         break
+        # # Main algorithm
+        # for i in range(1, n + 1):
+        #     for j in range(1, m + 1):
+        #         if p[j - 1] in {s[i - 1], "?"}:
+        #             dp[i][j] = dp[i - 1][j - 1]
+        #         elif p[j - 1] == "*":
+        #             dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+        # return dp[-1][-1]
+
+        # DP with 1D array - O(n*m)T, O(m)S
+        n, m = len(s), len(p)
+        dp = [False] * (m + 1)
+        # Base case
+        dp[0] = True
+        for j in range(1, m + 1):
+            if p[j - 1] == "*":
+                dp[j] = True
+            else:
+                break
+        # Main algorithm
+        for i in range(1, n + 1):
+            new = [False] * (m + 1)
+            for j in range(1, m + 1):
+                if p[j - 1] in {s[i - 1], "?"}:
+                    new[j] = dp[j - 1]
+                elif p[j - 1] == "*":
+                    new[j] = new[j - 1] or dp[j]
+            dp = new
+        return dp[-1]
+
+    # LC 45. Jump Game II (Medium)
+    # https://leetcode.com/problems/jump-game-ii/
+    def jump(self, nums: List[int]) -> int:
+        # # DP - O(n^2)T, O(n)S
+        # n = len(nums)
+        # dp = [float("inf")] * n
+        # dp[0] = 0
+        # for i in range(n):
+        #     for j in range(i + 1, min(i + nums[i] + 1, n)):
+        #         dp[j] = min(dp[j], dp[i] + 1)
+        # return dp[-1]
+
+        # Greedy (Implicit BFS) - O(n)T, O(1)S
+        # Initialize reach (maximum reachable index), count (number of jumps), and last (rightmost index reached)
+        reach, count, last = 0, 0, 0
+        # Loop through the array excluding the last element
+        for i in range(len(nums) - 1):
+            # Update reach to the maximum between reach and i + nums[i]
+            reach = max(reach, i + nums[i])
+            # If i has reached the last index that can be reached with the current number of jumps
+            if i == last:
+                # Update last to the new maximum reachable index
+                last = reach
+                # Increment the number of jumps made so far
+                count += 1
+        # Return the minimum number of jumps required
+        return count
+
+    # LC 46. Permutations
+    # https://leetcode.com/problems/permutations/
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        # # One-liner - O(n!)T, O(n!)S
+        # return itertools.permutations(nums)
+
+        # Backtracking - O(n!)T, O(n!)S
+        res = []
+
+        def backtrack(nums, path):
+            if not nums:
+                res.append(path)
+                return
+            for i in range(len(nums)):
+                backtrack(nums[:i] + nums[i + 1 :], path + [nums[i]])
+
+        backtrack(nums, [])
+        return res
+
+    # LC 47. Permutations II
+    # https://leetcode.com/problems/permutations-ii/
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        # # One-liner - O(n!)T, O(n!)S
+        # return set(itertools.permutations(nums))
+
+        # Backtracking - O(n!)T, O(n!)S
+        res = []
+
+        def backtrack(nums, path):
+            if not nums:
+                res.append(path)
+                return
+            for i in range(len(nums)):
+                if i > 0 and nums[i] == nums[i - 1]:
+                    continue
+                backtrack(nums[:i] + nums[i + 1 :], path + [nums[i]])
+
+        nums.sort()
+        backtrack(nums, [])
+        return res
+
+    # LC 48. Rotate Image (Medium)
+    # https://leetcode.com/problems/rotate-image/
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        # # Transpose and reverse - O(n^2)T, O(1)S
+        # for i in range(len(matrix)):
+        #     for j in range(i, len(matrix)):
+        #         matrix[j][i], matrix[i][j] = matrix[i][j], matrix[j][i]
+        #     matrix[i].reverse()
+
+        # Rotate groups of 4 cells - O(n^2)T, O(1)S
+        n = len(matrix)
+        for i in range(n // 2 + n % 2):
+            for j in range(n // 2):
+                tmp = matrix[n - j - 1][i]
+                matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1]
+                matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1]
+                matrix[j][n - i - 1] = matrix[i][j]
+                matrix[i][j] = tmp
+
+    # LC 49. Group Anagrams (Medium)
+    # https://leetcode.com/problems/group-anagrams/
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        # # One-liner - O(n*k*log(k))T, O(n*k)S
+        # return [list(g) for _, g in itertools.groupby(sorted(strs, key=sorted), sorted)]
+
+        # Categorize by sorted string - O(n*k*log(k))T, O(n*k)S
+        res = collections.defaultdict(list)
+        for s in strs:
+            res[tuple(sorted(s))].append(s)
+        return res.values()
+
+    # LC 50. Pow(x, n) (Medium)
+    # https://leetcode.com/problems/powx-n/
+    def myPow(self, x: float, n: int) -> float:
+        # # One-liner - O(log n)T, O(1)S
+        # return x ** n
+
+        # # Brute force - O(n)T, O(1)S
+        # res = 1
+        # if n < 0:
+        #     x = 1 / x
+        #     n = -n
+        # for _ in range(n):
+        #     res *= x
+        # return res
+
+        # # Fast power algorithm - O(log n)T, O(log n)S
+        # def fastPower(x, n):
+        #     if n == 0:
+        #         return 1.0
+        #     half = fastPower(x, n // 2)
+        #     if n % 2 == 0:
+        #         return half * half
+        #     else:
+        #         return half * half * x
+        # if n < 0:
+        #     x = 1 / x
+        #     n = -n
+        # return fastPower(x, n)
+
+        # Fast power algorithm (iterative) - O(log n)T, O(1)S
+        if n < 0:
+            x = 1 / x
+            n = -n
+        res = 1
+        while n:
+            if n & 1:
+                res *= x
+            x *= x
+            n >>= 1
+        return res
