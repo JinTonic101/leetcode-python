@@ -1867,8 +1867,16 @@ class Solution:
     # LC 67. Add Binary (Easy)
     # https://leetcode.com/problems/add-binary/
     def addBinary(self, a: str, b: str) -> str:
-        # One-liner - O(n)T, O(1)S
-        return bin(int(a, 2) + int(b, 2))[2:]
+        # # One-liner - O(n)T, O(1)S
+        # return bin(int(a, 2) + int(b, 2))[2:]
+
+        # Bit manipulation - O(n)T, O(1)S
+        x, y = int(a, 2), int(b, 2)
+        while y:
+            answer = x ^ y
+            carry = (x & y) << 1
+            x, y = answer, carry
+        return bin(x)[2:]
 
     # LC 332. Reconstruct Itinerary
     # https://leetcode.com/problems/reconstruct-itinerary/
