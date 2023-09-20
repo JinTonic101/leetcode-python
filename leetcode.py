@@ -1844,3 +1844,131 @@ class Solution:
                 return False
             currentState = states[currentState][c]
         return currentState in [3, 5, 8, 9]
+
+    # LC 66. Plus One (Easy)
+    # https://leetcode.com/problems/plus-one/
+    def plusOne(self, digits: List[int]) -> List[int]:
+        # # One-liner - O(n)T, O(n)S
+        # return [int(c) for c in str(int("".join([str(d) for d in digits])) + 1)]
+
+        # With carry - O(n)T, O(1)S
+        carry = 1
+        for i in range(len(digits) - 1, -1, -1):
+            if digits[i] + carry == 10:
+                digits[i] = 0
+                carry = 1
+            else:
+                digits[i] += carry
+                carry = 0
+        if carry:
+            digits.insert(0, 1)
+        return digits
+
+    # LC 67. Add Binary (Easy)
+    # https://leetcode.com/problems/add-binary/
+    def addBinary(self, a: str, b: str) -> str:
+        # # One-liner - O(n)T, O(1)S
+        # return bin(int(a, 2) + int(b, 2))[2:]
+
+        # Bit manipulation - O(n)T, O(1)S
+        x, y = int(a, 2), int(b, 2)
+        while y:
+            answer = x ^ y
+            carry = (x & y) << 1
+            x, y = answer, carry
+        return bin(x)[2:]
+
+    # LC 68. Text Justification (Hard)
+    # https://leetcode.com/problems/text-justification/
+    def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        # # Greedy (my solution) - O(n)T, O(n)S
+        # def replace_last(string, old, new):
+        #     return new.join(string.rsplit(old, 1))
+        # res = []
+        # while words:
+        #     buffer = [words.pop(0)]
+        #     while words and len(" ".join(buffer) + " " + words[0]) <= maxWidth:
+        #         buffer.append(words.pop(0))
+        #     if len(buffer) == 1 or len(words) == 0:
+        #         res.append(" ".join(buffer).ljust(maxWidth, " "))
+        #     else:
+        #         r = " ".join(buffer)
+        #         i = 1
+        #         while len(r) < maxWidth:
+        #             r = r.replace(" " * i, " " * (i + 1))
+        #             i += 1
+        #         while len(r) > maxWidth:
+        #             r = replace_last(r, " " * i, " " * (i - 1))
+        #         res.append(r)
+        # return res
+
+        # Greedy (alternative code) - O(n)T, O(n)S
+        res = []
+        cur = []
+        cur_len = 0
+        for word in words:
+            if cur_len + len(word) + len(cur) > maxWidth:
+                for i in range(maxWidth - cur_len):
+                    cur[i % (len(cur) - 1 or 1)] += " "
+                res.append("".join(cur))
+                cur = []
+                cur_len = 0
+            cur.append(word)
+            cur_len += len(word)
+        res.append(" ".join(cur).ljust(maxWidth))
+        return res
+
+    # LC 69. Sqrt(x) (Easy)
+    # https://leetcode.com/problems/sqrtx/
+    def mySqrt(self, x: int) -> int:
+        # # One-liner - O(1)T, O(1)S
+        # return int(x ** 0.5)
+
+        # Binary search - O(log n)T, O(1)S
+        l, r = 0, x
+        while l <= r:
+            mid = (l + r) // 2
+            if mid * mid <= x < (mid + 1) * (mid + 1):
+                return mid
+            elif x < mid * mid:
+                r = mid - 1
+            else:
+                l = mid + 1
+
+    # LC 70. Climbing Stairs (Easy)
+    # https://leetcode.com/problems/climbing-stairs/
+    def climbStairs(self, n: int) -> int:
+        # # Recursion with memoization - O(n)T, O(n)S
+        # memo = {}
+        # def helper(i):
+        #     if i in memo:
+        #         return memo[i]
+        #     if i > n:
+        #         return 0
+        #     if i == n:
+        #         return 1
+        #     res = helper(i+1) + helper(i+2)
+        #     memo[i] = res
+        #     return res
+        # return helper(0)
+
+        # DP - O(n)T, O(n)S
+        # dp = [0] * (n + 1)
+        # dp[0] = 1
+        # dp[1] = 1
+        # for i in range(2, n + 1):
+        #     dp[i] = dp[i - 1] + dp[i - 2]
+        # return dp[-1]
+
+        # # DP with only prev 2 values - O(n)T, O(1)S
+        # if n <= 2:
+        #     return n
+        # prev1, prev2 = 1, 2
+        # for _ in range(3, n + 1):
+        #     prev1, prev2 = prev2, prev1 + prev2
+        # return prev2
+
+        # Math (fibonacci) - O(log n)T, O(1)S
+        sqrt5 = 5**0.5
+        fibn = ((1 + sqrt5) / 2) ** (n + 1) - ((1 - sqrt5) / 2) ** (n + 1)
+        return int(fibn / sqrt5)
