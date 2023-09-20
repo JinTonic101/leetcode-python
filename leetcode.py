@@ -1039,7 +1039,7 @@ class Solution:
 
         # With re - O(n*2^n)T, O(2^n)S
         res = "1"
-        for _ in range(n-1):
+        for _ in range(n - 1):
             res = re.sub(r"(.)\1*", lambda m: str(len(m.group(0))) + m.group(1), res)
         return res
 
@@ -1048,6 +1048,7 @@ class Solution:
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
         # Backtracking - O(2^n)T, O(n)S
         res = []
+
         def backtrack(remain, comb, start):
             if remain == 0:
                 res.append(list(comb))
@@ -1058,6 +1059,7 @@ class Solution:
                 comb.append(candidates[i])
                 backtrack(remain - candidates[i], comb, i)
                 comb.pop()
+
         backtrack(target, [], 0)
         return res
 
@@ -1067,6 +1069,7 @@ class Solution:
         # Backtracking - O((2^n)*k)T, O(k*x)S
         res = []
         candidates.sort()
+
         def backtrack(remain, comb, start):
             if remain == 0:
                 res.append(list(comb))
@@ -1074,12 +1077,13 @@ class Solution:
             elif remain < 0:
                 return
             for i in range(start, len(candidates)):
-                if i > start and candidates[i] == candidates[i-1]:
+                if i > start and candidates[i] == candidates[i - 1]:
                     continue
                 if candidates[i] > target:
                     break
                 comb.append(candidates[i])
-                backtrack(remain - candidates[i], comb, i+1)
+                backtrack(remain - candidates[i], comb, i + 1)
                 comb.pop()
+
         backtrack(target, [], 0)
         return res
