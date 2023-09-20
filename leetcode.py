@@ -1046,7 +1046,7 @@ class Solution:
     # LC 39. Combination Sum (Medium)
     # https://leetcode.com/problems/combination-sum/
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
-        # Backtracking - O(n^target)T, O(target)S
+        # Backtracking - O(2^n)T, O(n)S
         res = []
         def backtrack(remain, comb, start):
             if remain == 0:
@@ -1064,7 +1064,7 @@ class Solution:
     # LC 40. Combination Sum II (Medium)
     # https://leetcode.com/problems/combination-sum-ii/
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
-        # Backtracking - O(n^target)T, O(target)S
+        # Backtracking - O((2^n)*k)T, O(k*x)S
         res = []
         candidates.sort()
         def backtrack(remain, comb, start):
