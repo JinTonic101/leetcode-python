@@ -2070,3 +2070,22 @@ class Solution:
         if len(s) < 3:
             return max(s)
         return sorted(s, reverse=True)[2] # Third max
+
+    # LC 1658. Minimum Operations to Reduce X to Zero (Medium)
+    # https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/
+    def minOperations(self, nums: List[int], x: int) -> int:
+        # Two pointers (sliding window) - O(n)T, O(1)S
+        target, n = sum(nums) - x, len(nums)
+        if target < 0:
+            return -1
+        if target == 0:
+            return n
+        max_len = cur_sum = left = 0
+        for right, val in enumerate(nums):
+            cur_sum += val
+            while left <= right and cur_sum > target:
+                cur_sum -= nums[left]
+                left += 1
+            if cur_sum == target:
+                max_len = max(max_len, right - left + 1)
+        return n - max_len if max_len else -1
