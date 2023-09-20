@@ -1807,25 +1807,38 @@ class Solution:
     # LC 46. Permutations
     # https://leetcode.com/problems/permutations/
     def permute(self, nums: List[int]) -> List[List[int]]:
-        # # return itertools.permutations(nums)
-        # Solution with backtracking & bitmask
-        n = len(nums)
-        Mask = (1 << n) - 1
-        ans = []
+        # # One-liner - O(n!)T, O(n!)S
+        # return itertools.permutations(nums)
 
-        def backtrack(mask, cur):
-            if mask == Mask:
-                ans.append(cur[:])
+        # Backtracking - O(n!)T, O(n!)S
+        res = []
+
+        def backtrack(nums, path):
+            if not nums:
+                res.append(path)
                 return
-            for i in range(n):
-                if mask & (1 << i) == 0:
-                    cur.append(nums[i])
-                    backtrack(mask | (1 << i), cur[:])
-                    cur.pop()
+            for i in range(len(nums)):
+                backtrack(nums[:i] + nums[i + 1 :], path + [nums[i]])
 
-        cur = []
-        backtrack(0, cur)
-        return ans
+        backtrack(nums, [])
+        return res
+
+        # # Solution with backtracking & bitmask
+        # n = len(nums)
+        # Mask = (1 << n) - 1
+        # ans = []
+        # def backtrack(mask, cur):
+        #     if mask == Mask:
+        #         ans.append(cur[:])
+        #         return
+        #     for i in range(n):
+        #         if mask & (1 << i) == 0:
+        #             cur.append(nums[i])
+        #             backtrack(mask | (1 << i), cur[:])
+        #             cur.pop()
+        # cur = []
+        # backtrack(0, cur)
+        # return ans
 
     # LC 58. Length of Last Word (Easy)
     # https://leetcode.com/problems/length-of-last-word/
@@ -2060,7 +2073,7 @@ class Solution:
     # https://leetcode.com/problems/isomorphic-strings/
     def isIsomorphic(self, s: str, t: str) -> bool:
         # One-liner - O(n)T, O(n)S
-        return len(set(s))==len(set(t))==len(set(zip(s,t)))
+        return len(set(s)) == len(set(t)) == len(set(zip(s, t)))
         # return [*map(s.index, s)] == [*map(t.index, t)]
 
     # LC 414. Third Maximum Number (Easy)
@@ -2069,7 +2082,7 @@ class Solution:
         s = set(nums)
         if len(s) < 3:
             return max(s)
-        return sorted(s, reverse=True)[2] # Third max
+        return sorted(s, reverse=True)[2]  # Third max
 
     # LC 1658. Minimum Operations to Reduce X to Zero (Medium)
     # https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/
