@@ -1368,3 +1368,264 @@ class Solution:
             x *= x
             n >>= 1
         return res
+
+    # LC 51. N-Queens (Hard)
+    # https://leetcode.com/problems/n-queens/
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        # Backtracking - O(n!)T, O(n)S
+        def solve(col, board, ans, lr, ud, ld, n):
+            if col == n:
+                ans.append(["".join(row) for row in board])
+                return
+            for row in range(n):
+                if lr[row] == 0 and ld[row - col] == 0 and ud[row + col] == 0:
+                    board[row][col] = "Q"
+                    lr[row] = 1
+                    ld[row - col] = 1
+                    ud[row + col] = 1
+                    solve(col + 1, board, ans, lr, ud, ld, n)
+                    board[row][col] = "."
+                    lr[row] = 0
+                    ld[row - col] = 0
+                    ud[row + col] = 0
+
+        ans = []
+        board = [["." for _ in range(n)] for _ in range(n)]
+        leftrow = [0] * n
+        upperDiagonal = [0] * (2 * n - 1)
+        lowerDiagonal = [0] * (2 * n - 1)
+        solve(0, board, ans, leftrow, upperDiagonal, lowerDiagonal, n)
+        return ans
+
+    # LC 52. N-Queens II (Hard)
+    # https://leetcode.com/problems/n-queens-ii/
+    def totalNQueens(self, n: int) -> int:
+        # Backtracking - O(n!)T, O(n)S
+        def solve(col, board, ans, lr, ud, ld, n):
+            if col == n:
+                ans.append(1)
+                return
+            for row in range(n):
+                if lr[row] == 0 and ld[row - col] == 0 and ud[row + col] == 0:
+                    board[row][col] = "Q"
+                    lr[row] = 1
+                    ld[row - col] = 1
+                    ud[row + col] = 1
+                    solve(col + 1, board, ans, lr, ud, ld, n)
+                    board[row][col] = "."
+                    lr[row] = 0
+                    ld[row - col] = 0
+                    ud[row + col] = 0
+
+        ans = []
+        board = [["." for _ in range(n)] for _ in range(n)]
+        leftrow = [0] * n
+        upperDiagonal = [0] * (2 * n - 1)
+        lowerDiagonal = [0] * (2 * n - 1)
+        solve(0, board, ans, leftrow, upperDiagonal, lowerDiagonal, n)
+        return len(ans)
+
+    # LC 53. Maximum Subarray (Easy)
+    # https://leetcode.com/problems/maximum-subarray/
+    def maxSubArray(self, nums: List[int]) -> int:
+        # # DP - O(n)T, O(1)S
+        # dp = nums[0]
+        # res = dp
+        # for i in range(1, len(nums)):
+        #     dp = max(nums[i], dp + nums[i])
+        #     res = max(res, dp)
+        # return res
+
+        # Divide and conquer - O(n*log(n))T, O(1)S
+        def divideAndConquer(nums, l, r):
+            if l == r:
+                return nums[l]
+            mid = (l + r) // 2
+            leftMax = divideAndConquer(nums, l, mid)
+            rightMax = divideAndConquer(nums, mid + 1, r)
+            crossMax = nums[mid]
+            tmp = crossMax
+            for i in range(mid - 1, l - 1, -1):
+                tmp += nums[i]
+                crossMax = max(crossMax, tmp)
+            tmp = crossMax
+            for i in range(mid + 1, r + 1):
+                tmp += nums[i]
+                crossMax = max(crossMax, tmp)
+            return max(leftMax, rightMax, crossMax)
+
+        return divideAndConquer(nums, 0, len(nums) - 1)
+
+    # LC 54. Spiral Matrix (Medium)
+    # https://leetcode.com/problems/spiral-matrix/
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        # # One-liner - O(n*m)T, O(n*m)S
+        # return matrix and [*matrix.pop(0)] + self.spiralOrder([*zip(*matrix)][::-1])
+
+        # Layer-by-layer - O(n*m)T, O(n*m)S
+        if not matrix:
+            return []
+        res = []
+        rows, cols = len(matrix), len(matrix[0])
+        left, right, top, bottom = 0, cols - 1, 0, rows - 1
+        while left <= right and top <= bottom:
+            for c in range(left, right + 1):
+                res.append(matrix[top][c])
+            for r in range(top + 1, bottom + 1):
+                res.append(matrix[r][right])
+            if left < right and top < bottom:
+                for c in range(right - 1, left, -1):
+                    res.append(matrix[bottom][c])
+                for r in range(bottom, top, -1):
+                    res.append(matrix[r][left])
+            left, right, top, bottom = left + 1, right - 1, top + 1, bottom - 1
+        return res
+
+    # LC 55. Jump Game (Medium)
+    # https://leetcode.com/problems/jump-game/
+    def canJump(self, nums: List[int]) -> bool:
+        # # DP - O(n^2)T, O(n)S
+        # n = len(nums)
+        # dp = [False] * n
+        # dp[0] = True
+        # for i in range(n):
+        #     if dp[i]:
+        #         for j in range(i + 1, min(i + nums[i] + 1, n)):
+        #             if j < n:
+        #                 dp[j] = True
+        #             if j == n - 1:
+        #                 return True
+        # return dp[-1]
+
+        # Greedy - O(n)T, O(1)S
+        reachable = 0
+        for i, num in enumerate(nums):
+            if reachable < i:
+                return False
+            reachable = max(reachable, i + num)
+        return True
+
+    # LC 56. Merge Intervals (Medium)
+    # https://leetcode.com/problems/merge-intervals/
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        # Sort and merge - O(n*log(n))T, O(n)S
+        intervals.sort(key=lambda x: x[0])
+        res = []
+        for interval in intervals:
+            if not res or res[-1][1] < interval[0]:
+                res.append(interval)
+            else:
+                res[-1][1] = max(res[-1][1], interval[1])  # Merge overlapping intervals
+        return res
+
+    # LC 57. Insert Interval (Medium)
+    # https://leetcode.com/problems/insert-interval/
+    def insert(
+        self, intervals: List[List[int]], newInterval: List[int]
+    ) -> List[List[int]]:
+        # # Insert, sort, and merge - O(n*log(n))T, O(n)S
+        # intervals.append(newInterval)
+        # intervals.sort(key=lambda x: x[0])
+        # res = []
+        # for interval in intervals:
+        #     if not res or res[-1][1] < interval[0]:
+        #         res.append(interval)
+        #     else:
+        #         res[-1][1] = max(res[-1][1], interval[1])
+        # return res
+
+        # Insert and merge - O(n)T, O(n)S
+        res = []
+        i = 0
+        while i < len(intervals) and intervals[i][1] < newInterval[0]:
+            res.append(intervals[i])
+            i += 1
+        while i < len(intervals) and intervals[i][0] <= newInterval[1]:
+            newInterval[0] = min(newInterval[0], intervals[i][0])
+            newInterval[1] = max(newInterval[1], intervals[i][1])
+            i += 1
+        res.append(newInterval)
+        while i < len(intervals):
+            res.append(intervals[i])
+            i += 1
+        return res
+
+    # LC 58. Length of Last Word (Easy)
+    # https://leetcode.com/problems/length-of-last-word/
+    def lengthOfLastWord(self, s: str) -> int:
+        return len(s.split()[-1])
+
+    # LC 59. Spiral Matrix II (Medium)
+    # https://leetcode.com/problems/spiral-matrix-ii/
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        # # Spiral filling - O(n^2)T, O(1)S
+        # mat = [[0 for _ in range(n)] for _ in range(n)]  # matrix of n*n
+        # el = 1  # element to be filled
+        # dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]  # 4 directions
+        # d = 0  # variable to refer direction
+        # row = 0
+        # col = 0
+        # while el <= n * n:
+        #     mat[row][col] = el
+        #     r = (row + dir[d][0]) % n
+        #     c = (col + dir[d][1]) % n
+        #     if mat[r][c] != 0:
+        #         # change in direction if cell already traveresed
+        #         d = (d + 1) % 4
+        #     row += dir[d][0]
+        #     col += dir[d][1]
+        #     el += 1
+        # return mat
+
+        # Spiral filling (alternative code) - O(n^2)T, O(n^2)S
+        ans = [[0] * n for _ in range(n)]
+        i = 0
+        start_col, start_row, end_col, end_row = 0, 0, n, n
+        while start_col < end_col or start_row < end_row:
+            for c in range(start_col, end_col):
+                i += 1
+                ans[start_row][c] = i
+            start_row += 1
+            for r in range(start_row, end_row):
+                i += 1
+                ans[r][end_col - 1] = i
+            end_col -= 1
+            for c in range(end_col - 1, start_col - 1, -1):
+                i += 1
+                ans[end_row - 1][c] = i
+            end_row -= 1
+            for r in range(end_row - 1, start_row - 1, -1):
+                i += 1
+                ans[r][start_col] = i
+            start_col += 1
+        return ans
+
+    # LC 60. Permutation Sequence (Hard)
+    # https://leetcode.com/problems/permutation-sequence/
+    def getPermutation(self, n: int, k: int) -> str:
+        # # One-liner - O(n^2)T, O(n)S
+        # return "".join(list(itertools.permutations([str(i) for i in range(1, n + 1)]))[k - 1])
+
+        # # Backtracking (TLE) - O(n!)T, O(n)S
+        # def backtrack(nums, path):
+        #     if not nums:
+        #         res.append(path)
+        #         return
+        #     for i in range(len(nums)):
+        #         backtrack(nums[:i] + nums[i + 1 :], path + [nums[i]])
+        # res = []
+        # backtrack([str(i) for i in range(1, n + 1)], [])
+        # return "".join(res[k - 1])
+
+        # Optimal solution - O(n^2)T, O(n)S
+        nums = [i for i in range(1, n + 1)]
+        fact = [1] * n
+        for i in range(1, n):
+            fact[i] = fact[i - 1] * i
+        k -= 1
+        res = []
+        for i in range(n - 1, -1, -1):
+            idx = k // fact[i]
+            k %= fact[i]
+            res.append(str(nums.pop(idx)))
+        return "".join(res)
