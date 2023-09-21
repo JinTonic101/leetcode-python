@@ -2333,3 +2333,213 @@ class Solution:
 
         # # One-liner - O(n)T, O(1)S
         # return len([nums[i] for i in range(len(nums)) if i < 2 or nums[i] != nums[i - 2]])
+
+    # LC 81. Search in Rotated Sorted Array II (Medium)
+    def search(self, nums: List[int], target: int) -> bool:
+        # # One-liner - O(n)T, O(1)S
+        # return target in nums
+
+        # # Linear search - O(n)T, O(1)S
+        # for num in nums:
+        #     if num == target:
+        #         return True
+
+        # Binary search in rotated sorted array - O(log n)T, O(1)S
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            while l < r and nums[l] == nums[l + 1]:
+                l += 1
+            while l < r and nums[r] == nums[r - 1]:
+                r -= 1
+            mid = (l + r) // 2
+            if nums[mid] == target:
+                return True
+            elif nums[mid] >= nums[l]:
+                if nums[l] <= target < nums[mid]:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            else:
+                if nums[mid] < target <= nums[r]:
+                    l = mid + 1
+                else:
+                    r = mid - 1
+        return False
+
+    # LC 82. Remove Duplicates from Sorted List II (Medium)
+    # https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # One-pass solution - O(n)T, O(1)S
+        dummy = prev = ListNode(0, head)
+        while head:
+            if head.next and head.val == head.next.val:
+                while head.next and head.val == head.next.val:
+                    head = head.next
+                prev.next = head.next
+            else:
+                prev = prev.next
+            head = head.next
+        return dummy.next
+
+    # LC 83. Remove Duplicates from Sorted List (Easy)
+    # https://leetcode.com/problems/remove-duplicates-from-sorted-list/
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # # One-pass solution - O(n)T, O(1)S
+        # dummy = prev = ListNode(0, head)
+        # while head:
+        #     if head.next and head.val == head.next.val:
+        #         prev.next = head.next
+        #     else:
+        #         prev = prev.next
+        #     head = head.next
+        # return dummy.next
+
+        # Optimized one-pass solution - O(n)T, O(1)S
+        curr = head
+        while curr and curr.next:
+            if curr.val == curr.next.val:
+                curr.next = curr.next.next
+            else:
+                curr = curr.next
+        return head
+
+    # LC 84. Largest Rectangle in Histogram (Hard)
+    # https://leetcode.com/problems/largest-rectangle-in-histogram/
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        # # Brute force - O(n^2)T, O(1)S
+        # res = 0
+        # for i in range(len(heights)):
+        #     min_height = float("inf")
+        #     for j in range(i, len(heights)):
+        #         min_height = min(min_height, heights[j])
+        #         res = max(res, min_height * (j - i + 1))
+        # return res
+
+        # # Divide and conquer - O(n log n)T, O(n)S
+        # def divide_conquer(heights, l, r):
+        #     if l > r:
+        #         return 0
+        #     min_idx = l
+        #     for i in range(l, r + 1):
+        #         if heights[i] < heights[min_idx]:
+        #             min_idx = i
+        #     return max(
+        #         heights[min_idx] * (r - l + 1),
+        #         divide_conquer(heights, l, min_idx - 1),
+        #         divide_conquer(heights, min_idx + 1, r),
+        #     )
+        # return divide_conquer(heights, 0, len(heights) - 1)
+
+        # Stack - O(n)T, O(n)S
+        stack = [-1]
+        res = 0
+        for i in range(len(heights)):
+            while stack[-1] != -1 and heights[stack[-1]] >= heights[i]:
+                res = max(res, heights[stack.pop()] * (i - stack[-1] - 1))
+            stack.append(i)
+        while stack[-1] != -1:
+            res = max(res, heights[stack.pop()] * (len(heights) - stack[-1] - 1))
+        return res
+
+        # # DP - O(n)T, O(n)S
+        # n = len(heights)
+        # left = [0] * n
+        # right = [0] * n
+        # left[0] = -1
+        # right[-1] = n
+        # for i in range(1, n):
+        #     p = i - 1
+        #     while p >= 0 and heights[p] >= heights[i]:
+        #         p = left[p]
+        #     left[i] = p
+        # for i in range(n - 2, -1, -1):
+        #     p = i + 1
+        #     while p < n and heights[p] >= heights[i]:
+        #         p = right[p]
+        #     right[i] = p
+        # res = 0
+        # for i in range(n):
+        #     res = max(res, heights[i] * (right[i] - left[i] - 1))
+        # return res
+
+    # LC 85. Maximal Rectangle (Hard)
+    # https://leetcode.com/problems/maximal-rectangle/
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        # # Brute force - O(m^2 * n^2)T, O(1)S
+        # if not matrix:
+        #     return 0
+        # m, n = len(matrix), len(matrix[0])
+        # res = 0
+        # for i in range(m):
+        #     for j in range(n):
+        #         if matrix[i][j] == "0":
+        #             continue
+        #         width = float("inf")
+        #         for k in range(i, m):
+        #             if matrix[k][j] == "0":
+        #                 break
+        #             width = min(width, k - i + 1)
+        #             res = max(res, width * (j - i + 1))
+        # return res
+
+        # DP - O(m*n)T, O(n)S
+        if not matrix:
+            return 0
+        m, n = len(matrix), len(matrix[0])
+        left = [0] * n
+        right = [n] * n
+        height = [0] * n
+        res = 0
+        for i in range(m):
+            curr_left, curr_right = 0, n
+            for j in range(n):
+                if matrix[i][j] == "1":
+                    height[j] += 1
+                else:
+                    height[j] = 0
+            for j in range(n):
+                if matrix[i][j] == "1":
+                    left[j] = max(left[j], curr_left)
+                else:
+                    left[j] = 0
+                    curr_left = j + 1
+            for j in range(n - 1, -1, -1):
+                if matrix[i][j] == "1":
+                    right[j] = min(right[j], curr_right)
+                else:
+                    right[j] = n
+                    curr_right = j
+            for j in range(n):
+                res = max(res, height[j] * (right[j] - left[j]))
+        return res
+
+        # # Stack - O(m*n)T, O(n)S
+        # if not matrix:
+        #     return 0
+        # m, n = len(matrix), len(matrix[0])
+        # left = [0] * n
+        # right = [n] * n
+        # height = [0] * n
+        # res = 0
+        # for i in range(m):
+        #     curr_left, curr_right = 0, n
+        #     for j in range(n):
+        #         if matrix[i][j] == "1":
+        #             height[j] += 1
+        #         else:
+        #             height[j] = 0
+        #     stack = []
+        #     for j in range(n):
+        #         while stack and height[stack[-1]] >= height[j]:
+        #             curr_right = stack.pop()
+        #         left[j] = stack[-1] if stack else -1
+        #         stack.append(j)
+        #     stack = []
+        #     for j in range(n - 1, -1, -1):
+        #         while stack and height[stack[-1]] >= height[j]:
+        #             curr_left = stack.pop()
+        #         right[j] = stack[-1] if stack else n
+        #         stack.append(j)
+        #     for j in range(n):
+        #         res = max(res, height[j] * (right[j] - left[j] - 1))
+        # return res
