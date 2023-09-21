@@ -1994,3 +1994,184 @@ class Solution:
         sqrt5 = 5**0.5
         fibn = ((1 + sqrt5) / 2) ** (n + 1) - ((1 - sqrt5) / 2) ** (n + 1)
         return int(fibn / sqrt5)
+
+    # LC 71. Simplify Path (Medium)
+    # https://leetcode.com/problems/simplify-path/
+    def simplifyPath(self, path: str) -> str:
+        # # My solution - O(n)T, O(n)S
+        # path = re.sub(r'/+', '/', path)
+        # path = re.sub(r'/\./', '/', path)
+        # path = path.strip("/")
+        # folders = path.split("/")
+        # res = []
+        # for f in folders:
+        #     if f == ".":
+        #         continue
+        #     elif f == "..":
+        #         if res:
+        #             res.pop()
+        #     else:
+        #         res.append(f)
+        # return "/" + "/".join(res)
+
+        # Stack - O(n)T, O(n)S
+        stack = []
+        for folder in path.split("/"):
+            if folder == "..":
+                if stack:
+                    stack.pop()
+            elif folder and folder != ".":
+                stack.append(folder)
+        return "/" + "/".join(stack)
+
+    # LC 72. Edit Distance (Hard)
+    # https://leetcode.com/problems/edit-distance/
+    def minDistance(self, word1: str, word2: str) -> int:
+        # # Recursion with memoization - O(m*n)T, O(m*n)S
+        # memo = {}
+        # def helper(i, j):
+        #     if (i, j) in memo:
+        #         return memo[(i, j)]
+        #     if i == len(word1):
+        #         return len(word2) - j
+        #     if j == len(word2):
+        #         return len(word1) - i
+        #     if word1[i] == word2[j]:
+        #         res = helper(i + 1, j + 1)
+        #     else:
+        #         insert = helper(i, j + 1)
+        #         delete = helper(i + 1, j)
+        #         replace = helper(i + 1, j + 1)
+        #         res = 1 + min(insert, delete, replace)
+        #     memo[(i, j)] = res
+        #     return res
+        # return helper(0, 0)
+
+        # DP with hash matrix - O(m*n)T, O(m*n)S
+        m, n = len(word1), len(word2)
+        dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+        # first row
+        for j in range(n + 1):
+            dp[0][j] = j
+        # first column
+        for i in range(m + 1):
+            dp[i][0] = i
+        # rest of the matrix
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]
+                    continue
+                insert = dp[i][j - 1]
+                delete = dp[i - 1][j]
+                replace = dp[i - 1][j - 1]
+                dp[i][j] = 1 + min(insert, delete, replace)
+        return dp[-1][-1]
+
+    # LC 73. Set Matrix Zeroes (Medium)
+    # https://leetcode.com/problems/set-matrix-zeroes/
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        # # Naive approach with memoization - O(m*n)T, O(m+n)S
+        # m, n = len(matrix), len(matrix[0])
+        # mset, nset = set(), set()
+        # for i in range(m):
+        #     for j in range(n):
+        #         if matrix[i][j] == 0:
+        #             mset.add(i)
+        #             nset.add(j)
+        # for i in mset:
+        #     matrix[i] = [0] * n
+        # for j in nset:
+        #     for i in range(m):
+        #         matrix[i][j] = 0
+
+        # Constant extra space - O(m*n)T, O(1)S
+        m, n = len(matrix), len(matrix[0])
+        is_col = False
+        for i in range(m):
+            if matrix[i][0] == 0:
+                is_col = True
+            for j in range(1, n):
+                if matrix[i][j] == 0:
+                    matrix[i][0] = 0
+                    matrix[0][j] = 0
+        for i in range(1, m):
+            for j in range(1, n):
+                if not matrix[i][0] or not matrix[0][j]:
+                    matrix[i][j] = 0
+        if matrix[0][0] == 0:
+            for j in range(n):
+                matrix[0][j] = 0
+        if is_col:
+            for i in range(m):
+                matrix[i][0] = 0
+
+    # LC 74. Search a 2D Matrix (Medium)
+    # https://leetcode.com/problems/search-a-2d-matrix/
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        # # Double binary search - O(log(m*n))T, O(1)S
+        # m, n = len(matrix), len(matrix[0])
+        # row = None
+        # l, r = 0, m - 1
+        # while l <= r:
+        #     mid = (l + r) // 2
+        #     val = matrix[mid][0]
+        #     if val == target:
+        #         return True
+        #     elif matrix[mid][0] <= target <= matrix[mid][-1]:
+        #         row = mid
+        #         l = float("inf")
+        #     elif val < target:
+        #         l = mid + 1
+        #     else:
+        #         r = mid - 1
+        # if row is None:
+        #     return False
+        # l, r = 0, n - 1
+        # while l <= r:
+        #     mid = (l + r) // 2
+        #     val = matrix[row][mid]
+        #     if val == target:
+        #         return True
+        #     elif val < target:
+        #         l = mid + 1
+        #     else:
+        #         r = mid - 1
+        # return False
+
+        # Single binary search - O(log(m*n))T, O(1)S
+        m, n = len(matrix), len(matrix[0])
+        l, r = 0, m * n - 1
+        while l <= r:
+            mid = (l + r) // 2
+            val = matrix[mid // n][mid % n]
+            if val == target:
+                return True
+            elif val < target:
+                l = mid + 1
+            else:
+                r = mid - 1
+        return False
+
+    # LC 75. Sort Colors (Medium)
+    # https://leetcode.com/problems/sort-colors/
+    def sortColors(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        # Single pass in-place sorting - O(n)T, O(1)S
+        l, r = 0, len(nums) - 1
+        i = 0
+        while i <= r:
+            if nums[i] == 0:
+                nums[i], nums[l] = nums[l], nums[i]
+                l += 1
+                i += 1
+            elif nums[i] == 1:
+                i += 1
+            elif nums[i] == 2:
+                nums[i], nums[r] = nums[r], nums[i]
+                r -= 1
