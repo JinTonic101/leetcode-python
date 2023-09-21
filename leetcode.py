@@ -102,34 +102,56 @@ class Solution:
         # s = sorted(nums1 + nums2)
         # return (s[n//2-1]/2.0+s[n//2]/2.0, s[n//2])[n % 2] if n else None
 
-        # Binary search - O(log(min(m,n)))T, O(1)S
+        # # Binary search - O(log(min(m,n)))T, O(1)S
+        # if len(nums1) > len(nums2):
+        #     nums1, nums2 = nums2, nums1
+        # m, n = len(nums1), len(nums2)
+        # imin, imax, half_len = 0, m, (m + n + 1) // 2
+        # while imin <= imax:
+        #     i = (imin + imax) // 2
+        #     j = half_len - i
+        #     if i < m and nums2[j - 1] > nums1[i]:
+        #         imin = i + 1
+        #     elif i > 0 and nums1[i - 1] > nums2[j]:
+        #         imax = i - 1
+        #     else:
+        #         if i == 0:
+        #             max_left = nums2[j - 1]
+        #         elif j == 0:
+        #             max_left = nums1[i - 1]
+        #         else:
+        #             max_left = max(nums1[i - 1], nums2[j - 1])
+        #         if (m + n) % 2 == 1:
+        #             return float(max_left)
+        #         if i == m:
+        #             min_right = nums2[j]
+        #         elif j == n:
+        #             min_right = nums1[i]
+        #         else:
+        #             min_right = min(nums1[i], nums2[j])
+        #         return (max_left + min_right) / 2.0
+
+        # Binary search (LC solution) - O(log(min(m,n)))T, O(1)S
         if len(nums1) > len(nums2):
             nums1, nums2 = nums2, nums1
         m, n = len(nums1), len(nums2)
-        imin, imax, half_len = 0, m, (m + n + 1) // 2
-        while imin <= imax:
-            i = (imin + imax) // 2
-            j = half_len - i
-            if i < m and nums2[j - 1] > nums1[i]:
-                imin = i + 1
-            elif i > 0 and nums1[i - 1] > nums2[j]:
-                imax = i - 1
+        low, high = 0, m
+        while low <= high:
+            partitionX = (low + high) // 2
+            partitionY = (m + n + 1) // 2 - partitionX
+            maxX = float("-inf") if partitionX == 0 else nums1[partitionX - 1]
+            maxY = float("-inf") if partitionY == 0 else nums2[partitionY - 1]
+            minX = float("inf") if partitionX == m else nums1[partitionX]
+            minY = float("inf") if partitionY == n else nums2[partitionY]
+            if maxX <= minY and maxY <= minX:
+                if (m + n) % 2 == 0:
+                    return (max(maxX, maxY) + min(minX, minY)) / 2
+                else:
+                    return max(maxX, maxY)
+            elif maxX > minY:
+                high = partitionX - 1
             else:
-                if i == 0:
-                    max_left = nums2[j - 1]
-                elif j == 0:
-                    max_left = nums1[i - 1]
-                else:
-                    max_left = max(nums1[i - 1], nums2[j - 1])
-                if (m + n) % 2 == 1:
-                    return float(max_left)
-                if i == m:
-                    min_right = nums2[j]
-                elif j == n:
-                    min_right = nums1[i]
-                else:
-                    min_right = min(nums1[i], nums2[j])
-                return (max_left + min_right) / 2.0
+                low = partitionX + 1
 
     # LC 5. Longest Palindromic Substring
     # https://leetcode.com/problems/longest-palindromic-substring/
