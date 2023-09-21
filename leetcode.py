@@ -1,5 +1,6 @@
 import bisect
 import collections
+import functools
 import heapq
 import itertools
 import math
@@ -2543,3 +2544,192 @@ class Solution:
         #     for j in range(n):
         #         res = max(res, height[j] * (right[j] - left[j] - 1))
         # return res
+
+    # LC 86. Partition List (Medium)
+    # https://leetcode.com/problems/partition-list/
+    def partition(self, head: Optional[ListNode], x: int) -> Optional[ListNode]:
+        # # One-pass solution - O(n)T, O(1)S
+        # before_head = before = ListNode(0)
+        # after_head = after = ListNode(0)
+        # while head:
+        #     if head.val < x:
+        #         before.next = head
+        #         before = before.next
+        #     else:
+        #         after.next = head
+        #         after = after.next
+        #     head = head.next
+        # after.next = None
+        # before.next = after_head.next
+        # return before_head.next
+
+        # LC solution - O(n)T, O(1)S
+        # Initialize two dummy nodes for 'before' and 'after' lists.
+        before, after = ListNode(0), ListNode(0)
+        # Pointers to help in appending nodes to 'before' and 'after' lists.
+        before_curr, after_curr = before, after
+        # Traverse the original list.
+        while head:
+            # Compare current node's value with x and append to appropriate list.
+            if head.val < x:
+                before_curr.next, before_curr = head, head
+            else:
+                after_curr.next, after_curr = head, head
+            head = head.next
+        # Ensure 'after' list's end points to None.
+        after_curr.next = None
+        # Connect the end of 'before' list to the start of 'after' list.
+        before_curr.next = after.next
+        # Return the merged list.
+        return before.next
+
+    # LC 87. Scramble String (Hard)
+    # https://leetcode.com/problems/scramble-string/
+    def isScramble(self, s1: str, s2: str) -> bool:
+        # # DP - O(n^4)T, O(n^4)S
+        # if len(s1) != len(s2) or Counter(s1) != Counter(s2):
+        #     return False
+        # n = len(s1)
+        # dp = [[[False for _ in range(n + 1)] for _ in range(n)] for _ in range(n)]
+        # for i in range(n):
+        #     for j in range(n):
+        #         dp[i][j][1] = s1[i] == s2[j]
+        # for l in range(2, n + 1):
+        #     for i in range(n - l + 1):
+        #         for j in range(n - l + 1):
+        #             for k in range(1, l):
+        #                 if (
+        #                     dp[i][j][k] and dp[i + k][j + k][l - k]
+        #                     or dp[i][j + l - k][k] and dp[i + k][j][l - k]
+        #                 ):
+        #                     dp[i][j][l] = True
+        #                     break
+        # return dp[0][0][n]
+
+        # # Recursion with memoization - O(n^4)T, O(n^4)S
+        # memo = {}
+        # def helper(s1, s2):
+        #     if (s1, s2) in memo:
+        #         return memo[(s1, s2)]
+        #     if s1 == s2:
+        #         return True
+        #     if Counter(s1) != Counter(s2):
+        #         return False
+        #     for i in range(1, len(s1)):
+        #         if (
+        #             helper(s1[:i], s2[:i])
+        #             and helper(s1[i:], s2[i:])
+        #             or helper(s1[:i], s2[-i:])
+        #             and helper(s1[i:], s2[:-i])
+        #         ):
+        #             memo[(s1, s2)] = True
+        #             return True
+        #     memo[(s1, s2)] = False
+        #     return False
+        # return helper(s1, s2)
+
+        # DFS - O(n^6)T but sped up with lru_cache, O(n^2)S
+        @functools.lru_cache(None)
+        def dfs(s1, s2):
+            if s1 == s2:
+                return True
+            if Counter(s1) != Counter(s2):
+                return False
+            for i in range(1, len(s1)):
+                if (
+                    dfs(s1[:i], s2[:i])       # gr|eat
+                    and dfs(s1[i:], s2[i:])   # rg|tea
+                    or dfs(s1[:i], s2[-i:])   # gr|eat
+                    and dfs(s1[i:], s2[:-i])  # tea|gr
+                ):
+                    return True
+            return False
+        return dfs(s1, s2)
+
+    # LC 88. Merge Sorted Array (Easy)
+    # https://leetcode.com/problems/merge-sorted-array/
+    def merge88(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        # # With built-in function - O((m+n)log(m+n))T, O(1)S
+        # nums1[m:] = nums2
+        # nums1.sort()
+
+        # # Two pointers - O(m+n)T, O(m)S
+        # nums1_copy = nums1[:m]
+        # i, j = 0, 0
+        # for k in range(m + n):
+        #     if j >= n or i < m and nums1_copy[i] <= nums2[j]:
+        #         nums1[k] = nums1_copy[i]
+        #         i += 1
+        #     else:
+        #         nums1[k] = nums2[j]
+        #         j += 1
+
+        # Two pointers (start from the end) - O(m+n)T, O(1)S
+        i, j = m - 1, n - 1
+        for k in range(m + n - 1, -1, -1):
+            if j < 0 or i >= 0 and nums1[i] >= nums2[j]:
+                nums1[k] = nums1[i]
+                i -= 1
+            else:
+                nums1[k] = nums2[j]
+                j -= 1
+
+    # LC 89. Gray Code (Medium)
+    # https://leetcode.com/problems/gray-code/
+    def grayCode(self, n: int) -> List[int]:
+        # # Iterative - O(2^n)T, O(1)S
+        # res = [0]
+        # for i in range(n):
+        #     for j in range(len(res) - 1, -1, -1):
+        #         res.append(res[j] | 1 << i)
+        # return res
+
+        # # Recursive - O(2^n)T, O(1)S
+        # if n == 0:
+        #     return [0]
+        # res = self.grayCode(n - 1)
+        # return res + [x | 1 << n - 1 for x in reversed(res)]
+
+        # # Mathematical - O(2^n)T, O(1)S
+        # res = []
+        # for i in range(2 ** n):
+        #     res.append(i ^ (i >> 1))
+        # return res
+
+        # One-liner - O(2^n)T, O(1)S
+        return [i ^ (i >> 1) for i in range(2 ** n)]
+
+    # LC 90. Subsets II (Medium)
+    # https://leetcode.com/problems/subsets-ii/
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        # # My solution - O(n*2^n)T, O(n*2^n)S
+        # res = set()
+        # for i in range(len(nums) + 1):
+        #     for el in itertools.combinations(nums, i):
+        #         res.add(tuple(sorted(el)))
+        # return sorted(res)
+
+        # # One-liner - O(n*2^n)T, O(n*2^n)S
+        # return sorted(set(sum([sorted(itertools.combinations(sorted(nums), r)) for r in range(len(nums) + 1)], [])))
+
+        # # Backtracking - O(n*2^n)T, O(n*2^n)S
+        # res = []
+        # nums.sort()
+        # def backtrack(i, path):
+        #     res.append(path)
+        #     for j in range(i, len(nums)):
+        #         if j > i and nums[j] == nums[j - 1]:
+        #             continue
+        #         backtrack(j + 1, path + [nums[j]])
+        # backtrack(0, [])
+        # return res
+
+        # Iterative - O(n*2^n)T, O(n*2^n)S
+        res = [[]]
+        nums.sort()
+        for num in nums:
+            res += [curr + [num] for curr in res if curr + [num] not in res]
+        return res
