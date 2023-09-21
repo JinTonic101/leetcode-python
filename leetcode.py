@@ -2175,3 +2175,161 @@ class Solution:
             elif nums[i] == 2:
                 nums[i], nums[r] = nums[r], nums[i]
                 r -= 1
+
+    # LC 76. Minimum Window Substring (Hard)
+    # https://leetcode.com/problems/minimum-window-substring/
+    def minWindow(self, s: str, t: str) -> str:
+        # Sliding window - O(n)T, O(n)S
+        if not t or not s:
+            return ""
+        dict_t = Counter(t)
+        required = len(dict_t)
+        l, r = 0, 0
+        formed = 0
+        window_counts = {}
+        ans = (float("inf"), None, None)
+        while r < len(s):
+            char = s[r]
+            window_counts[char] = window_counts.get(char, 0) + 1
+            if char in dict_t and window_counts[char] == dict_t[char]:
+                formed += 1
+            while l <= r and formed == required:
+                char = s[l]
+                if r - l + 1 < ans[0]:
+                    ans = (r - l + 1, l, r)
+                window_counts[char] -= 1
+                if char in dict_t and window_counts[char] < dict_t[char]:
+                    formed -= 1
+                l += 1
+            r += 1
+        return "" if ans[0] == float("inf") else s[ans[1] : ans[2] + 1]
+
+    # LC 77. Combinations (Medium)
+    # https://leetcode.com/problems/combinations/
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        # One-liner - O(n^k)T, O(n^k)S
+        # return itertools.combinations(range(1, n + 1), k)
+
+        # # Backtracking - O(n^k)T, O(n^k)S
+        # res = []
+        # def backtrack(i, path):
+        #     if len(path) == k:
+        #         res.append(path)
+        #         return
+        #     for j in range(i, n + 1):
+        #         backtrack(j + 1, path + [j])
+        # backtrack(1, [])
+        # return res
+
+        # Lexicographic (binary sorted) combinations - O(n^k)T, O(n^k)S
+        res = []
+        nums = list(range(1, k + 1)) + [n + 1]
+        j = 0
+        while j < k:
+            res.append(nums[:k])
+            j = 0
+            while j < k and nums[j + 1] == nums[j] + 1:
+                nums[j] = j + 1
+                j += 1
+            nums[j] += 1
+        return res
+
+    # LC 78. Subsets (Medium)
+    # https://leetcode.com/problems/subsets/
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        # # My solution - O(n*2^n)T, O(n*2^n)S
+        # res = set()
+        # for i in range(len(nums) + 1):
+        #     for el in itertools.combinations(nums, i):
+        #         res.add(el)
+        # return res
+
+        # # One-liner - O(n*2^n)T, O(n*2^n)S
+        # return itertools.chain.from_iterable(itertools.combinations(nums, r) for r in range(len(nums) + 1))
+
+        # # Backtracking - O(n*2^n)T, O(n*2^n)S
+        # res = []
+        # def backtrack(i, path):
+        #     res.append(path)
+        #     for j in range(i, len(nums)):
+        #         backtrack(j + 1, path + [nums[j]])
+        # backtrack(0, [])
+        # return res
+
+        # Iterative - O(n*2^n)T, O(n*2^n)S
+        res = [[]]
+        for num in nums:
+            res += [curr + [num] for curr in res]
+        return res
+
+    # LC 79. Word Search (Medium)
+    # https://leetcode.com/problems/word-search/
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        # # Backtracking - O(m*n*4^k)T, O(k)S
+        # m, n = len(board), len(board[0])
+        # visited = set()
+        # def backtrack(i, j, idx):
+        #     if idx == len(word):
+        #         return True
+        #     if (
+        #         i < 0
+        #         or i >= m
+        #         or j < 0
+        #         or j >= n
+        #         or (i, j) in visited
+        #         or board[i][j] != word[idx]
+        #     ):
+        #         return False
+        #     visited.add((i, j))
+        #     res = (
+        #         backtrack(i + 1, j, idx + 1)
+        #         or backtrack(i - 1, j, idx + 1)
+        #         or backtrack(i, j + 1, idx + 1)
+        #         or backtrack(i, j - 1, idx + 1)
+        #     )
+        #     visited.remove((i, j))
+        #     return res
+        # for i in range(m):
+        #     for j in range(n):
+        #         if backtrack(i, j, 0):
+        #             return True
+        # return False
+
+        # Backtracking without set for visited cells - O(m*n*4^k)T, O(1)S
+        m, n = len(board), len(board[0])
+
+        def backtrack(i, j, idx):
+            if idx == len(word):
+                return True
+            if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != word[idx]:
+                return False
+            board[i][j] = "#"
+            res = (
+                backtrack(i + 1, j, idx + 1)
+                or backtrack(i - 1, j, idx + 1)
+                or backtrack(i, j + 1, idx + 1)
+                or backtrack(i, j - 1, idx + 1)
+            )
+            board[i][j] = word[idx]
+            return res
+
+        for i in range(m):
+            for j in range(n):
+                if backtrack(i, j, 0):
+                    return True
+        return False
+
+    # LC 80. Remove Duplicates from Sorted Array II (Medium)
+    def removeDuplicates(self, nums: List[int]) -> int:
+        # Double pointers - O(n)T, O(1)S
+        if len(nums) <= 2:
+            return len(nums)
+        i = 2
+        for j in range(2, len(nums)):
+            if nums[j] != nums[i - 2]:
+                nums[i] = nums[j]
+                i += 1
+        return i
+
+        # # One-liner - O(n)T, O(1)S
+        # return len([nums[i] for i in range(len(nums)) if i < 2 or nums[i] != nums[i - 2]])
