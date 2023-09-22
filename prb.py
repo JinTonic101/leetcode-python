@@ -1378,16 +1378,29 @@ class Solution:
     # LC 392. Is Subsequence (Easy)
     # https://leetcode.com/problems/is-subsequence/
     def isSubsequence(self, s: str, t: str) -> bool:
-        # O(s*t)T, O(1)S
-        ls, lt = len(s), len(t)
-        if s == 0 or t == 0 or ls > lt:
-            return False
+        # # One-liner - O(s*t)T, O(1)S
+        # return all(s[i] in t[i:] for i in range(len(s)))
+
+        # # My solution - O(s+t)T, O(1)S
+        # ls, lt = len(s), len(t)
+        # if s == 0 or t == 0 or ls > lt:
+        #     return False
+        # i, j = 0, 0
+        # while i < ls and j < lt:
+        #     if s[i] == t[j]:
+        #         i += 1
+        #     j += 1
+        # return i == ls
+
+        # Two pointers - O(s+t)T, O(1)S
         i, j = 0, 0
-        while i < ls and j < lt:
+        while i < len(s) and j < len(t):
             if s[i] == t[j]:
                 i += 1
             j += 1
-        return i == ls
+        return i == len(s)
+
+
 
     # LC 1646. Get Maximum in Generated Array (Easy)
     # https://leetcode.com/problems/get-maximum-in-generated-array/
