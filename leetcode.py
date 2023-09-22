@@ -2637,13 +2637,14 @@ class Solution:
                 return False
             for i in range(1, len(s1)):
                 if (
-                    dfs(s1[:i], s2[:i])       # gr|eat
-                    and dfs(s1[i:], s2[i:])   # rg|tea
-                    or dfs(s1[:i], s2[-i:])   # gr|eat
+                    dfs(s1[:i], s2[:i])  # gr|eat
+                    and dfs(s1[i:], s2[i:])  # rg|tea
+                    or dfs(s1[:i], s2[-i:])  # gr|eat
                     and dfs(s1[i:], s2[:-i])  # tea|gr
                 ):
                     return True
             return False
+
         return dfs(s1, s2)
 
     # LC 88. Merge Sorted Array (Easy)
@@ -2700,7 +2701,7 @@ class Solution:
         # return res
 
         # One-liner - O(2^n)T, O(1)S
-        return [i ^ (i >> 1) for i in range(2 ** n)]
+        return [i ^ (i >> 1) for i in range(2**n)]
 
     # LC 90. Subsets II (Medium)
     # https://leetcode.com/problems/subsets-ii/
