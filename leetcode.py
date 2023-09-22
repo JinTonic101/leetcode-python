@@ -2733,3 +2733,241 @@ class Solution:
         for num in nums:
             res += [curr + [num] for curr in res if curr + [num] not in res]
         return res
+
+    # LC 91. Decode Ways (Medium)
+    # https://leetcode.com/problems/decode-ways/
+    def numDecodings(self, s: str) -> int:
+        # # Recursion with memoization - O(n)T, O(n)S
+        # memo = {}
+        # def helper(i):
+        #     if i in memo:
+        #         return memo[i]
+        #     if i == len(s):
+        #         return 1
+        #     if s[i] == "0":
+        #         return 0
+        #     res = helper(i + 1)
+        #     if i < len(s) - 1 and (s[i] == "1" or s[i] == "2" and s[i + 1] <= "6"):
+        #         res += helper(i + 2)
+        #     memo[i] = res
+        #     return res
+        # return helper(0)
+
+        # # DP - O(n)T, O(n)S
+        # n = len(s)
+        # dp = [0] * (n + 1)
+        # dp[n] = 1
+        # for i in range(n - 1, -1, -1):
+        #     if s[i] == "0":
+        #         dp[i] = 0
+        #     else:
+        #         dp[i] = dp[i + 1]
+        #         if i < n - 1 and (s[i] == "1" or s[i] == "2" and s[i + 1] <= "6"):
+        #             dp[i] += dp[i + 2]
+        # return dp[0]
+
+        # DP with constant space - O(n)T, O(1)S
+        n = len(s)
+        dp = [0] * 3
+        dp[n % 3] = 1
+        for i in range(n - 1, -1, -1):
+            if s[i] == "0":
+                dp[i % 3] = 0
+            else:
+                dp[i % 3] = dp[(i + 1) % 3]
+                if i < n - 1 and (s[i] == "1" or s[i] == "2" and s[i + 1] <= "6"):
+                    dp[i % 3] += dp[(i + 2) % 3]
+        return dp[0]
+
+    # LC 92. Reverse Linked List II (Medium)
+    # https://leetcode.com/problems/reverse-linked-list-ii/
+    def reverseBetween(
+        self, head: Optional[ListNode], left: int, right: int
+    ) -> Optional[ListNode]:
+        # # My solution (one-pass) - O(n)T, O(1)S
+        # left -= 1
+        # right -= 1
+        # if right == left == 0:
+        #     return head
+        # prev_original, curr = None, head
+        # i = 0
+        # while i < left:
+        #     prev_original, curr = curr, curr.next
+        #     i += 1
+        # last_to_place = curr
+        # prev = prev_original
+        # while i <= right:
+        #     dummy = curr.next
+        #     curr.next = prev
+        #     prev = curr
+        #     curr = dummy
+        #     i += 1
+        # if prev_original:
+        #     prev_original.next = prev
+        # last_to_place.next = curr
+        # return head if left else prev
+
+        # Only two pointers (one-pass) - O(n)T, O(1)S
+        if not head or left == right:
+            return head
+        dummy = ListNode(0, head)
+        prev = dummy
+        for _ in range(left - 1):
+            prev = prev.next
+        current = prev.next
+        for _ in range(right - left):
+            next_node = current.next
+            current.next, next_node.next, prev.next = (
+                next_node.next,
+                prev.next,
+                next_node,
+            )
+        return dummy.next
+
+    # LC 93. Restore IP Addresses (Medium)
+    # https://leetcode.com/problems/restore-ip-addresses/
+    def restoreIpAddresses(self, s: str) -> List[str]:
+        # # Backtracking - O(4^4)T, O(|res|)S
+        # res = []
+        # def backtrack(i, path):
+        #     if len(path) == 4 and i == len(s):
+        #         res.append(".".join(path))
+        #         return
+        #     if len(path) == 4 or i == len(s):
+        #         return
+        #     for j in range(i, len(s)):
+        #         if j > i and s[i] == "0":
+        #             break
+        #         if int(s[i : j + 1]) <= 255:
+        #             backtrack(j + 1, path + [s[i : j + 1]])
+        # backtrack(0, [])
+        # return res
+
+        # Iterative (Brute-force) - O(4^4)T, O(|res|)S
+        res = []
+        for a in range(1, 4):
+            for b in range(1, 4):
+                for c in range(1, 4):
+                    for d in range(1, 4):
+                        if a + b + c + d == len(s):
+                            A, B, C, D = (
+                                int(s[:a]),
+                                int(s[a : a + b]),
+                                int(s[a + b : a + b + c]),
+                                int(s[a + b + c :]),
+                            )
+                            if A <= 255 and B <= 255 and C <= 255 and D <= 255:
+                                ip = f"{A}.{B}.{C}.{D}"
+                                if len(ip) == len(s) + 3:
+                                    res.append(ip)
+        return res
+
+    # LC 94. Binary Tree Inorder Traversal (Medium)
+    # https://leetcode.com/problems/binary-tree-inorder-traversal/
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        # # Recursive - O(n)T, O(n)S
+        # res = []
+        # def helper(node):
+        #     if not node:
+        #         return
+        #     helper(node.left)
+        #     res.append(node.val)
+        #     helper(node.right)
+        # helper(root)
+        # return res
+
+        # Iterative - O(n)T, O(n)S
+        res = []
+        stack = []
+        curr = root
+        while curr or stack:
+            while curr:
+                stack.append(curr)
+                curr = curr.left
+            curr = stack.pop()
+            res.append(curr.val)
+            curr = curr.right
+        return res
+
+        # # Morris traversal - O(n)T, O(n)S
+        # res = []
+        # curr = root
+        # while curr:
+        #     if not curr.left:
+        #         res.append(curr.val)
+        #         curr = curr.right
+        #     else:
+        #         prev = curr.left
+        #         while prev.right:
+        #             prev = prev.right
+        #         prev.right = curr
+        #         temp = curr
+        #         curr = curr.left
+        #         temp.left = None
+        # return res
+
+        # One-liner - O(n)T, O(n)S
+        # return (self.inorderTraversal(root.left) + [root.val] + self.inorderTraversal(root.right) if root else [])
+
+    # LC 95. Unique Binary Search Trees II (Medium)
+    # https://leetcode.com/problems/unique-binary-search-trees-ii/
+    def generateTrees(self, n: int) -> List[Optional[TreeNode]]:
+        # # Recursion - O(4^n / n^(3/2))T, O(4^n / n^(3/2))S
+        # def helper(start, end):
+        #     if start > end:
+        #         return [None]
+        #     res = []
+        #     for i in range(start, end + 1):
+        #         left = helper(start, i - 1)
+        #         right = helper(i + 1, end)
+        #         for l in left:
+        #             for r in right:
+        #                 root = TreeNode(i)
+        #                 root.left = l
+        #                 root.right = r
+        #                 res.append(root)
+        #     return res
+        # return helper(1, n)
+
+        # # DP - O(4^n / n^(3/2))T, O(4^n / n^(3/2))S
+        # if not n:
+        #     return []
+        # def clone(node, offset):
+        #     if not node:
+        #         return None
+        #     root = TreeNode(node.val + offset)
+        #     root.left = clone(node.left, offset)
+        #     root.right = clone(node.right, offset)
+        #     return root
+        # dp = [[] for _ in range(n + 1)]
+        # dp[0].append(None)
+        # for i in range(1, n + 1):
+        #     for j in range(i):
+        #         for left in dp[j]:
+        #             for right in dp[i - j - 1]:
+        #                 root = TreeNode(j + 1)
+        #                 root.left = left
+        #                 root.right = clone(right, j + 1)
+        #                 dp[i].append(root)
+        # return dp[n]
+
+        # DP with memoization - O(4^n / n^(3/2))T, O(4^n / n^(3/2))S
+        memo = {}
+        def helper(start, end):
+            if start > end:
+                return [None]
+            if (start, end) in memo:
+                return memo[(start, end)]
+            res = []
+            for i in range(start, end + 1):
+                left = helper(start, i - 1)
+                right = helper(i + 1, end)
+                for l in left:
+                    for r in right:
+                        root = TreeNode(i)
+                        root.left = l
+                        root.right = r
+                        res.append(root)
+            memo[(start, end)] = res
+            return res
+        return helper(1, n)
