@@ -1,3 +1,6 @@
+import collections
+import heapq
+import operator
 import re
 from bisect import bisect_left
 from collections import Counter, defaultdict, deque
@@ -7,8 +10,6 @@ from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from operator import xor
 from typing import List, Optional
-import heapq
-import operator
 
 
 def manhattan_distance(p1: List[int], p2: List[int]) -> int:
@@ -1400,8 +1401,6 @@ class Solution:
             j += 1
         return i == len(s)
 
-
-
     # LC 1646. Get Maximum in Generated Array (Easy)
     # https://leetcode.com/problems/get-maximum-in-generated-array/
     def getMaximumGenerated(self, n: int) -> int:
@@ -2123,3 +2122,32 @@ class Solution:
             if cur_sum == target:
                 max_len = max(max_len, right - left + 1)
         return n - max_len if max_len else -1
+
+    # LC 1048. Longest String Chain (Medium)
+    # https://leetcode.com/problems/longest-string-chain/
+    def longestStrChain(self, words: List[str]) -> int:
+        # # DP - O(nlog(n) + n*m²), O(n)S
+        # words.sort(key=len)
+        # dp = collections.defaultdict(lambda: 1)
+        # max_chain = 0
+        # for word in words:
+        #     for i in range(len(word)):
+        #         prev_word = word[:i] + word[i + 1 :]
+        #         if prev_word in dp:
+        #             dp[word] = max(dp[word], dp[prev_word] + 1)
+        #     max_chain = max(max_chain, dp[word])
+        # return max_chain
+
+        # DFS with memoization - O(n*m²), O(n)S
+        def dfs(word):
+            if word not in memo:
+                memo[word] = 1
+                for i in range(len(word)):
+                    prev = word[:i] + word[i + 1 :]
+                    if prev in words:
+                        memo[word] = max(memo[word], dfs(prev) + 1)
+            return memo[word]
+
+        memo = {}
+        words = set(words)
+        return max(dfs(word) for word in words)
