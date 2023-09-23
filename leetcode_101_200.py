@@ -34,7 +34,8 @@ class Node:
         self.random = random
 
 
-class Solution:  # LC 101. Symmetric Tree (Easy)
+class Solution:
+    # LC 101. Symmetric Tree (Easy)
     # https://leetcode.com/problems/symmetric-tree/
     def isSymmetric(self, root: Optional[TreeNode]) -> bool:
         # # Iterative - O(n)T, O(n)S
