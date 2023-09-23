@@ -130,33 +130,44 @@ class Solution:
 
     # LC 101. Symmetric Tree (Easy)
     # https://leetcode.com/problems/symmetric-tree/
-    def isSymmetric(self, root):
-        # Recursive
-        def sym(l, r):
-            if l and r:
-                return l.val == r.val and sym(l.left, r.right) and sym(l.right, r.left)
-            else:
-                return l == r
-
-        return sym(root.left, root.right)
-
-        # # Iterative
-        # stack = [root.left, root.right]
-        # while len(stack) > 0:
-        #     r = stack.pop()
-        #     l = stack.pop()
-        #     if l and r:
-        #         if l.val != r.val:
-        #             return False
-        #     else:
-        #         if l is None and r is None:
-        #             continue
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        # # Iterative - O(n)T, O(n)S
+        # stack = [(root, root)]
+        # while stack:
+        #     n1, n2 = stack.pop()
+        #     if not n1 and not n2:
+        #         continue
+        #     if not n1 or not n2:
         #         return False
-        #     stack.append(l.left)
-        #     stack.append(r.right)
-        #     stack.append(r.left)
-        #     stack.append(l.right)
+        #     if n1.val != n2.val:
+        #         return False
+        #     stack.append((n1.left, n2.right))
+        #     stack.append((n1.right, n2.left))
         # return True
+
+        # # Recursive - O(n)T, O(n)S
+        # def helper(n1, n2):
+        #     if not n1 and not n2:
+        #         return True
+        #     if not n1 or not n2:
+        #         return False
+        #     return (
+        #         n1.val == n2.val
+        #         and helper(n1.left, n2.right)
+        #         and helper(n1.right, n2.left)
+        #     )
+        # return helper(root, root)
+
+        # Recursive (optimized) - O(n)T, O(n)S
+        def helper(n1, n2):
+            if n1 and n2:
+                return (
+                    n1.val == n2.val
+                    and helper(n1.left, n2.right)
+                    and helper(n1.right, n2.left)
+                )
+            return n1 == n2
+        return helper(root, root)
 
     # LC 448. Find All Numbers Disappeared in an Array (Easy)
     # https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
