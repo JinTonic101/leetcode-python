@@ -2954,6 +2954,7 @@ class Solution:
 
         # DP with memoization - O(4^n / n^(3/2))T, O(4^n / n^(3/2))S
         memo = {}
+
         def helper(start, end):
             if start > end:
                 return [None]
@@ -2971,4 +2972,232 @@ class Solution:
                         res.append(root)
             memo[(start, end)] = res
             return res
+
         return helper(1, n)
+
+    # LC 96. Unique Binary Search Trees (Medium)
+    # https://leetcode.com/problems/unique-binary-search-trees/
+    def numTrees(self, n: int) -> int:
+        # # DP - O(n^2)T, O(n)S
+        # dp = [0] * (n + 1)
+        # dp[0] = 1
+        # for i in range(1, n + 1):
+        #     for j in range(i):
+        #         dp[i] += dp[j] * dp[i - j - 1]
+        # return dp[n]
+
+        # Catalan number - O(n)T, O(1)S
+        res = 1
+        for i in range(n):
+            res = res * 2 * (2 * i + 1) // (i + 2)
+        return res
+
+    # LC 97. Interleaving String (Medium)
+    # https://leetcode.com/problems/interleaving-string/
+    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
+        # # Recursion with memoization - O(m*n)T, O(m*n)S
+        # memo = {}
+        # def helper(i, j, k):
+        #     if (i, j, k) in memo:
+        #         return memo[(i, j, k)]
+        #     if k == len(s3):
+        #         return True
+        #     res = False
+        #     if i < len(s1) and s1[i] == s3[k]:
+        #         res = res or helper(i + 1, j, k + 1)
+        #     if j < len(s2) and s2[j] == s3[k]:
+        #         res = res or helper(i, j + 1, k + 1)
+        #     memo[(i, j, k)] = res
+        #     return res
+        # return helper(0, 0, 0)
+
+        # # DP - O(m*n)T, O(m*n)S
+        # if len(s1) + len(s2) != len(s3):
+        #     return False
+        # dp = [[False for _ in range(len(s2) + 1)] for _ in range(len(s1) + 1)]
+        # dp[0][0] = True
+        # for i in range(len(s1)):
+        #     dp[i + 1][0] = dp[i][0] and s1[i] == s3[i]
+        # for j in range(len(s2)):
+        #     dp[0][j + 1] = dp[0][j] and s2[j] == s3[j]
+        # for i in range(len(s1)):
+        #     for j in range(len(s2)):
+        #         dp[i + 1][j + 1] = (
+        #             dp[i][j + 1] and s1[i] == s3[i + j + 1]
+        #             or dp[i + 1][j] and s2[j] == s3[i + j + 1]
+        #         )
+        # return dp[-1][-1]
+
+        # DP with constant space - O(m*n)T, O(1)S
+        if len(s1) + len(s2) != len(s3):
+            return False
+        dp = [True] + [False] * len(s2)
+        for j in range(len(s2)):
+            dp[j + 1] = dp[j] and s2[j] == s3[j]
+        for i in range(len(s1)):
+            dp[0] = dp[0] and s1[i] == s3[i]
+            for j in range(len(s2)):
+                dp[j + 1] = (
+                    dp[j + 1]
+                    and s1[i] == s3[i + j + 1]
+                    or dp[j]
+                    and s2[j] == s3[i + j + 1]
+                )
+        return dp[-1]
+
+    # LC 98. Validate Binary Search Tree (Medium)
+    # https://leetcode.com/problems/validate-binary-search-tree/
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        # # Recursion - O(n)T, O(n)S
+        # def helper(node, lower=float("-inf"), upper=float("inf")):
+        #     if not node:
+        #         return True
+        #     if node.val <= lower or node.val >= upper:
+        #         return False
+        #     return (
+        #         helper(node.left, lower, node.val)
+        #         and helper(node.right, node.val, upper)
+        #     )
+        # return helper(root)
+
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return True
+        # stack = [(root, float("-inf"), float("inf"))]
+        # while stack:
+        #     node, lower, upper = stack.pop()
+        #     if not node:
+        #         continue
+        #     if node.val <= lower or node.val >= upper:
+        #         return False
+        #     stack.append((node.left, lower, node.val))
+        #     stack.append((node.right, node.val, upper))
+        # return True
+
+        # In-order traversal (iterative) - O(n)T, O(n)S
+        stack = []
+        prev = float("-inf")
+        while stack or root:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            if root.val <= prev:
+                return False
+            prev = root.val
+            root = root.right
+        return True
+
+        # # In-order traversal (recursive) - O(n)T, O(n)S
+        # self.prev = float("-inf")
+        # def inorder(node):
+        #     if not node:
+        #         return True
+        #     if not inorder(node.left):
+        #         return False
+        #     if node.val <= self.prev:
+        #         return False
+        #     self.prev = node.val
+        #     return inorder(node.right)
+        # return inorder(root)
+
+    # LC 99. Recover Binary Search Tree (Medium)
+    # https://leetcode.com/problems/recover-binary-search-tree/
+    def recoverTree(self, root: Optional[TreeNode]) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        # # In-order traversal (iterative) - O(n)T, O(n)S
+        # stack = []
+        # x = y = prev = None
+        # while stack or root:
+        #     while root:
+        #         stack.append(root)
+        #         root = root.left
+        #     root = stack.pop()
+        #     if prev and root.val < prev.val:
+        #         y = root
+        #         if not x:
+        #             x = prev
+        #         else:
+        #             break
+        #     prev = root
+        #     root = root.right
+        # x.val, y.val = y.val, x.val
+
+        # # Morris traversal - O(n)T, O(1)S
+        # x = y = prev = pred = None
+        # while root:
+        #     if root.left:
+        #         prev = root.left
+        #         while prev.right and prev.right != root:
+        #             prev = prev.right
+        #         if not prev.right:
+        #             prev.right = root
+        #             root = root.left
+        #         else:
+        #             if pred and root.val < pred.val:
+        #                 y = root
+        #                 if not x:
+        #                     x = pred
+        #             pred = root
+        #             prev.right = None
+        #             root = root.right
+        #     else:
+        #         if pred and root.val < pred.val:
+        #             y = root
+        #             if not x:
+        #                 x = pred
+        #         pred = root
+        #         root = root.right
+        # x.val, y.val = y.val, x.val
+
+        # Recursive - O(n)T, O(n)S
+        self.x = self.y = self.prev = None
+
+        def helper(node):
+            if not node:
+                return
+            helper(node.left)
+            if self.prev and node.val < self.prev.val:
+                self.y = node
+                if not self.x:
+                    self.x = self.prev
+                else:
+                    return
+            self.prev = node
+            helper(node.right)
+
+        helper(root)
+        self.x.val, self.y.val = self.y.val, self.x.val
+
+    # LC 100. Same Tree (Easy)
+    # https://leetcode.com/problems/same-tree/
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        # Recursive - O(n)T, O(n)S
+        if not p and not q:
+            return True
+        if not p or not q:
+            return False
+        return (
+            p.val == q.val
+            and self.isSameTree(p.left, q.left)
+            and self.isSameTree(p.right, q.right)
+        )
+
+        # # Iterative - O(n)T, O(n)S
+        # stack = [(p, q)]
+        # while stack:
+        #     n1, n2 = stack.pop()
+        #     if not n1 and not n2:
+        #         continue
+        #     if not n1 or not n2:
+        #         return False
+        #     if n1.val != n2.val:
+        #         return False
+        #     stack.append((n1.left, n2.left))
+        #     stack.append((n1.right, n2.right))
+        # return True
+
+        # # One-liner - O(n)T, O(n)S
+        # return p and q and p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right) or p is q
