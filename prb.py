@@ -167,6 +167,7 @@ class Solution:
                     and helper(n1.right, n2.left)
                 )
             return n1 == n2
+
         return helper(root, root)
 
     # LC 448. Find All Numbers Disappeared in an Array (Easy)
@@ -2162,3 +2163,25 @@ class Solution:
         memo = {}
         words = set(words)
         return max(dfs(word) for word in words)
+
+    # LC 799. Champagne Tower (Medium)
+    # https://leetcode.com/problems/champagne-tower/
+    def champagneTower(self, poured: int, query_row: int, query_glass: int) -> float:
+        # # DP - O(n²)T, O(n²)S
+        # dp = [[0] * (i + 1) for i in range(query_row + 2)]
+        # dp[0][0] = poured
+        # for i in range(query_row + 1):
+        #     for j in range(i + 1):
+        #         if dp[i][j] > 1:
+        #             dp[i + 1][j] += (dp[i][j] - 1) / 2
+        #             dp[i + 1][j + 1] += (dp[i][j] - 1) / 2
+        #             dp[i][j] = 1
+        # return dp[query_row][query_glass]
+
+        # DP (optimized) - O(n²)T, O(n)S
+        dp = [0] * (query_row + 1)
+        dp[0] = poured
+        for i in range(1, query_row + 1):
+            for j in range(i, -1, -1):
+                dp[j] = max(0, (dp[j] - 1) / 2) + max(0, (dp[j - 1] - 1) / 2)
+        return min(1, dp[query_glass])
