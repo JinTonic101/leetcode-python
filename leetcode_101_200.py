@@ -356,3 +356,173 @@ class Solution:
             return 1 + max(left, right)
 
         return helper(root) != -1
+
+    # LC 111. Minimum Depth of Binary Tree (Easy)
+    # https://leetcode.com/problems/minimum-depth-of-binary-tree/
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        # # Recursive - O(n)T, O(n)S
+        # if not root:
+        #     return 0
+        # left = self.minDepth(root.left)
+        # right = self.minDepth(root.right)
+        # if left and right:
+        #     return 1 + min(left, right)
+        # return 1 + max(left, right)
+
+        # Iterative - O(n)T, O(n)S
+        if not root:
+            return 0
+        depth = 0
+        queue = collections.deque([root])
+        while queue:
+            depth += 1
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                if not node.left and not node.right:
+                    return depth
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return depth
+
+    # LC 112. Path Sum (Easy)
+    # https://leetcode.com/problems/path-sum/
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        # # Recursive - O(n)T, O(n)S
+        # if not root:
+        #     return False
+        # v = targetSum - root.val
+        # if not root.left and not root.right:
+        #     return v == 0
+        # return self.hasPathSum(root.left, v) or self.hasPathSum(root.right, v)
+
+        # Iterative - O(n)T, O(n)S
+        if not root:
+            return False
+        stack = [(root, targetSum)]
+        while stack:
+            node, target = stack.pop()
+            if not node.left and not node.right and target == node.val:
+                return True
+            if node.left:
+                stack.append((node.left, target - node.val))
+            if node.right:
+                stack.append((node.right, target - node.val))
+        return False
+
+    # LC 113. Path Sum II (Medium)
+    # https://leetcode.com/problems/path-sum-ii/
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return []
+        # res = []
+        # stack = [(root, targetSum, [])]
+        # while stack:
+        #     node, target, path = stack.pop()
+        #     if not node.left and not node.right and target == node.val:
+        #         res.append(path + [node.val])
+        #     if node.left:
+        #         stack.append((node.left, target - node.val, path + [node.val]))
+        #     if node.right:
+        #         stack.append((node.right, target - node.val, path + [node.val]))
+        # return res
+
+        # # Recursive - O(n)T, O(n)S
+        # res = []
+        # def helper(node, target, path):
+        #     if not node:
+        #         return
+        #     if not node.left and not node.right and target == node.val:
+        #         res.append(path + [node.val])
+        #         return
+        #     helper(node.left, target - node.val, path + [node.val])
+        #     helper(node.right, target - node.val, path + [node.val])
+        # helper(root, targetSum, [])
+        # return res
+
+        # Recursive (optimized) - O(n)T, O(n)S
+        if not root:
+            return []
+        if not root.left and not root.right and targetSum == root.val:
+            return [[root.val]]
+        left = self.pathSum(root.left, targetSum - root.val)
+        right = self.pathSum(root.right, targetSum - root.val)
+        return [[root.val] + path for path in left + right]
+
+    # LC 114. Flatten Binary Tree to Linked List (Medium)
+    # https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return
+        # stack = [root]
+        # prev = None
+        # while stack:
+        #     node = stack.pop()
+        #     if prev:
+        #         prev.right = node
+        #         prev.left = None
+        #     if node.right:
+        #         stack.append(node.right)
+        #     if node.left:
+        #         stack.append(node.left)
+        #     prev = node
+
+        # # Recursive (semi Morris traversal) - O(n)T, O(n)S
+        # if not root:
+        #     return
+        # self.flatten(root.left)
+        # self.flatten(root.right)
+        # if root.left:
+        #     node = root.left
+        #     while node.right:
+        #         node = node.right
+        #     node.right = root.right
+        #     root.right = root.left
+        #     root.left = None
+
+        # Morris traversal - O(n)T, O(1)S
+        if not root:
+            return
+        node = root
+        while node:
+            if node.left:
+                prev = node.left
+                while prev.right:
+                    prev = prev.right
+                prev.right = node.right
+                node.right = node.left
+                node.left = None
+            node = node.right
+
+    # LC 115. Distinct Subsequences (Hard)
+    # https://leetcode.com/problems/distinct-subsequences/
+    def numDistinct(self, s: str, t: str) -> int:
+        # # DP - O(mn)T, O(mn)S
+        # m, n = len(s), len(t)
+        # dp = [[0] * (n + 1) for _ in range(m + 1)]
+        # for i in range(m + 1):
+        #     dp[i][-1] = 1
+        # for i in range(m - 1, -1, -1):
+        #     for j in range(n - 1, -1, -1):
+        #         dp[i][j] = dp[i + 1][j]
+        #         if s[i] == t[j]:
+        #             dp[i][j] += dp[i + 1][j + 1]
+        # return dp[0][0]
+
+        # DP (optimized) - O(mn)T, O(mn)S
+        @functools.lru_cache(None)
+        def dp(i, j):
+            if j == len(t):
+                return 1
+            if i == len(s):
+                return 0
+            if len(s) - i < len(t) - j:
+                return 0  # prunnig
+            if s[i] == t[j]:
+                return dp(i + 1, j + 1) + dp(i + 1, j)
+            return dp(i + 1, j)
+
+        return dp(0, 0)
