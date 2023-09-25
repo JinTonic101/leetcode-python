@@ -2212,3 +2212,14 @@ class Solution:
 
         # # One-liner (Counter and iter) - O(n)T, O(1)S
         return next(iter((Counter(t) - Counter(s)).keys()))
+
+    # LC 1572. Matrix Diagonal Sum (Easy)
+    # https://leetcode.com/problems/matrix-diagonal-sum/
+    def diagonalSum(self, mat: List[List[int]]) -> int:
+        # One-pass - O(n)T, O(1)S
+        n, res = len(mat), 0
+        for i in range(n):
+            res += mat[i][i] + mat[i][-i - 1]
+        if n % 2:
+            res -= mat[n // 2][n // 2]
+        return res
