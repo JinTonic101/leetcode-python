@@ -2185,3 +2185,30 @@ class Solution:
             for j in range(i, -1, -1):
                 dp[j] = max(0, (dp[j] - 1) / 2) + max(0, (dp[j - 1] - 1) / 2)
         return min(1, dp[query_glass])
+
+    # LC 389. Find the Difference (Easy)
+    # https://leetcode.com/problems/find-the-difference/
+    def findTheDifference(self, s: str, t: str) -> str:
+        # # Hash table - O(n)T, O(1)S
+        # d = defaultdict(int)
+        # for c in s:
+        #     d[c] += 1
+        # for c in t:
+        #     if d[c] == 0:
+        #         return c
+        #     d[c] -= 1
+
+        # # Bit manipulation - O(n)T, O(1)S
+        # res = 0
+        # for c in s + t:
+        #     res ^= ord(c)
+        # return chr(res)
+
+        # # One-liner (sum of unicodes) - O(n)T, O(1)S
+        # return chr(sum(map(ord, t)) - sum(map(ord, s)))
+
+        # # One-liner (Counter) - O(n)T, O(1)S
+        # return list(Counter(t) - Counter(s))[0]
+
+        # # One-liner (Counter and iter) - O(n)T, O(1)S
+        return next(iter((Counter(t) - Counter(s)).keys()))
