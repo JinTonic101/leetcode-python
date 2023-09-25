@@ -526,3 +526,202 @@ class Solution:
             return dp(i + 1, j)
 
         return dp(0, 0)
+
+    # LC 116. Populating Next Right Pointers in Each Node (Medium)
+    # https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
+    def connect(self, root: "Optional[Node]") -> "Optional[Node]":
+        # # Iterative (BFS with queues) - O(N)TS
+        # if not root:
+        #     return root
+        # queue = collections.deque([root])
+        # while queue:
+        #     new_queue = collections.deque()
+        #     while queue:
+        #         node = queue.popleft()
+        #         if queue:
+        #             node.next = queue[0]
+        #         if node.left and node.right:
+        #             new_queue.append(node.left)
+        #             new_queue.append(node.right)
+        #     queue = new_queue
+        # return root
+
+        # # Iterative (BFS with constant space) - O(N)T, O(1)S
+        # if not root:
+        #     return root
+        # node = root
+        # while node.left:
+        #     next_node = node.left
+        #     while node:
+        #         node.left.next = node.right
+        #         node.right.next = node.next and node.next.left
+        #         node = node.next
+        #     node = next_node
+        # return root
+
+        # Recursive - O(N)T, O(N)S
+        if not root:
+            return root
+        if root.left:
+            root.left.next = root.right
+            if root.next:
+                root.right.next = root.next.left
+        self.connect(root.left)
+        self.connect(root.right)
+        return root
+
+    # LC 117. Populating Next Right Pointers in Each Node II (Medium)
+    # https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
+    def connect(self, root: "Node") -> "Node":
+        # # Iterative (BFS with queues) - O(N)TS
+        # if not root:
+        #     return root
+        # queue = collections.deque([root])
+        # while queue:
+        #     new_queue = collections.deque()
+        #     while queue:
+        #         node = queue.popleft()
+        #         if queue:
+        #             node.next = queue[0]
+        #         if node.left:
+        #             new_queue.append(node.left)
+        #         if node.right:
+        #             new_queue.append(node.right)
+        #     queue = new_queue
+        # return root
+
+        # # Iterative (BFS with constant space) - O(N)T, O(1)S
+        # if not root:
+        #     return root
+        # curr = root
+        # while curr:
+        #     tmp = prev = Node(0)
+        #     while curr:
+        #         if curr.left:
+        #             prev.next = curr.left
+        #             prev = prev.next
+        #         if curr.right:
+        #             prev.next = curr.right
+        #             prev = prev.next
+        #         curr = curr.next
+        #     curr = tmp.next
+        # return root
+
+        # Recursive - O(N)T, O(N)S
+        if not root:
+            return root
+        if root.left:
+            if root.right:
+                root.left.next = root.right
+            else:
+                node = root.next
+                while node:
+                    if node.left:
+                        root.left.next = node.left
+                        break
+                    elif node.right:
+                        root.left.next = node.right
+                        break
+                    node = node.next
+        if root.right:
+            node = root.next
+            while node:
+                if node.left:
+                    root.right.next = node.left
+                    break
+                elif node.right:
+                    root.right.next = node.right
+                    break
+                node = node.next
+        self.connect(root.right)
+        self.connect(root.left)
+        return root
+
+    # LC 118. Pascal's Triangle (Easy)
+    # https://leetcode.com/problems/pascals-triangle/
+    def generate(self, numRows: int) -> List[List[int]]:
+        """Return the numRows first rows of Pascal's Triangle"""
+        # # DP - O(n^2)T, O(n^2)S
+        # res = []
+        # for i in range(numRows):
+        #     row = [1] * (i + 1)
+        #     for j in range(1, i):
+        #         row[j] = res[i-1][j-1] + res[i-1][j]
+        #     res.append(row)
+        # return res
+
+        # # Recursion - O(n^2)T, O(n^2)S
+        # if numRows == 0:
+        #     return []
+        # triangle = [[1]]
+        # for i in range(1, numRows):
+        #     prev_row = triangle[-1]
+        #     new_row = [1]
+        #     for j in range(1, len(prev_row)):
+        #         new_row.append(prev_row[j-1] + prev_row[j])
+        #     new_row.append(1)
+        #     triangle.append(new_row)
+        # return triangle
+
+        # Math: Combinatorics - O(n^2)T, O(n^2)S
+        # (n
+        #  k)
+        triangle = []
+        for n in range(numRows):
+            row = []
+            for k in range(n + 1):
+                row.append(math.comb(n, k))
+            triangle.append(row)
+        return triangle
+
+    # LC 119. Pascal's Triangle II (Easy)
+    # https://leetcode.com/problems/pascals-triangle-ii/
+    def getRow(self, rowIndex: int) -> List[int]:
+        # # DP - O(n^2)T, O(n^2)S
+        # res = []
+        # for i in range(numRows):
+        #     row = [1] * (i + 1)
+        #     for j in range(1, i):
+        #         row[j] = res[i-1][j-1] + res[i-1][j]
+        #     res.append(row)
+        # return res[numRows]
+
+        # # Math: Combinatorics - O(n)T, O(n)S
+        # # (n
+        # #  k)
+        # return [math.comb(rowIndex, k) for k in range(rowIndex + 1)]
+
+        # Math: Combinatorics without import - O(n)T, O(n)S
+        row = [1] * (rowIndex + 1)
+        for i in range(1, rowIndex):
+            row[i] = row[i - 1] * (rowIndex - i + 1) // i
+        return row
+
+    # LC 120. Triangle (Medium)
+    # https://leetcode.com/problems/triangle/
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        # # DP (my solution) - O(n^2)T, O(n)S
+        # dp = triangle[-1]
+        # for row in range(len(triangle) - 2, -1, -1):
+        #     new_dp = []
+        #     for i in range(len(triangle[row])):
+        #         new_dp.append(triangle[row][i] + min(dp[i], dp[i + 1]))
+        #     dp = new_dp
+        # return dp[0]
+
+        # DP (optimized) - O(n^2)T, O(n)S
+        dp = triangle[-1]
+        for i in range(len(triangle) - 2, -1, -1):
+            for j in range(len(triangle[i])):
+                dp[j] = triangle[i][j] + min(dp[j], dp[j + 1])
+        return dp[0]
+
+        # # Recursion (TLE) - O(2^n)T , O(n)S
+        # def helper(row, col):
+        #     if row == len(triangle):
+        #         return 0
+        #     return (
+        #         triangle[row][col]
+        #         + min(helper(row + 1, col), helper(row + 1, col + 1))
+        #     )
+        # return helper(0, 0)
