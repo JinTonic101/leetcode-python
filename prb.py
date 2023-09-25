@@ -1,5 +1,6 @@
 import collections
 import heapq
+import math
 import operator
 import re
 from bisect import bisect_left
@@ -1280,7 +1281,8 @@ class Solution:
     # https://leetcode.com/problems/pascals-triangle/
     def generate(self, numRows: int) -> List[List[int]]:
         """Return the numRows first rows of Pascal's Triangle"""
-        # # DP
+        """Return the numRows first rows of Pascal's Triangle"""
+        # # DP - O(n^2)T, O(n^2)S
         # res = []
         # for i in range(numRows):
         #     row = [1] * (i + 1)
@@ -1289,7 +1291,7 @@ class Solution:
         #     res.append(row)
         # return res
 
-        # # Recursion
+        # # Recursion - O(n^2)T, O(n^2)S
         # if numRows == 0:
         #     return []
         # triangle = [[1]]
@@ -1302,11 +1304,9 @@ class Solution:
         #     triangle.append(new_row)
         # return triangle
 
-        # Math: Combinatorics
+        # Math: Combinatorics - O(n^2)T, O(n^2)S
         # (n
         #  k)
-        import math
-
         triangle = []
         for n in range(numRows):
             row = []
@@ -1318,7 +1318,7 @@ class Solution:
     # LC 119. Pascal's Triangle II (Easy)
     # https://leetcode.com/problems/pascals-triangle-ii/
     def getRow(self, rowIndex: int) -> List[int]:
-        # # DP
+        # # DP - O(n^2)T, O(n^2)S
         # res = []
         # for i in range(numRows):
         #     row = [1] * (i + 1)
@@ -1327,14 +1327,12 @@ class Solution:
         #     res.append(row)
         # return res[numRows]
 
-        # # Math: Combinatorics
+        # # Math: Combinatorics - O(n)T, O(n)S
         # # (n
         # #  k)
-        # import math
-
         # return [math.comb(rowIndex, k) for k in range(rowIndex + 1)]
 
-        # Math: Combinatorics without import
+        # Math: Combinatorics without import - O(n)T, O(n)S
         row = [1] * (rowIndex + 1)
         for i in range(1, rowIndex):
             row[i] = row[i - 1] * (rowIndex - i + 1) // i
