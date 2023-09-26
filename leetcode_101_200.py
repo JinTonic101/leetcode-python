@@ -5,6 +5,7 @@ import heapq
 import itertools
 import math
 import re
+import string
 from typing import List, Optional
 
 
@@ -725,3 +726,276 @@ class Solution:
         #         + min(helper(row + 1, col), helper(row + 1, col + 1))
         #     )
         # return helper(0, 0)
+
+    # LC 121. Best Time to Buy and Sell Stock (Easy)
+    # https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+    def maxProfit(self, prices: List[int]) -> int:
+        # # DP - O(n)T, O(n)S
+        # if not prices:
+        #     return 0
+        # min_price = prices[0]
+        # max_profit = 0
+        # for price in prices:
+        #     max_profit = max(max_profit, price - min_price)
+        #     min_price = min(min_price, price)
+        # return max_profit
+
+        # Greedy - O(n)T, O(1)S
+        min_price = float("inf")
+        max_profit = 0
+        for price in prices:
+            if price < min_price:
+                min_price = price
+            else:
+                max_profit = max(max_profit, price - min_price)
+        return max_profit
+
+    # LC 122. Best Time to Buy and Sell Stock II (Easy)
+    # https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
+    def maxProfit(self, prices: List[int]) -> int:
+        # # DP - O(n)T, O(n)S
+        # if not prices:
+        #     return 0
+        # dp = [0] * len(prices)
+        # for i in range(1, len(prices)):
+        #     dp[i] = max(dp[i - 1], dp[i - 1] + prices[i] - prices[i - 1])
+        # return dp[-1]
+
+        # Greedy - O(n)T, O(1)S
+        max_profit = 0
+        for i in range(1, len(prices)):
+            max_profit += max(prices[i] - prices[i - 1], 0)
+        return max_profit
+
+        # # Greedy (one-liner) - O(n)T, O(1)S
+        # return sum(max(prices[i] - prices[i - 1], 0) for i in range(1, len(prices)))
+
+    # LC 123. Best Time to Buy and Sell Stock III (Hard)
+    # https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/
+    def maxProfit(self, prices: List[int]) -> int:
+        # # DP - O(n)T, O(n)S
+        # if not prices:
+        #     return 0
+        # n = len(prices)
+        # left = [0] * n
+        # right = [0] * n
+        # min_price = prices[0]
+        # for i in range(1, n):
+        #     min_price = min(min_price, prices[i])
+        #     left[i] = max(left[i - 1], prices[i] - min_price)
+        # max_price = prices[-1]
+        # for i in range(n - 2, -1, -1):
+        #     max_price = max(max_price, prices[i])
+        #     right[i] = max(right[i + 1], max_price - prices[i])
+        # return max(left[i] + right[i] for i in range(n))
+
+        # Greedy - O(n)T, O(1)S
+        buy1 = profit1, float("inf"), 0  # 1st transaction
+        buy2, profit2 = float("inf"), 0  # 2nd transaction
+        for price in prices:
+            buy1 = min(buy1, price)
+            profit1 = max(profit1, price - buy1)
+            buy2 = min(buy2, price - profit1)
+            profit2 = max(profit2, price - buy2)
+        return profit2
+
+    # LC 124. Binary Tree Maximum Path Sum (Hard)
+    # https://leetcode.com/problems/binary-tree-maximum-path-sum/
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return 0
+        # max_sum = float("-inf")
+        # stack = [(root, False)]
+        # while stack:
+        #     node, visited = stack.pop()
+        #     if not node:
+        #         continue
+        #     if visited:
+        #         left = max(node.left.max_sum, 0) if node.left else 0
+        #         right = max(node.right.max_sum, 0) if node.right else 0
+        #         max_sum = max(max_sum, node.val + left + right)
+        #         node.max_sum = node.val + max(left, right)
+        #     else:
+        #         stack.append((node, True))
+        #         stack.append((node.right, False))
+        #         stack.append((node.left, False))
+        # return max_sum
+
+        # Recursion - O(n)T, O(n)S
+        max_sum = float("-inf")
+
+        def helper(node):
+            nonlocal max_sum
+            if not node:
+                return 0
+            left = max(helper(node.left), 0)
+            right = max(helper(node.right), 0)
+            max_sum = max(max_sum, node.val + left + right)
+            return node.val + max(left, right)
+
+        helper(root)
+        return max_sum
+
+    # LC 125. Valid Palindrome (Easy)
+    # https://leetcode.com/problems/valid-palindrome/
+    def isPalindrome(self, s: str) -> bool:
+        # # Basic solution - O(n)T, O(n)S
+        # # s = [c.lower() for c in s if c.isalnum()]
+        # s = "".join(c.lower() for c in s if c.isalnum())  # faster
+        # return s == s[::-1]
+
+        # Two pointers - O(n)T, O(1)S
+        left = 0
+        right = len(s) - 1
+        while left < right:
+            while left < right and not s[left].isalnum():
+                left += 1
+            while left < right and not s[right].isalnum():
+                right -= 1
+            if s[left].lower() != s[right].lower():
+                return False
+            left += 1
+            right -= 1
+        return True
+
+    # LC 126. Word Ladder II (Hard)
+    # https://leetcode.com/problems/word-ladder-ii/
+    def findLadders(
+        self, beginWord: str, endWord: str, wordList: List[str]
+    ) -> List[List[str]]:
+        # TODO
+        return
+
+    # LC 127. Word Ladder (Hard)
+    # https://leetcode.com/problems/word-ladder/
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        # TODO
+        return
+
+    # LC 128. Longest Consecutive Sequence (Hard)
+    # https://leetcode.com/problems/longest-consecutive-sequence/
+    def longestConsecutive(self, nums: List[int]) -> int:
+        # # Sorting - O(nlogn)T, O(1)S
+        # if not nums:
+        #     return 0
+        # nums.sort()
+        # longest = 1
+        # curr_len = 1
+        # for i in range(1, len(nums)):
+        #     if nums[i] != nums[i - 1]:
+        #         if nums[i] == nums[i - 1] + 1:
+        #             curr_len += 1
+        #         else:
+        #             longest = max(longest, curr_len)
+        #             curr_len = 1
+        # return max(longest, curr_len)
+
+        # # Hashset - O(n)T, O(n)S
+        # nums = set(nums)
+        # longest = 0
+        # for num in nums:
+        #     if num - 1 not in nums:
+        #         curr = num
+        #         curr_len = 1
+        #         while curr + 1 in nums:
+        #             curr += 1
+        #             curr_len += 1
+        #         longest = max(longest, curr_len)
+        # return longest
+
+        # Hashset (optimized) - O(n)T, O(n)S
+        nums = set(nums)
+        longest = 0
+        for num in nums:
+            if num - 1 not in nums:
+                curr = num
+                while curr + 1 in nums:
+                    curr += 1
+                longest = max(longest, curr - num + 1)
+        return longest
+
+    # LC 129. Sum Root to Leaf Numbers (Medium)
+    # https://leetcode.com/problems/sum-root-to-leaf-numbers/
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        # # Recursive (my solution) - O(n)T, O(n)S
+        # res = 0
+        # def helper(node, num):
+        #     nonlocal res
+        #     if not node:
+        #         return
+        #     if not node.left and not node.right:
+        #         res += int(num)
+        #     if node.left:
+        #         helper(node.left, num + str(node.left.val))
+        #     if node.right:
+        #         helper(node.right, num + str(node.right.val))
+        # helper(root, str(root.val))
+        # return res
+
+        # # Recursive - O(n)T, O(n)S
+        # if not root:
+        #     return 0
+        # self.total = 0
+        # def helper(node, curr):
+        #     if not node:
+        #         return
+        #     curr = curr * 10 + node.val
+        #     if not node.left and not node.right:
+        #         self.total += curr
+        #     helper(node.left, curr)
+        #     helper(node.right, curr)
+        # helper(root, 0)
+        # return self.total
+
+        # Iterative - O(n)T, O(n)S
+        if not root:
+            return 0
+        total = 0
+        stack = [(root, root.val)]
+        while stack:
+            node, val = stack.pop()
+            if not node.left and not node.right:
+                total += val
+            if node.left:
+                stack.append((node.left, val * 10 + node.left.val))
+            if node.right:
+                stack.append((node.right, val * 10 + node.right.val))
+        return total
+
+    # LC 130. Surrounded Regions (Medium)
+    # https://leetcode.com/problems/surrounded-regions/
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        # DFS - O(mn)T, O(mn)S
+        rows = len(board)
+        columns = len(board[0])
+
+        def mark_edge(row, col):
+            if (
+                row < 0
+                or row > rows - 1
+                or col < 0
+                or col > columns - 1
+                or board[row][col] != "O"
+            ):
+                return
+            board[row][col] = "B"
+            mark_edge(row - 1, col)
+            mark_edge(row + 1, col)
+            mark_edge(row, col - 1)
+            mark_edge(row, col + 1)
+
+        for row in range(rows):
+            for col in range(columns):
+                if board[row][col] == "O":
+                    if row == 0 or row == rows - 1 or col == 0 or col == columns - 1:
+                        mark_edge(row, col)
+        for row in range(rows):
+            for col in range(columns):
+                if board[row][col] != "B":
+                    board[row][col] = "X"
+                if board[row][col] == "B":
+                    board[row][col] = "O"
