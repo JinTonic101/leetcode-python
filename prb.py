@@ -2221,3 +2221,17 @@ class Solution:
         if n % 2:
             res -= mat[n // 2][n // 2]
         return res
+
+    # LC 316. Remove Duplicate Letters (Medium)
+    # https://leetcode.com/problems/remove-duplicate-letters/
+    def removeDuplicateLetters(self, s: str) -> str:
+        # Greedy - O(n)T, O(1)S
+        last_occurrence = {c: i for i, c in enumerate(s)}
+        stack = []
+        for i, c in enumerate(s):
+            if c in stack:
+                continue
+            while stack and stack[-1] > c and i < last_occurrence[stack[-1]]:
+                stack.pop()
+            stack.append(c)
+        return "".join(stack)
