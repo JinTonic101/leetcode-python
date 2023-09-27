@@ -2235,3 +2235,42 @@ class Solution:
                 stack.pop()
             stack.append(c)
         return "".join(stack)
+
+    # LC 880. Decoded String at Index (Medium)
+    # https://leetcode.com/problems/decoded-string-at-index/
+    def decodeAtIndex(self, s: str, k: int) -> str:
+        # # Reverse traversal - O(n)T, O(1)S
+        # n = len(s)
+        # decoded_len = 0
+        # for i in range(n):
+        #     if s[i].isdigit():
+        #         decoded_len *= int(s[i])
+        #     else:
+        #         decoded_len += 1
+        # for i in range(n - 1, -1, -1):
+        #     k %= decoded_len
+        #     if k == 0 and s[i].isalpha():
+        #         return s[i]
+        #     if s[i].isdigit():
+        #         decoded_len //= int(s[i])
+        #     else:
+        #         decoded_len -= 1
+
+        # Reverse traversal (LC solution) - O(n)T, O(1)S
+        length = 0
+        i = 0
+        while length < k:
+            if s[i].isdigit():
+                length *= int(s[i])
+            else:
+                length += 1
+            i += 1
+        for j in range(i - 1, -1, -1):
+            char = s[j]
+            if char.isdigit():
+                length //= int(char)
+                k %= length
+            else:
+                if k == 0 or k == length:
+                    return char
+                length -= 1
