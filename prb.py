@@ -2274,3 +2274,18 @@ class Solution:
                 if k == 0 or k == length:
                     return char
                 length -= 1
+
+    # LC 905. Sort Array By Parity (Easy)
+    def sortArrayByParity(self, nums: List[int]) -> List[int]:
+        # # Two pointers - O(n)T, O(1)S
+        # l, r = 0, len(nums) - 1
+        # while l < r:
+        #     while l < r and nums[l] % 2 == 0:
+        #         l += 1
+        #     while l < r and nums[r] % 2:
+        #         r -= 1
+        #     nums[l], nums[r] = nums[r], nums[l]
+        # return nums
+
+        # One-liner (two passes) - O(n)T, O(n)S
+        return [x for x in nums if x % 2 == 0] + [x for x in nums if x % 2]
