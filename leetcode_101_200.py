@@ -4,6 +4,7 @@ import functools
 import heapq
 import itertools
 import math
+import operator
 import re
 import string
 from typing import List, Optional
@@ -999,3 +1000,319 @@ class Solution:
                     board[row][col] = "X"
                 if board[row][col] == "B":
                     board[row][col] = "O"
+
+    # LC 131. Palindrome Partitioning (Medium)
+    # https://leetcode.com/problems/palindrome-partitioning/
+    def partition(self, s: str) -> List[List[str]]:
+        # Backtracking - O(n*2^n)T, O(n)S
+        def is_palindrome(s):
+            return s == s[::-1]
+
+        def helper(s, path):
+            if not s:
+                res.append(path)
+                return
+            for i in range(1, len(s) + 1):
+                if is_palindrome(s[:i]):
+                    helper(s[i:], path + [s[:i]])
+
+        res = []
+        helper(s, [])
+        return res
+
+    # LC 132. Palindrome Partitioning II (Hard)
+    # https://leetcode.com/problems/palindrome-partitioning-ii/
+    def minCut(self, s: str) -> int:
+        # # DP - O(n^2)T, O(n^2)S
+        # n = len(s)
+        # dp = [[False] * n for _ in range(n)]
+        # for i in range(n):
+        #     dp[i][i] = True
+        # for i in range(n - 1, -1, -1):
+        #     for j in range(i + 1, n):
+        #         dp[i][j] = s[i] == s[j] and (j - i < 3 or dp[i + 1][j - 1])
+        # cuts = [float("inf")] * n
+        # for i in range(n):
+        #     if dp[0][i]:
+        #         cuts[i] = 0
+        #     else:
+        #         for j in range(i):
+        #             if dp[j + 1][i]:
+        #                 cuts[i] = min(cuts[i], cuts[j] + 1)
+        # return cuts[-1]
+
+        # DP (optimized) - O(n^2)T, O(n)S
+        n = len(s)
+        dp = [float("inf")] * n
+        for i in range(n):
+            if s[: i + 1] == s[: i + 1][::-1]:
+                dp[i] = 0
+            else:
+                for j in range(i):
+                    if s[j + 1 : i + 1] == s[j + 1 : i + 1][::-1]:
+                        dp[i] = min(dp[i], dp[j] + 1)
+        return dp[-1]
+
+    # LC 133. Clone Graph (Medium)
+    # https://leetcode.com/problems/clone-graph/
+    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
+        # # DFS (recursive) - O(n)T, O(n)S
+        # if not node:
+        #     return None
+        # visited = {}
+        # def helper(node):
+        #     if node in visited:
+        #         return visited[node]
+        #     clone = Node(node.val)
+        #     visited[node] = clone
+        #     for neighbor in node.neighbors:
+        #         clone.neighbors.append(helper(neighbor))
+        #     return clone
+        # return helper(node)
+
+        # BFS (iterative) - O(n)T, O(n)S
+        if not node:
+            return None
+        visited = {}
+        queue = collections.deque([node])
+        visited[node] = Node(node.val)
+        while queue:
+            curr = queue.popleft()
+            for neighbor in curr.neighbors:
+                if neighbor not in visited:
+                    visited[neighbor] = Node(neighbor.val)
+                    queue.append(neighbor)
+                visited[curr].neighbors.append(visited[neighbor])
+        return visited[node]
+
+    # LC 134. Gas Station (Medium)
+    # https://leetcode.com/problems/gas-station/
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        # # Brute force (TLE) - O(n^2)T, O(1)S
+        # n = len(gas)
+        # for i in range(n):
+        #     tank = 0
+        #     for j in range(n):
+        #         k = (i + j) % n
+        #         tank += gas[k] - cost[k]
+        #         if tank < 0:
+        #             break
+        #     if tank >= 0:
+        #         return i
+        # return -1
+
+        # Greedy - O(n)T, O(1)S
+        n = len(gas)
+        tank = 0
+        total = 0
+        start = 0
+        for i in range(n):
+            tank += gas[i] - cost[i]
+            if tank < 0:
+                start = i + 1
+                total += tank
+                tank = 0
+        return start if total + tank >= 0 else -1
+
+    # LC 135. Candy (Hard)
+    # https://leetcode.com/problems/candy/
+    def candy(self, ratings: List[int]) -> int:
+        # # Greedy two pass - O(n)TS
+        # n = len(ratings)
+        # candies = [1] * n  # candies
+        # for i in range(1, n):
+        #     if ratings[i] > ratings[i - 1]:
+        #         candies[i] = candies[i - 1] + 1
+        # for i in range(n - 2, -1, -1):
+        #     if ratings[i] > ratings[i + 1]:
+        #         candies[i] = max(candies[i], candies[i + 1] + 1)
+        # return sum(candies)
+
+        # Greedy one pass - O(n)T, O(1)S
+        if not ratings:
+            return 0
+        ret, up, down, peak = 1, 0, 0, 0
+        for prev, curr in zip(ratings[:-1], ratings[1:]):
+            if prev < curr:
+                up, down, peak = up + 1, 0, up + 1
+                ret += 1 + up
+            elif prev == curr:
+                up = down = peak = 0
+                ret += 1
+            else:
+                up, down = 0, down + 1
+                ret += 1 + down - int(peak >= down)
+        return ret
+
+    # LC 136. Single Number (Easy)
+    # https://leetcode.com/problems/single-number/
+    def singleNumber(self, nums: List[int]) -> int:
+        # # Naive approach with set
+        # s = set()
+        # for v in nums:
+        #     if v in s:
+        #         s.remove(v)
+        #     else:
+        #         s.add(v)
+        # return s.pop()
+
+        # # XOR Approach (XOR same numbers = 0)
+        # a = 0
+        # for i in nums:
+        #     a ^= i
+        # return a
+
+        # XOR one-liner #WOW
+        return functools.reduce(operator.xor, nums)
+
+    # LC 137. Single Number II (Medium)
+    # https://leetcode.com/problems/single-number-ii/
+    def singleNumber(self, nums: List[int]) -> int:
+        # # Hashmap - O(n)T, O(n)S
+        # d = {}
+        # for num in nums:
+        #     d[num] = d.get(num, 0) + 1
+        # for k, v in d.items():
+        #     if v == 1:
+        #         return k
+
+        # # One liner - O(n)T, O(n)S
+        # return (3 * sum(set(nums)) - sum(nums)) // 2
+
+        # Bit manipulation - O(n)T, O(1)S
+        ones = twos = 0
+        for num in nums:
+            ones = (ones ^ num) & ~twos
+            twos = (twos ^ num) & ~ones
+        return ones
+
+    # LC 138. Copy List with Random Pointer (Medium)
+    # https://leetcode.com/problems/copy-list-with-random-pointer/
+    def copyRandomList(self, head: Optional[Node]) -> Optional[Node]:
+        # # Cheating with built-in function
+        # return deepcopy(head)
+
+        # # Hash table - O(n)TS
+        # if not head:
+        #     return None
+        # h = {}
+        # curr = head
+        # while curr:
+        #     h[curr] = Node(curr.val)
+        #     curr = curr.next
+        # curr = head
+        # while curr:
+        #     h[curr].next = h.get(curr.next, None)
+        #     h[curr].random = h.get(curr.random, None)
+        #     curr = curr.next
+        # return h[head]
+
+        # Interweaving - O(n)T, O(1)S
+        if not head:
+            return None
+        curr = head
+        while curr:
+            new_node = Node(curr.val, curr.next)
+            curr.next = new_node
+            curr = new_node.next
+        curr = head
+        while curr:
+            if curr.random:
+                curr.next.random = curr.random.next
+            curr = curr.next.next
+        old_head = head
+        new_head = head.next
+        curr_old = old_head
+        curr_new = new_head
+        while curr_old:
+            curr_old.next = curr_old.next.next
+            curr_new.next = curr_new.next.next if curr_new.next else None
+            curr_old = curr_old.next
+            curr_new = curr_new.next
+        return new_head
+
+    # LC 139. Word Break (Medium)
+    # https://leetcode.com/problems/word-break/
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        # # Brute force (TLE) - O(n^2)T, O(n)S
+        # def helper(s):
+        #     if not s:
+        #         return True
+        #     for word in wordDict:
+        #         if s.startswith(word) and helper(s[len(word) :]):
+        #             return True
+        #     return False
+        # return helper(s)
+
+        # # DP - O(n^2)T, O(n)S
+        # n = len(s)
+        # dp = [False] * (n + 1)
+        # dp[0] = True
+        # wordDict = set(wordDict)
+        # for i in range(n + 1):
+        #     for j in range(i):
+        #         if dp[j] and s[j:i] in wordDict:
+        #             dp[i] = True
+        #             break
+        # return dp[-1]
+
+        # BFS - O(n^2)T, O(n)S
+        n = len(s)
+        wordDict = set(wordDict)
+        visited = set()
+        queue = collections.deque([0])
+        while queue:
+            start = queue.popleft()
+            if start in visited:
+                continue
+            for end in range(start + 1, n + 1):
+                if s[start:end] in wordDict:
+                    queue.append(end)
+                    if end == n:
+                        return True
+            visited.add(start)
+        return False
+
+    # LC 140. Word Break II (Hard)
+    # https://leetcode.com/problems/word-break-ii/
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        # # Brute force - O(n^2)T, O(n)S
+        # def helper(s):
+        #     if not s:
+        #         return [[]]
+        #     res = []
+        #     for word in wordDict:
+        #         if s.startswith(word):
+        #             for sub in helper(s[len(word) :]):
+        #                 res.append([word] + sub)
+        #     return res
+        # return [" ".join(words) for words in helper(s)]
+
+        # # DP - O(n^2)T, O(n)S
+        # n = len(s)
+        # dp = [[] for _ in range(n + 1)]
+        # dp[0] = [[]]
+        # wordDict = set(wordDict)
+        # for i in range(n + 1):
+        #     for j in range(i):
+        #         if dp[j] and s[j:i] in wordDict:
+        #             for sub in dp[j]:
+        #                 dp[i].append(sub + [s[j:i]])
+        # return [" ".join(words) for words in dp[-1]]
+
+        # DFS (with memoization)- O(n^2)T, O(n)S
+        def helper(s):
+            if not s:
+                return [[]]
+            if s in memo:
+                return memo[s]
+            res = []
+            for word in wordDict:
+                if s.startswith(word):
+                    for sub in helper(s[len(word) :]):
+                        res.append([word] + sub)
+            memo[s] = res
+            return res
+
+        memo = {}
+        return [" ".join(words) for words in helper(s)]
