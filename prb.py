@@ -97,6 +97,7 @@ class Solution:
     # LC 896. Monotonic Array (Easy)
     # https://leetcode.com/problems/monotonic-array/
     def isMonotonic(self, nums):
+        # # My solution - O(n)T, O(1)S
         # if len(nums) == 1:
         #     return True
         # increasing = nums[0] < nums[-1]
@@ -104,11 +105,20 @@ class Solution:
         #     if increasing and nums[i] > nums[i + 1] or not increasing and nums[i] < nums[i + 1]:
         #         return False
         # return True
+
+        # Optimized solution - O(n)T, O(1)S
         direction = -1 if nums[0] <= nums[-1] else 1
         for i in range(0, len(nums) - 1):
             if (nums[i] - nums[i + 1]) * direction < 0:
                 return False
         return True
+
+        # # One-liner
+        # return nums == sorted(nums) or nums == sorted(nums, reverse=True)
+
+        # Optimized one-liner - O(n)T, O(1)S
+        # return all(nums[i] <= nums[i + 1] for i in range(len(nums) - 1)) or all(nums[i] >= nums[i + 1] for i in range(len(nums) - 1))
+
 
     # LC 543. Diameter of Binary Tree (Easy)
     # https://leetcode.com/problems/diameter-of-binary-tree/
