@@ -1,15 +1,13 @@
 import collections
+import functools
 import heapq
 import math
 import operator
 import re
 from bisect import bisect_left
 from collections import Counter, defaultdict, deque
-from copy import deepcopy
-from functools import reduce
 from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
-from operator import xor
 from typing import List, Optional
 
 
@@ -279,8 +277,8 @@ class Solution:
         #     a ^= i
         # return a
 
-        # XOR one-liner (LeetCode imports operator.xor as xor) #WOW
-        return reduce(xor, nums)
+        # XOR one-liner #WOW
+        return itertools.reduce(operator.xor, nums)
 
     # LC 1002. Find Common Characters (Easy)
     # https://leetcode.com/problems/find-common-characters/
