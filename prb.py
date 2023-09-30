@@ -2297,3 +2297,47 @@ class Solution:
 
         # One-liner (two passes) - O(n)T, O(n)S
         return [x for x in nums if x % 2 == 0] + [x for x in nums if x % 2]
+
+    # LC 456. 132 Pattern (Medium)
+    # https://leetcode.com/problems/132-pattern/
+    def find132pattern(self, nums: List[int]) -> bool:
+        # # Brute force (TLE) - O(n³)T, O(1)S
+        # n = len(nums)
+        # for i in range(n - 2):
+        #     for j in range(i + 1, n - 1):
+        #         for k in range(j + 1, n):
+        #             if nums[i] < nums[k] < nums[j]:
+        #                 return True
+        # return False
+
+        # # DP - O(n)T, O(n)S
+        # n = len(nums)
+        # if n < 3:
+        #     return False
+        # min_left = [inf] * n
+        # for i in range(1, n):
+        #     min_left[i] = min(min_left[i - 1], nums[i - 1])
+        # stack = []
+        # for j in range(n - 1, -1, -1):
+        #     if nums[j] > min_left[j]:
+        #         while stack and stack[-1] <= min_left[j]:
+        #             stack.pop()
+        #         if stack and stack[-1] < nums[j]:
+        #             return True
+        #         stack.append(nums[j])
+        # return False
+
+        # Stack - O(n)T, O(n)S
+        n = len(nums)
+        if n < 3:
+            return False
+        stack = []
+        third = -inf
+        for i in range(n - 1, -1, -1):
+            if nums[i] < third:
+                return True
+            while stack and stack[-1] < nums[i]:
+                third = stack.pop()
+            stack.append(nums[i])
+        return False
+    
