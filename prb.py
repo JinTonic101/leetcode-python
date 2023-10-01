@@ -1,6 +1,7 @@
 import collections
 import functools
 import heapq
+import itertools
 import math
 import operator
 import re
@@ -116,7 +117,6 @@ class Solution:
 
         # Optimized one-liner - O(n)T, O(1)S
         # return all(nums[i] <= nums[i + 1] for i in range(len(nums) - 1)) or all(nums[i] >= nums[i + 1] for i in range(len(nums) - 1))
-
 
     # LC 543. Diameter of Binary Tree (Easy)
     # https://leetcode.com/problems/diameter-of-binary-tree/
@@ -293,7 +293,22 @@ class Solution:
     # LC 557. Reverse Words in a String III (Easy)
     # https://leetcode.com/problems/reverse-words-in-a-string-iii/
     def reverseWords(self, s: str) -> str:
-        return " ".join([word[::-1] for word in s.split(" ")])
+        # # One liner - O(n)T, O(n)S
+        # return " ".join([word[::-1] for word in s.split(" ")])
+
+        # Two pointers - O(n)T, O(n)S
+        res = []
+        i = 0
+        while i < len(s):
+            if s[i] != " ":
+                j = i
+                while j < len(s) and s[j] != " ":
+                    j += 1
+                res.append(s[i:j][::-1])
+                i = j
+            else:
+                i += 1
+        return " ".join(res)
 
     # LC 1122. Relative Sort Array (Easy)
     # https://leetcode.com/problems/relative-sort-array/
@@ -2340,4 +2355,3 @@ class Solution:
                 third = stack.pop()
             stack.append(nums[i])
         return False
-    
