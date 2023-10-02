@@ -1316,3 +1316,324 @@ class Solution:
 
         memo = {}
         return [" ".join(words) for words in helper(s)]
+
+    # LC 141. Linked List Cycle (Easy)
+    # https://leetcode.com/problems/linked-list-cycle/
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        # # Hash table - O(n)TS
+        # visited_nodes = set()
+        # current_node = head
+        # while current_node:
+        #     if current_node in visited_nodes:
+        #         return True
+        #     visited_nodes.add(current_node)
+        #     current_node = current_node.next
+        # return False
+
+        # Floyd's Tortoise and Hare (Cycle Detection with double cursors fast and slow) - O(n)T, O(1)S
+        fast = head
+        slow = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if fast == slow:
+                return True
+        return False
+
+    # LC 142. Linked List Cycle II (Medium)
+    # https://leetcode.com/problems/linked-list-cycle-ii/
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # # Hash table - O(n)TS
+        # visited_nodes = set()
+        # curr = head
+        # while curr:
+        #     if curr in visited_nodes:
+        #         return curr
+        #     visited_nodes.add(curr)
+        #     curr = curr.next
+        # return None
+
+        # Floyd's Tortoise and Hare (Cycle Detection with double cursors fast and slow) - O(n)T, O(1)S
+        fast = head
+        slow = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            # Cycle detected
+            if fast == slow:
+                # Find the start of the cycle
+                slow = head
+                while slow != fast:
+                    slow = slow.next
+                    fast = fast.next
+                return slow
+        return None
+
+    # LC 143. Reorder List (Medium)
+    # https://leetcode.com/problems/reorder-list/
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        """
+        Do not return anything, modify head in-place instead.
+        """
+        # # Hash table - O(n)T, O(n)S
+        # if not head:
+        #     return
+        # nodes = []
+        # curr = head
+        # while curr:
+        #     nodes.append(curr)
+        #     curr = curr.next
+        # n = len(nodes)
+        # for i in range(n // 2):
+        #     nodes[i].next = nodes[n - i - 1]
+        #     nodes[n - i - 1].next = nodes[i + 1]
+        # nodes[n // 2].next = None
+
+        # Single pass - O(n)T, O(1)S
+        if not head:
+            return
+        # Find the middle of the list
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        # Reverse the second half of the list
+        prev = None
+        curr = slow
+        while curr:
+            next_node = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next_node
+        # Merge the two lists
+        first = head
+        second = prev
+        while second.next:
+            first.next, first = second, first.next
+            second.next, second = first, second.next
+
+    # LC 144. Binary Tree Preorder Traversal (Easy)
+    # https://leetcode.com/problems/binary-tree-preorder-traversal/
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        # Recursive - O(n)T, O(n)S
+        if not root:
+            return []
+        return (
+            [root.val]
+            + self.preorderTraversal(root.left)
+            + self.preorderTraversal(root.right)
+        )
+
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return []
+        # res = []
+        # stack = [root]
+        # while stack:
+        #     curr = stack.pop()
+        #     res.append(curr.val)
+        #     if curr.right:
+        #         stack.append(curr.right)
+        #     if curr.left:
+        #         stack.append(curr.left)
+        # return res
+
+    # LC 145. Binary Tree Postorder Traversal (Easy)
+    # https://leetcode.com/problems/binary-tree-postorder-traversal/
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        # Recursive - O(n)T, O(n)S
+        if not root:
+            return []
+        return (
+            self.postorderTraversal(root.left)
+            + self.postorderTraversal(root.right)
+            + [root.val]
+        )
+
+        # # Iterative - O(n)T, O(n)S
+        # if not root:
+        #     return []
+        # res = []
+        # stack = [root]
+        # while stack:
+        #     node = stack.pop()
+        #     res.insert(0, node.val)
+        #     if node.left:
+        #         stack.append(node.left)
+        #     if node.right:
+        #         stack.append(node.right)
+        # return res
+
+    # LC 146. LRU Cache (Medium)
+    # https://leetcode.com/problems/lru-cache/
+    class LRUCache:
+        def __init__(self, capacity: int):
+            self.capacity = capacity
+            self.cache = {}
+            self.queue = collections.deque()
+
+        def get(self, key: int) -> int:
+            if key not in self.cache:
+                return -1
+            self.queue.remove(key)
+            self.queue.append(key)
+            return self.cache[key]
+
+        def put(self, key: int, value: int) -> None:
+            if key in self.cache:
+                self.queue.remove(key)
+            elif len(self.cache) == self.capacity:
+                del self.cache[self.queue.popleft()]
+            self.cache[key] = value
+            self.queue.append(key)
+
+    # LC 147. Insertion Sort List (Medium)
+    # https://leetcode.com/problems/insertion-sort-list/
+    def insertionSortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # Brute force - O(n^2)T, O(1)S
+        dummy = ListNode()
+        curr = head
+        while curr:
+            prev = dummy
+            while prev.next and prev.next.val < curr.val:
+                prev = prev.next
+            next_node = curr.next
+            curr.next = prev.next
+            prev.next = curr
+            curr = next_node
+        return dummy.next
+
+    # LC 148. Sort List (Medium)
+    # https://leetcode.com/problems/sort-list/
+    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # # Merge sort - O(nlogn)T, O(logn)S
+        # def merge(left, right):
+        #     dummy = ListNode()
+        #     curr = dummy
+        #     while left and right:
+        #         if left.val < right.val:
+        #             curr.next = left
+        #             left = left.next
+        #         else:
+        #             curr.next = right
+        #             right = right.next
+        #         curr = curr.next
+        #     curr.next = left or right
+        #     return dummy.next
+        # if not head or not head.next:
+        #     return head
+        # slow = fast = head
+        # prev = None
+        # while fast and fast.next:
+        #     prev = slow
+        #     slow = slow.next
+        #     fast = fast.next.next
+        # prev.next = None
+        # left = self.sortList(head)
+        # right = self.sortList(slow)
+        # return self.merge(left, right)
+
+        # Constant space merge sort - O(nlogn)T, O(1)S
+        def split(head, n):
+            for i in range(n - 1):
+                if not head:
+                    break
+                head = head.next
+            if not head:
+                return None
+            second = head.next
+            head.next = None
+            return second
+
+        def merge(left, right, head):
+            curr = head
+            while left and right:
+                if left.val < right.val:
+                    curr.next = left
+                    left = left.next
+                else:
+                    curr.next = right
+                    right = right.next
+                curr = curr.next
+            curr.next = left or right
+            while curr.next:
+                curr = curr.next
+            return curr
+
+        if not head or not head.next:
+            return head
+        curr = head
+        length = 0
+        while curr:
+            length += 1
+            curr = curr.next
+        dummy = ListNode()
+        dummy.next = head
+        step = 1
+        while step < length:
+            prev, curr = dummy, dummy.next
+            while curr:
+                left = curr
+                right = split(left, step)
+                curr = split(right, step)
+                prev = merge(left, right, prev)
+            step *= 2
+        return dummy.next
+
+    # LC 149. Max Points on a Line (Hard)
+    # https://leetcode.com/problems/max-points-on-a-line/
+    def maxPoints(self, points: List[List[int]]) -> int:
+        # # Brute force - O(n^3)T, O(n)S
+        # # TODO
+
+        # GCD - O(n^2)T, O(n)S
+        if len(points) < 3:
+            return len(points)
+
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+
+        res = 0
+        for i in range(len(points)):
+            d = {}
+            overlap = 0
+            curr_max = 0
+            for j in range(i + 1, len(points)):
+                dx = points[i][0] - points[j][0]
+                dy = points[i][1] - points[j][1]
+                if dx == 0 and dy == 0:
+                    overlap += 1
+                    continue
+                g = gcd(dx, dy)
+                dx //= g
+                dy //= g
+                if (dx, dy) in d:
+                    d[(dx, dy)] += 1
+                else:
+                    d[(dx, dy)] = 1
+                curr_max = max(curr_max, d[(dx, dy)])
+            res = max(res, curr_max + overlap + 1)
+        return res
+
+    # LC 150. Evaluate Reverse Polish Notation (Medium)
+    # https://leetcode.com/problems/evaluate-reverse-polish-notation/
+    def evalRPN(self, tokens: List[str]) -> int:
+        # Stack - O(n)T, O(n)S
+        stack = []
+        for token in tokens:
+            if token in "+-*/":
+                b = stack.pop()
+                a = stack.pop()
+                if token == "+":
+                    stack.append(a + b)
+                elif token == "-":
+                    stack.append(a - b)
+                elif token == "*":
+                    stack.append(a * b)
+                elif token == "/":
+                    stack.append(int(a / b))
+            else:
+                stack.append(int(token))
+        return stack.pop()
