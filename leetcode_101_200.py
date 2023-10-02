@@ -1637,3 +1637,96 @@ class Solution:
             else:
                 stack.append(int(token))
         return stack.pop()
+
+    # LC 151. Reverse Words in a String (Medium)
+    # https://leetcode.com/problems/reverse-words-in-a-string/
+    def reverseWords(self, s: str) -> str:
+        # # One-liner - O(n)T, O(n)S
+        # return " ".join(s.split()[::-1])
+
+        # Two pointers - O(n)T, O(n)S
+        s = s.strip()
+        res = []
+        i = j = len(s) - 1
+        while i >= 0:
+            while i >= 0 and s[i] != " ":
+                i -= 1
+            res.append(s[i + 1 : j + 1])
+            while s[i] == " ":
+                i -= 1
+            j = i
+        return " ".join(res)
+
+    # LC 152. Maximum Product Subarray (Medium)
+    # https://leetcode.com/problems/maximum-product-subarray/
+    def maxProduct(self, nums: List[int]) -> int:
+        # min and max DP - O(n)T, O(1)S
+        curr_max = curr_min = res = nums[0]
+        for num in nums[1:]:
+            temp = curr_max
+            curr_max = max(num, curr_max * num, curr_min * num)
+            curr_min = min(num, temp * num, curr_min * num)
+            res = max(res, curr_max)
+        return res
+
+    # LC 153. Find Minimum in Rotated Sorted Array (Medium)
+    # https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+    def findMin(self, nums: List[int]) -> int:
+        # # One-liner - O(n)T, O(1)S
+        # return min(nums)
+
+        # Binary search - O(log(n))T, O(1)S
+        l, r = 0, len(nums) - 1
+        while l < r:
+            mid = l + (r - l) // 2  # avoid overflow
+            if nums[mid] > nums[r]:
+                l = mid + 1
+            else:
+                r = mid
+        return nums[l]
+
+    # LC 154. Find Minimum in Rotated Sorted Array II (Hard)
+    # https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/
+    def findMin(self, nums: List[int]) -> int:
+        # # One-liner - O(n)T, O(1)S
+        # return min(nums)
+
+        # Binary search - O(log(n))T, O(1)S
+        l, r = 0, len(nums) - 1
+        while l < r:
+            mid = l + (r - l) // 2  # avoid overflow
+            # If mid is greater than right, then the minimum is in the right half
+            if nums[mid] > nums[r]:
+                l = mid + 1
+            # If mid is less than right, then the minimum is in the left half
+            elif nums[mid] < nums[r]:
+                r = mid
+            # If mid is equal to right, then we don't know where the minimum is
+            # But we can safely remove the right element
+            else:
+                r -= 1
+        return nums[l]
+
+    # LC 155. Min Stack (Easy)
+    # https://leetcode.com/problems/min-stack/
+    class MinStack:
+        def __init__(self):
+            """
+            initialize your data structure here.
+            """
+            self.stack = []
+            self.min_stack = [float("inf")]
+
+        def push(self, val: int) -> None:
+            self.stack.append(val)
+            self.min_stack.append(min(self.min_stack[-1], val))
+
+        def pop(self) -> None:
+            self.stack.pop()
+            self.min_stack.pop()
+
+        def top(self) -> int:
+            return self.stack[-1]
+
+        def getMin(self) -> int:
+            return self.min_stack[-1]
