@@ -2299,6 +2299,7 @@ class Solution:
                 length -= 1
 
     # LC 905. Sort Array By Parity (Easy)
+    # https://leetcode.com/problems/sort-array-by-parity/
     def sortArrayByParity(self, nums: List[int]) -> List[int]:
         # # Two pointers - O(n)T, O(1)S
         # l, r = 0, len(nums) - 1
@@ -2368,3 +2369,25 @@ class Solution:
                 else:
                     b += 1
         return a > b
+    
+    # LC 1512. Number of Good Pairs (Easy)
+    # https://leetcode.com/problems/number-of-good-pairs/
+    def numIdenticalPairs(self, nums: List[int]) -> int:
+        # # Brute-force, O(n²)T, O(n)S
+        # res = 0
+        # for i in range(len(nums) - 1):
+        #     for j in range(i + 1, len(nums)):
+        #         if nums[i] == nums[j]:
+        #             res += 1
+        # return res
+
+        # # One-pass with dict, O(n)T, O(n)S
+        # d = collections.defaultdict(int)
+        # res = 0
+        # for num in nums:
+        #     res += d[num]
+        #     d[num] += 1
+        # return res
+
+        # One-liner, O(n)T, O(n)S
+        return sum(v * (v - 1) // 2 for v in collections.Counter(nums).values())
