@@ -2369,7 +2369,7 @@ class Solution:
                 else:
                     b += 1
         return a > b
-    
+
     # LC 1512. Number of Good Pairs (Easy)
     # https://leetcode.com/problems/number-of-good-pairs/
     def numIdenticalPairs(self, nums: List[int]) -> int:
@@ -2391,3 +2391,19 @@ class Solution:
 
         # One-liner, O(n)T, O(n)S
         return sum(v * (v - 1) // 2 for v in collections.Counter(nums).values())
+
+    # LC 706. Design HashMap (Easy)
+    # https://leetcode.com/problems/design-hashmap/
+    class MyHashMap:
+        def __init__(self):
+            self.hashmap = {}
+
+        def put(self, key: int, value: int) -> None:
+            self.hashmap[key] = value
+
+        def get(self, key: int) -> int:
+            return self.hashmap.get(key, -1)
+
+        def remove(self, key: int) -> None:
+            if key in self.hashmap:
+                del self.hashmap[key]
