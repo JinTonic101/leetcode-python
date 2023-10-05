@@ -2419,7 +2419,7 @@ class Solution:
         # # One-liner with Counter - O(n)T, O(n)S
         # return [num for num, count in collections.Counter(nums).items() if count > len(nums) // 3]
 
-        # Boyer-Moore Voting Algorithm (double-pass cause len(res) <= 2) - O(n)T, O(1)S
+        # Boyer-Moore Voting Algorithm (only 2 candidates cause len(res) <= 2) - O(n)T, O(1)S
         # Counters for the potential majority elements
         count1 = count2 = 0
         # Potential majority element candidates
