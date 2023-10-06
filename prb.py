@@ -2458,3 +2458,54 @@ class Solution:
         if count2 > threshold:
             result.append(candidate2)
         return result
+
+    # LC 343. Integer Break (Medium)
+    # https://leetcode.com/problems/integer-break/
+    def integerBreak(self, n: int) -> int:
+        # # DP (bottom-up), O(n^2)T, O(n)S
+        # dp = [0] * (n + 1)
+        # dp[1] = 1
+        # for i in range(2, n + 1):
+        #     dp[i] = float("-inf")
+        #     for j in range(1, i):
+        #         dp[i] = max(dp[i], j * (i - j), j * dp[i - j])
+        # return dp[n]
+
+        # # DP (top-down with memoization), O(n^2)T, O(n)
+        # memo = [-1] * (n + 1)
+        # def maxProduct(k):
+        #     if memo[k] != -1:
+        #         return memo[k]
+        #     if k == 1:
+        #         return 1
+        #     result = -float("inf")
+        #     for i in range(1, k):
+        #         result = max(result, i * maxProduct(k - i), i * (k - i))
+        #     memo[k] = result
+        #     return result
+        # return maxProduct(n)
+
+        # # Greedy approach (maximizing 3s) - O(1)T, O(1)S
+        # if n == 2:
+        #     return 1
+        # if n == 3:
+        #     return 2
+        # result = 1
+        # while n > 4:
+        #     result *= 3
+        #     n -= 3
+        # return result * n
+
+        # Math - O(1)T, O(1)S
+        if n == 2:
+            return 1
+        if n == 3:
+            return 2
+        q = n // 3
+        r = n % 3
+        if r == 0:
+            return 3**q
+        elif r == 1:
+            return (3 ** (q - 1)) * 4
+        else:
+            return (3**q) * 2
