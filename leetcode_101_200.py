@@ -1730,3 +1730,118 @@ class Solution:
 
         def getMin(self) -> int:
             return self.min_stack[-1]
+
+    # LC 156. Binary Tree Upside Down (Medium)
+    # https://leetcode.com/problems/binary-tree-upside-down/
+    def upsideDownBinaryTree(self, root: TreeNode) -> TreeNode:
+        # In-place replacement - O(n)T, O(1)S
+        curr, parent, parent_right = root, None, None
+        while curr:
+            left = curr.left
+            curr.left = parent_right
+            parent_right = curr.right
+            curr.right = parent
+            parent = curr
+            curr = left
+        return parent
+
+    # LC 157. Read N Characters Given Read4 (Easy)
+    # https://leetcode.com/problems/read-n-characters-given-read4/
+    def read(self, buf: List[str], n: int) -> int:
+        # Read 4 until reaching n or end of file - O(n)T, O(1)S
+        i, size = 0, 4
+        buf4 = [""] * 4
+        while size == 4:
+            size = read4(buf4)
+            for j in range(size):
+                buf[i] = buf4[j]
+                i += 1
+                if i == n:
+                    break
+        return i
+
+    # LC 158. Read N Characters Given Read4 II - Call multiple times (Hard)
+    # https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
+    def read(self, buf: List[str], n: int) -> int:
+        # Basically the same as LC 157 but with some static class variables
+        # that we reset in the init function of the Solution class
+        # O(n)T, O(1)S
+
+        # def __init__(self):
+        #     self.buf4 = [""] * 4
+        #     self.i = 0
+        #     self.size = 0
+
+        j = 0
+        while j < n:
+            if self.i == self.size:
+                self.size = read4(self.buf4)
+                self.i = 0
+                if self.size == 0:
+                    break
+            while j < n and self.i < self.size:
+                buf[j] = self.buf4[self.i]
+                self.i += 1
+                j += 1
+        return j
+
+    # LC 159. Longest Substring with At Most Two Distinct Characters (Medium)
+    # https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/
+    def lengthOfLongestSubstringTwoDistinct(self, s: str) -> int:
+        # Hashmap with max 3 characters as keys - O(n)T, O(1)S
+        d = collections.defaultdict(int)
+        res = i = 0
+        for c in s:
+            d[c] += 1
+            while len(d) > 2:
+                d[s[i]] -= 1
+                if d[s[i]] == 0:
+                    del d[s[i]]
+                i += 1
+            res = max(res, i - res)
+        return res
+
+    # LC 160. Intersection of Two Linked Lists
+    # https://leetcode.com/problems/intersection-of-two-linked-lists/
+    def getIntersectionNode(
+        self, headA: ListNode, headB: ListNode
+    ) -> Optional[ListNode]:
+        # # Naive approach: save all nodes from A then iterate through B - O(m+n)T, O(m)S
+        # # Could be optimized with a hashset
+        # a, nodesA = headA, []
+        # while a:
+        #     nodesA.append(a)
+        #     a = a.next
+        # b = headB
+        # while b:
+        #     if b in nodesA:
+        #         return b
+        #     b = b.next
+        # return None
+
+        # # Get both lengths and start at equal distance - O(m+n)T, O(1)S
+        # a, lenA = headA, 0
+        # while a:
+        #     lenA += 1
+        #     a = a.next
+        # b, lenB = headB, 0
+        # while b:
+        #     lenB += 1
+        #     b = b.next
+        # while lenA > lenB:
+        #     headA = headA.next
+        #     lenA -= 1
+        # while lenB > lenA:
+        #     headB = headB.next
+        #     lenB -= 1
+        # while headA != headB:
+        #     headA = headA.next
+        #     headB = headB.next
+        # return headA
+
+        # Two pointers going though both linked lists - O(m+n)T, O(1)S
+        a, b = headA, headB
+        while a != b:
+            a = a.next if a else headB
+            b = b.next if b else headA
+        return a
