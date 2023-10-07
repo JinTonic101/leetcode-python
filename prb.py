@@ -208,7 +208,7 @@ class Solution:
     # LC 169. Majority Element (Easy)
     # https://leetcode.com/problems/majority-element/
     def majorityElement(self, nums: List[int]) -> int:
-        # # Counters in dict
+        # # Counter hashmap - O(n)T, O(n)S
         # if len(nums) == 1:
         #     return nums[0]
         # dic = {}
@@ -221,11 +221,10 @@ class Solution:
         #     else:
         #         dic[i] = 1
 
-        # # One liner
-        # from collections import Counter
-        # return Counter(nums).most_common(1)[0][0]
+        # # One liner - O(n)T, O(n)S
+        # return collections.Counter(nums).most_common(1)[0][0]
 
-        # Boyer-Moore Voting Algorithm #WOW
+        # Boyer-Moore Voting Algorithm #WOW - O(n)T, O(1)S
         count = 0
         candidate = None
         for num in nums:
