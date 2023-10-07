@@ -2015,3 +2015,129 @@ class Solution:
             i += 1
             j += 1
         return 0
+
+    # LC 166. Fraction to Recurring Decimal (Medium)
+    # https://leetcode.com/problems/fraction-to-recurring-decimal/
+    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
+        # Optimized integer & fractional division - O(logn)T, O(1)S
+        # See: https://leetcode.com/problems/fraction-to-recurring-decimal/solutions/3208837/166-solution-with-step-by-step-explanation/
+        """
+        This solution also handles the edge cases of a zero numerator and a zero denominator,
+        and also checks for the negative sign at the beginning.
+        It then calculates the integer part of the result by doing an integer division of the numerator by the denominator,
+        and checks if there is a fractional part by checking if the remainder of this division is zero. If there is a fractional part,
+        it adds a decimal point to the result.
+
+        The main optimization in this solution is the use of a dictionary to store the position of each remainder in the result.
+        This way, we can easily check if a remainder has already appeared in the result, and if it has, we know that we have found a repeating part.
+        We can then insert the opening and closing parentheses at the appropriate positions in the result.
+        """
+        # Handle edge cases
+        if numerator == 0:
+            return "0"
+        if denominator == 0:
+            return ""
+        # Initialize result and check for negative sign
+        result = ""
+        if (numerator < 0) ^ (denominator < 0):
+            result += "-"
+        numerator, denominator = abs(numerator), abs(denominator)
+        # Integer part of the result
+        result += str(numerator // denominator)
+        # Check if there is a fractional part
+        if numerator % denominator == 0:
+            return result
+        result += "."
+        # Use a dictionary to store the position of each remainder
+        remainder_dict = {}
+        remainder = numerator % denominator
+        # Keep adding the remainder to the result until it repeats or the remainder becomes 0
+        while remainder != 0 and remainder not in remainder_dict:
+            remainder_dict[remainder] = len(result)
+            remainder *= 10
+            result += str(remainder // denominator)
+            remainder %= denominator
+        # Check if there is a repeating part
+        if remainder in remainder_dict:
+            result = (
+                result[: remainder_dict[remainder]]
+                + "("
+                + result[remainder_dict[remainder] :]
+                + ")"
+            )
+        return result
+
+    # LC 167. Two Sum II - Input Array Is Sorted (Medium)
+    # https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        # Two pointers - O(n)T, O(1)S
+        l, r = 0, len(numbers) - 1
+        while l < r:
+            _sum = numbers[l] + numbers[r]
+            if _sum < target:
+                l += 1
+            elif _sum > target:
+                r -= 1
+            else:
+                return [l + 1, r + 1]
+
+    # LC 168. Excel Sheet Column Title (Easy)
+    # https://leetcode.com/problems/excel-sheet-column-title/
+    def convertToTitle(self, columnNumber: int) -> str:
+        # # Iterative solution - O(log26(n))T, O(log26(n))S
+        # res = []
+        # while columnNumber > 0:
+        #     columnNumber, remainder = divmod(columnNumber - 1, 26)
+        #     res.append(chr(65 + remainder))  # 65 == ord("A")
+        # return "".join(res[::-1])
+
+        # Recursive solution - O(log26(n))T, O(log26(n))S
+        if not columnNumber:
+            return ""
+        columnNumber, remainder = divmod(columnNumber - 1, 26)
+        return self.convertToTitle(columnNumber) + chr(65 + remainder)  # 65 == ord("A")
+
+    # LC 169. Majority Element (Medium)
+    def majorityElement(self, nums: List[int]) -> int:
+        # # Counter hashmap - O(n)T, O(n)S
+        # if len(nums) == 1:
+        #     return nums[0]
+        # dic = {}
+        # half = len(nums) // 2
+        # for i in nums:
+        #     if i in dic.keys():
+        #         if dic[i] == half:
+        #             return i
+        #         dic[i] += 1
+        #     else:
+        #         dic[i] = 1
+
+        # # One liner - O(n)T, O(n)S
+        # return collections.Counter(nums).most_common(1)[0][0]
+
+        # Boyer-Moore Voting Algorithm #WOW - O(n)T, O(1)S
+        count = 0
+        candidate = None
+        for num in nums:
+            if count == 0:
+                candidate = num
+            count += 1 if candidate == num else -1
+        return candidate
+
+    # LC 170. Two Sum III - Data structure design
+    # https://leetcode.com/problems/two-sum-iii-data-structure-design/
+    class TwoSum:
+        def __init__(self):
+            self.counter = collections.defaultdict(int)
+
+        def add(self, number: int) -> None:
+            self.counter[number] += 1
+
+        def find(self, value: int) -> bool:
+            for number in self.counter:
+                diff = value - number
+                if diff in self.counter:
+                    # if number != diff or self.counter[number] > 1
+                    if self.counter[diff] >= 1 + (number == diff):
+                        return True
+            return False
