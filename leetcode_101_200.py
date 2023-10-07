@@ -1801,7 +1801,7 @@ class Solution:
             res = max(res, i - res)
         return res
 
-    # LC 160. Intersection of Two Linked Lists
+    # LC 160. Intersection of Two Linked Lists (Easy)
     # https://leetcode.com/problems/intersection-of-two-linked-lists/
     def getIntersectionNode(
         self, headA: ListNode, headB: ListNode
@@ -1845,3 +1845,173 @@ class Solution:
             a = a.next if a else headB
             b = b.next if b else headA
         return a
+
+    # LC 161. One Edit Distance (Medium)
+    # https://leetcode.com/problems/one-edit-distance/
+    def isOneEditDistance(self, s, t):
+        # # Classic approach - O(m+n)T, O(1)S
+        # m, n = len(s), len(t)
+        # if abs(m - n) > 1:
+        #     return False
+        # if m == n:
+        #     # There should be only one char diff
+        #     return sum(c != t[i] for i, c in enumerate(s)) == 1
+        # if m > n:
+        #     # Swap to set s as the smaller word
+        #     # so that deletion and insertion are the "same" operation
+        #     # but we can also call self.getEditDistance(t, s) instead
+        #     s, t = t, s
+        #     m, n = n, m
+        # for i in range(m):
+        #     if s[i] != t[i]:
+        #         # Test deletion/insertion
+        #         return s[i:] == t[i + 1 :]
+        # return False  # Same word
+
+        # Classic approach (cleaner) - O(m+n)T, O(1)S
+        m, n = len(s), len(t)
+        if m > n:
+            # Simplify code by arbitrarily setting s as the smaller word
+            return self.isOneEditDistance(s, t)
+        if n - m > 1:
+            return False
+        for i, c in enumerate(s):
+            if c != t[i]:
+                # if m == n:
+                #     return s[i + 1 :] == t[i + 1 :]
+                # else:
+                #     return s[i:] == t[i + 1 :]
+                return s[i + int(m == n) :] == t[i + 1 :]
+        return False  # Same word
+
+    # LC 162. Find Peak Element (Medium)
+    # https://leetcode.com/problems/find-peak-element/
+    def findPeakElement(self, nums: List[int]) -> int:
+        # # Linear search - O(n)T, O(1)S
+        # return nums.index(max(nums))
+
+        # Binary search - O(log(n))T, O(1)S
+        # this works because of the constraints:
+        # 1) array borders are -inf
+        # 2) no adjacent duplicated numbers
+        # 3) we only need to return one peak (local maximum)
+        l, r = 0, len(nums) - 1
+        while l < r:
+            mid = l + (r - l) // 2
+            if nums[mid] < nums[mid + 1]:
+                l = mid + 1
+            else:
+                r = mid
+        return l
+
+    # LC 163. Missing Ranges (Medium)
+    # https://leetcode.com/problems/missing-ranges/
+    def findMissingRanges(self, nums, lower, upper):
+        # Naive approach - O(n)T, O(1)S
+        res = []
+        nums = [lower - 1] + nums + [upper + 1]
+        for i in range(1, len(nums)):
+            lower, upper = nums[i - 1], nums[i]
+            diff = upper - lower
+            if diff == 0:
+                continue
+            if diff == 1:
+                res.append(str(upper - 1))
+            else:
+                res.append(str(lower + 1) + "->" + str(upper - 1))
+        return res
+
+    # LC 164. Maximum Gap (Medium)
+    # https://leetcode.com/problems/maximum-gap/
+    def maximumGap(self, nums: List[int]) -> int:
+        # # Sort and search - O(nlog(n))T, O(1)S
+        # if len(nums) < 2:
+        #     return 0
+        # nums.sort()
+        # res = 0
+        # for i in range(1, len(nums)):
+        #     res = max(res, nums[i] - nums[i - 1])
+        # return res
+
+        # Linear solution with bucket sort - O(n)T, O(n)S
+        """
+        First, find the maximum and minimum values of the array,
+        and then determine the capacity of each bucket, which is (maximum-minimum) / number + 1.
+        When determining the number of buckets, that is (maximum-minimum) / the capacity of the bucket + 1,
+
+        Then you need to find the local maximum and minimum in each bucket,
+        and the two numbers with the maximum distance will not be in the same bucket,
+        but the distance between the minimum value of one bucket and the maximum value of another bucket.
+
+        This is because all numbers should be evenly distributed to each bucket as much as possible,
+        rather than crowded in one bucket, which ensures that the maximum and minimum values will not be in the same bucket
+        """
+        n = len(nums)
+        if n < 2:
+            return 0
+
+        # find the maximum and minimum values
+        maxi, mini = max(nums), min(nums)
+
+        # compute the capacity (size) of each bucket
+        b_size = max(1, (maxi - mini) // (n - 1))
+
+        # compute the number of buckets
+        n_buckets = (maxi - mini) // b_size + 1
+
+        # initialize the buckets with maximum and minimum values
+        buckets = [[float("inf"), float("-inf")] for _ in range(n_buckets)]
+        for num in nums:
+            i = (num - mini) // b_size
+            buckets[i][0] = min(buckets[i][0], num)
+            buckets[i][1] = max(buckets[i][1], num)
+
+        # compute the maximum difference
+        max_diff = 0
+        prev_max = buckets[0][1]
+        for i in range(1, n_buckets):
+            if buckets[i][0] == float("inf"):
+                continue
+            max_diff = max(max_diff, buckets[i][0] - prev_max)
+            prev_max = buckets[i][1]
+
+        return max_diff
+
+    # LC 165. Compare Version Numbers (Medium)
+    # https://leetcode.com/problems/compare-version-numbers/
+    def compareVersion(self, version1: str, version2: str) -> int:
+        # # Trim and compare - O(m+n)T, O(m+n)S
+        # def split_and_trim(version):
+        #     revisions = version.split(".")
+        #     while revisions and int(revisions[-1]) == 0:
+        #         revisions.pop()
+        #     return revisions
+        # v1, v2 = split_and_trim(version1), split_and_trim(version2)
+        # for i in range(min(len(v1), len(v2))):
+        #     if int(v1[i]) < int(v2[i]):
+        #         return -1
+        #     if int(v1[i]) > int(v2[i]):
+        #         return 1
+        # res = 0
+        # if len(v1) < len(v2):
+        #     res = -1
+        # elif len(v1) > len(v2):
+        #     res = 1
+        # return res
+
+        # Linear comparison - O(m+n)T, O(1)S
+        len1, len2 = len(version1), len(version2)
+        i, j = 0, 0
+        while i < len1 or j < len2:
+            v1, v2 = 0, 0
+            while i < len1 and version1[i] != ".":
+                v1 = v1 * 10 + int(version1[i])
+                i += 1
+            while j < len2 and version2[j] != ".":
+                v2 = v2 * 10 + int(version2[j])
+                j += 1
+            if v1 != v2:
+                return 1 if v1 > v2 else -1
+            i += 1
+            j += 1
+        return 0
