@@ -2141,3 +2141,34 @@ class Solution:
                     if self.counter[diff] >= 1 + (number == diff):
                         return True
             return False
+
+    # LC 171. Excel Sheet Column Number
+    # https://leetcode.com/problems/excel-sheet-column-number/
+    def titleToNumber(self, columnTitle: str) -> int:
+        # Iterative - O(|columnTitle|)T, O(1)S
+        res, power = 0, 0
+        for c in columnTitle[::-1]:
+            res += (26 ** power) * (ord(c) - 64)
+            power += 1
+        return res
+
+    # LC 172. Factorial Trailing Zeroes (Medium)
+    # https://leetcode.com/problems/factorial-trailing-zeroes/
+    def trailingZeroes(self, n: int) -> int:
+        # # Naive approach (int overflow) - O(|n!|)T, O(1)S
+        # pass
+
+        # Counting number of factors of 10 in n! - Logarithmic T, O(1)S
+        """
+        To find the number of 10 in the multiplier, and 10 can be decomposed into 2 and 5,
+        and the number of 2 is much greater than the number of 5 (for example, there are 2 `5`s in 1 to 10, 5 `2`s),
+        then this question is `find the counts of 5`.
+
+        One thing that still needs to be noted is that numbers like 25, 125,
+        which contain more than a 5, need to be taken into consideration.
+        """
+        res = 0
+        while n:
+            n //= 5
+            res += n
+        return res
