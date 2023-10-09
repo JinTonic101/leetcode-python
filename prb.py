@@ -2526,3 +2526,36 @@ class Solution:
                     if i:
                         cur = (cur + dp[i - 1][j]) % mod
         return sum(dp[-1]) % mod
+
+    # LC 1458. Max Dot Product of Two Subsequences (Hard)
+    # https://leetcode.com/problems/max-dot-product-of-two-subsequences/
+    def maxDotProduct(self, nums1: List[int], nums2: List[int]) -> int:
+        # # DP - O(m*n)T, O(m*n)S
+        # m, n = len(nums1), len(nums2)
+        # dp = [[float("-inf")] * (n + 1) for _ in range(m + 1)]  # dp[0][i] and dp[i][0] == empty subsequences
+        # for i in range(m):
+        #     for j in range(n):
+        #         dp[i + 1][j + 1] = max(
+        #             max(0, dp[i][j]) + nums1[i] * nums2[j],  # If we include nums1[i] and nums2[j]
+        #             dp[i][j + 1],                            # If we dont include nums1[i]
+        #             dp[i + 1][j]                             # If we dont include nums2[j]
+        #         )
+        # return dp[m][n]
+
+        # DP (space optimized) - O(m*n)T, O(min(m,n))S
+        # since dp[i + 1][j + 1] only depends on dp[i][j + 1] and dp[i + 1][j]
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+        m, n = len(nums1), len(nums2)
+        curr = [float("-inf")] * (n + 1)
+        prev = [float("-inf")] * (n + 1)
+        for i in range(m):
+            for j in range(n):
+                curr[j + 1] = max(
+                    max(0, prev[j])
+                    + nums1[i] * nums2[j],  # If we include nums1[i] and nums2[j]
+                    prev[j + 1],  # If we dont include nums1[i]
+                    curr[j],  # If we dont include nums2[j]
+                )
+            curr, prev = prev, curr
+        return prev[n]
