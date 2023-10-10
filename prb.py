@@ -2564,16 +2564,46 @@ class Solution:
     # LC 2009. Minimum Number of Operations to Make Array Continuous
     # https://leetcode.com/problems/minimum-number-operations-to-make-array-continuous
     def minOperations(self, nums: List[int]) -> int:
-        # Sort and binary search for longest continous windows - O(nlogn)T, O(n)S
+        # # Sort + set then binary search for longest continous window - O(nlogn)T, O(n)S
+        # n = len(nums)
+        # nums = sorted(set(nums))
+        # res = n - 1
+        # for i, num in enumerate(nums):
+        #     upper = num + n - 1
+        #     l = bisect.bisect_left(nums, upper, lo=i)
+        #     if l == len(nums) or nums[l] != upper:
+        #         l -= 1
+        #     res = min(res, n - (l - i + 1))
+        #     if res == 0:
+        #         return res
+        # return res
+
+        # Sort + set then binary search for longest continous window - O(nlogn)T, O(n)S
         n = len(nums)
         nums = sorted(set(nums))
         res = n - 1
         for i, num in enumerate(nums):
             upper = num + n - 1
-            l = bisect.bisect_left(nums, upper, lo=i)
-            if l == len(nums) or nums[l] != upper:
-                l -= 1
-            res = min(res, n - (l - i + 1))
+            r = bisect.bisect_right(nums, upper, lo=i)
+            res = min(res, n - (r - i))
             if res == 0:
                 return res
         return res
+
+        # # Same but without bisect package - O(nlogn)T, O(n)S
+        # n = len(nums)
+        # nums = sorted(set(nums))
+        # res = n - 1
+        # for i, l in enumerate(nums):
+        #     search = l + n - 1  # number to search
+        #     l, r = 0, len(nums)-1
+        #     while l <= r:
+        #         mid = l + (r - l) // 2
+        #         if nums[mid] <= search:
+        #             idx = mid
+        #             l = mid + 1
+        #         else:
+        #             r = mid - 1
+        #     diff = idx - i + 1
+        #     res = min(res, n - diff)
+        # return res
