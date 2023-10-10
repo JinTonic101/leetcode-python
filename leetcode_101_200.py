@@ -36,6 +36,10 @@ class Node:
         self.random = random
 
 
+def read4(buff):
+    pass
+
+
 class Solution:
     # LC 101. Symmetric Tree (Easy)
     # https://leetcode.com/problems/symmetric-tree/
@@ -2148,7 +2152,7 @@ class Solution:
         # Iterative - O(|columnTitle|)T, O(1)S
         res, power = 0, 0
         for c in columnTitle[::-1]:
-            res += (26 ** power) * (ord(c) - 64)
+            res += (26**power) * (ord(c) - 64)
             power += 1
         return res
 
