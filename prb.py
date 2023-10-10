@@ -2561,7 +2561,7 @@ class Solution:
             curr, prev = prev, curr
         return prev[n]
 
-    # LC 2009. Minimum Number of Operations to Make Array Continuous
+    # LC 2009. Minimum Number of Operations to Make Array Continuous (Hard)
     # https://leetcode.com/problems/minimum-number-operations-to-make-array-continuous
     def minOperations(self, nums: List[int]) -> int:
         # # Sort + set then binary search for longest continous window - O(nlogn)T, O(n)S

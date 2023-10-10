@@ -2128,7 +2128,7 @@ class Solution:
             count += 1 if candidate == num else -1
         return candidate
 
-    # LC 170. Two Sum III - Data structure design
+    # LC 170. Two Sum III - Data structure design (Easy)
     # https://leetcode.com/problems/two-sum-iii-data-structure-design/
     class TwoSum:
         def __init__(self):
@@ -2146,7 +2146,7 @@ class Solution:
                         return True
             return False
 
-    # LC 171. Excel Sheet Column Number
+    # LC 171. Excel Sheet Column Number (Easy)
     # https://leetcode.com/problems/excel-sheet-column-number/
     def titleToNumber(self, columnTitle: str) -> int:
         # Iterative - O(|columnTitle|)T, O(1)S
