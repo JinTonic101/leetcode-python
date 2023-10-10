@@ -1,3 +1,4 @@
+import bisect
 import collections
 import functools
 import heapq
@@ -2559,3 +2560,20 @@ class Solution:
                 )
             curr, prev = prev, curr
         return prev[n]
+
+    # LC 2009. Minimum Number of Operations to Make Array Continuous
+    # https://leetcode.com/problems/minimum-number-operations-to-make-array-continuous
+    def minOperations(self, nums: List[int]) -> int:
+        # Sort and binary search for longest continous windows - O(nlogn)T, O(n)S
+        n = len(nums)
+        nums = sorted(set(nums))
+        res = n - 1
+        for i, num in enumerate(nums):
+            upper = num + n - 1
+            l = bisect.bisect_left(nums, upper, lo=i)
+            if l == len(nums) or nums[l] != upper:
+                l -= 1
+            res = min(res, n - (l - i + 1))
+            if res == 0:
+                return res
+        return res
