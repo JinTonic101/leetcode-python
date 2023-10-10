@@ -2176,3 +2176,56 @@ class Solution:
             n //= 5
             res += n
         return res
+
+    # LC 173. Binary Search Tree Iterator (Medium)
+    # https://leetcode.com/problems/binary-search-tree-iterator/
+    class BSTIterator:
+        def __init__(self, root: Optional[TreeNode]):
+            self.stack = []
+            while root:
+                self.stack.append(root)
+                root = root.left
+
+        def next(self) -> int:
+            # We assume next() calls will always be valid
+            node = self.stack.pop()
+            n = node.right
+            while n:
+                self.stack.append(n)
+                n = n.left
+            return node.val
+
+        def hasNext(self) -> bool:
+            return len(self.stack) > 0
+
+    # LC 174. Dungeon Game (Hard)
+    # https://leetcode.com/problems/dungeon-game/
+    def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
+        # # DP (bottom-up) - O(m*n)TS
+        # m, n = len(dungeon), len(dungeon[0])
+        # dp = [[float("inf")] * (n + 1) for _ in range(m + 1)]
+        # dp[m][n - 1] = dp[m - 1][n] = 1
+        # for i in range(m - 1, -1, -1):
+        #     dp[i][-1] = max(dp[i][-1] - dungeon[i][-1], 1)
+        #     for j in range(n - 1, -1, -1):
+        #         needed_hp = min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j]
+        #         dp[i][j] = 1 if needed_hp <= 0 else needed_hp
+        # return dp[0][0]
+
+        # DP (bottom-up space optimized) - O(m*n)T, O(n)S
+        m, n = len(dungeon), len(dungeon[0])
+        dp = [float("inf")] * n
+        dp[-1] = 1
+        for i in reversed(range(m)):
+            dp[-1] = max(dp[-1] - dungeon[i][-1], 1)
+            for j in reversed(range(n - 1)):
+                needed_hp = min(dp[j], dp[j + 1]) - dungeon[i][j]
+                dp[j] = 1 if needed_hp <= 0 else needed_hp
+        return dp[0]
+
+    # LC 175. Combine Two Tables (Easy)
+    # https://leetcode.com/problems/combine-two-tables/
+    # O(n+m)T, O(n+m)S
+    # SELECT firstName, lastName, city, state
+    # FROM Person P LEFT JOIN Address A ON P.personId = A.personId
+    # ;
