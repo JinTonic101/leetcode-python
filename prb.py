@@ -2607,3 +2607,48 @@ class Solution:
         #     diff = idx - i + 1
         #     res = min(res, n - diff)
         # return res
+
+    # LC 2251. Number of Flowers in Full Bloom (Hard)
+    # https://leetcode.com/problems/number-of-flowers-in-full-bloom/
+    def fullBloomFlowers(
+        self, flowers: List[List[int]], people: List[int]
+    ) -> List[int]:
+        # # Sort then brute-force (TLE) - O(nlog(n) + p(log(p)) + n*p)T, O(p)S
+        # flowers.sort(key=lambda f: f[0])
+        # sorted_people = sorted(set(people))
+        # d = defaultdict(int)
+        # for p in sorted_people:
+        #     for i, (s, e) in enumerate(flowers):
+        #         if s <= p <= e:
+        #             d[p] += 1
+        #         else:
+        #             continue
+        # return [d[p] for p in people]
+
+        # # Sort then hashmap flowers (TLE) - O(nlog(n) + n*p)T, O(n)S
+        # flowers.sort(key=lambda f: f[0])
+        # sorted_people = sorted(set(people))
+        # d = defaultdict(int)
+        # for s, e in flowers:
+        #     for i in range(s, e + 1):
+        #         if i in sorted_people:
+        #             d[i] += 1
+        # return [d[i] for i in people]
+
+        # # Line sweep then binary search - O(nlog(n) + plog(n))T, O(n)
+        # counter = collections.Counter()
+        # for s, e in flowers:
+        #     counter[s] += 1
+        #     counter[e + 1] -= 1
+        # events = sorted(counter.keys())
+        # prefix = [0]
+        # for x in events:
+        #     prefix.append(prefix[-1] + counter[x])
+        # return [prefix[bisect.bisect_right(events, t)] for t in people]
+
+        # Binary search - O(nlog(n) + plog(n))T, O(n)S
+        start = sorted([s for s, e in flowers])
+        end = sorted([e for s, e in flowers])
+        return [
+            bisect.bisect_right(start, t) - bisect.bisect_left(end, t) for t in people
+        ]
