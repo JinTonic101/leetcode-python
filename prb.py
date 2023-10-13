@@ -2709,3 +2709,19 @@ class Solution:
             return low
         # Target is not present in the mountain array
         return -1
+
+    # LC 746. Min Cost Climbing Stairs (Easy)
+    # https://leetcode.com/problems/min-cost-climbing-stairs/
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        # # DP - O(n)TS
+        # dp = [0] * (len(cost) + 1)
+        # for i in range(2, len(cost) + 1):
+        #     dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2])
+        # return dp[-1]
+
+        # DP (optimized memory) - O(n)T, O(1)S
+        prev1 = prev2 = 0
+        for i in range(2, len(cost) + 1):
+            curr = min(prev1 + cost[i - 1], prev2 + cost[i - 2])
+            prev1, prev2 = curr, prev1
+        return prev1
