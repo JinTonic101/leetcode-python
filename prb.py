@@ -2725,3 +2725,45 @@ class Solution:
             curr = min(prev1 + cost[i - 1], prev2 + cost[i - 2])
             prev1, prev2 = curr, prev1
         return prev1
+
+    # LC 2742. Painting the Walls (Hard)
+    # https://leetcode.com/problems/painting-the-walls/
+    def paintWalls(self, cost: List[int], time: List[int]) -> int:
+        # # DP (knapsack problem) - O(n²)TS
+        # @functools.cache
+        # def dp(i, remain):
+        #     if remain <= 0:
+        #         return 0
+        #     if i == n:
+        #         return inf
+        #     paint = cost[i] + dp(i + 1, remain - 1 - time[i])
+        #     dont_paint = dp(i + 1, remain)
+        #     return min(paint, dont_paint)
+        # n = len(cost)
+        # return dp(0, n)
+
+        # # DP (bottom-up) - O(n²)TS
+        # n = len(cost)
+        # dp = [[0] * (n + 1) for _ in range(n + 1)]
+        # for i in range(1, n + 1):
+        #     dp[n][i] = inf
+        # for i in range(n - 1, -1, -1):
+        #     for remain in range(1, n + 1):
+        #         paint = cost[i] + dp[i + 1][max(0, remain - 1 - time[i])]
+        #         dont_paint = dp[i + 1][remain]
+        #         dp[i][remain] = min(paint, dont_paint)
+        # return dp[0][n]
+
+        # DP (space-optimized) - O(n²)T, O(n)S
+        n = len(cost)
+        dp = [0] * (n + 1)
+        prev_dp = [inf] * (n + 1)
+        prev_dp[0] = 0
+        for i in range(n - 1, -1, -1):
+            dp = [0] * (n + 1)
+            for remain in range(1, n + 1):
+                paint = cost[i] + prev_dp[max(0, remain - 1 - time[i])]
+                dont_paint = prev_dp[remain]
+                dp[remain] = min(paint, dont_paint)
+            prev_dp = dp
+        return dp[n]
