@@ -2767,3 +2767,55 @@ class Solution:
                 dp[remain] = min(paint, dont_paint)
             prev_dp = dp
         return dp[n]
+
+    # LC 1269. Number of Ways to Stay in the Same Place After Some Steps (Hard)
+    # https://leetcode.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/description/
+    def numWays(self, steps: int, arrLen: int) -> int:
+        # # DP (top-down) - O(n*min(m,n))TS
+        # @functools.cache
+        # def dp(curr, remain):
+        #     if remain == 0:
+        #         if curr == 0:
+        #             return 1
+        #         return 0
+        #     ans = dp(curr, remain - 1)
+        #     if curr > 0:
+        #         ans = (ans + dp(curr - 1, remain - 1)) % MOD
+        #     if curr < arrLen - 1:
+        #         ans = (ans + dp(curr + 1, remain - 1)) % MOD
+        #     return ans
+        # MOD = 10 ** 9 + 7
+        # return dp(0, steps)
+
+        # # # DP (bottom-up) - O(n*min(m,n))TS
+        # MOD = 10 ** 9 + 7
+        # arrLen = min(arrLen, steps)
+        # dp = [[0] * (steps + 1) for _ in range(arrLen)]
+        # dp[0][0] = 1
+        # for remain in range(1, steps + 1):
+        #     for curr in range(arrLen - 1, -1, -1):
+        #         ans = dp[curr][remain - 1]
+        #         if curr > 0:
+        #             ans = (ans + dp[curr - 1][remain - 1]) % MOD
+        #         if curr < arrLen - 1:
+        #             ans = (ans + dp[curr + 1][remain - 1]) % MOD
+        #         dp[curr][remain] = ans
+        # return dp[0][steps]
+
+        # DP (space-optimized) - O(n*min(m,n))T, O(min(m,n))S
+        MOD = 10 ** 9 + 7
+        arrLen = min(arrLen, steps)
+        dp = [0] * (arrLen)
+        prevDp = [0] * (arrLen)
+        prevDp[0] = 1
+        for remain in range(1, steps + 1):
+            dp = [0] * (arrLen)
+            for curr in range(arrLen - 1, -1, -1):
+                ans = prevDp[curr]
+                if curr > 0:
+                    ans = (ans + prevDp[curr - 1]) % MOD
+                if curr < arrLen - 1:
+                    ans = (ans + prevDp[curr + 1]) % MOD
+                dp[curr] = ans
+            prevDp = dp
+        return dp[0]
