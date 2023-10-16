@@ -1364,16 +1364,26 @@ class Solution:
         #     res.append(row)
         # return res[numRows]
 
-        # # Math: Combinatorics - O(n)T, O(n)S
-        # # (n
-        # #  k)
-        # return [math.comb(rowIndex, k) for k in range(rowIndex + 1)]
+        # # DP (space optimized) - O(n²)T, O(n)S
+        # prev = [1]
+        # for _ in range(rowIndex):
+        #     res = [1]
+        #     for i in range(1, len(prev)):
+        #         res.append(prev[i - 1] + prev[i])
+        #     res.append(1)
+        #     prev = res
+        # return prev
 
-        # Math: Combinatorics without import - O(n)T, O(n)S
-        row = [1] * (rowIndex + 1)
-        for i in range(1, rowIndex):
-            row[i] = row[i - 1] * (rowIndex - i + 1) // i
-        return row
+        # # Math: Combinatorics without import - O(n)T, O(n)S
+        # row = [1] * (rowIndex + 1)
+        # for i in range(1, rowIndex):
+        #     row[i] = row[i - 1] * (rowIndex - i + 1) // i
+        # return row
+
+        # Math: Combinatorics (one-liner) - O(n)T, O(n)S
+        # (n
+        #  k)
+        return [math.comb(rowIndex, k) for k in range(rowIndex + 1)]
 
     # 377. Combination Sum IV
     # https://leetcode.com/problems/combination-sum-iv/
