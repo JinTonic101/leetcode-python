@@ -955,7 +955,7 @@ class Solution:
         return min(dic[0], dic[1])
 
     # LC 5214. Longest Arithmetic Subsequence of Given Difference
-    # https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/description/
+    # https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/
     def longestSubsequence(self, arr: List[int], difference: int) -> int:
         # # See https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/solutions/3761478/python-it-s-all-about-expectations-explained/
         # subseqs = {}
@@ -974,7 +974,7 @@ class Solution:
         return max(map.values())
 
     # LC 461. Hamming Distance (Easy)
-    # https://leetcode.com/problems/hamming-distance/description/
+    # https://leetcode.com/problems/hamming-distance/
     def hammingDistance(self, x: int, y: int) -> int:
         x_bin = str(bin(x))[2:]
         y_bin = str(bin(y))[2:]
@@ -2779,7 +2779,7 @@ class Solution:
         return dp[n]
 
     # LC 1269. Number of Ways to Stay in the Same Place After Some Steps (Hard)
-    # https://leetcode.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/description/
+    # https://leetcode.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/
     def numWays(self, steps: int, arrLen: int) -> int:
         # # DP (top-down) - O(n*min(m,n))TS
         # @functools.cache
@@ -2831,7 +2831,7 @@ class Solution:
         return dp[0]
 
     # LC 1361. Validate Binary Tree Nodes (Medium)
-    # https://leetcode.com/problems/validate-binary-tree-nodes/description/
+    # https://leetcode.com/problems/validate-binary-tree-nodes/
     def validateBinaryTreeNodes(
         self, n: int, leftChild: List[int], rightChild: List[int]
     ) -> bool:
