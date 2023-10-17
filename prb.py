@@ -2813,7 +2813,7 @@ class Solution:
         # return dp[0][steps]
 
         # DP (space-optimized) - O(n*min(m,n))T, O(min(m,n))S
-        MOD = 10 ** 9 + 7
+        MOD = 10**9 + 7
         arrLen = min(arrLen, steps)
         dp = [0] * (arrLen)
         prevDp = [0] * (arrLen)
@@ -2829,3 +2829,84 @@ class Solution:
                 dp[curr] = ans
             prevDp = dp
         return dp[0]
+
+    # LC 1361. Validate Binary Tree Nodes (Medium)
+    # https://leetcode.com/problems/validate-binary-tree-nodes/description/
+    def validateBinaryTreeNodes(
+        self, n: int, leftChild: List[int], rightChild: List[int]
+    ) -> bool:
+        # # DFS - O(n)T, O(1)S
+        # def find_root():
+        #     children = set(leftChild) | set(rightChild)
+        #     for i in range(n):
+        #         if i not in children:
+        #             return i
+        #     return -1
+        # root = find_root()
+        # if root == -1:
+        #     return False
+        # seen = {root}
+        # stack = [root]
+        # while stack:
+        #     node = stack.pop()
+        #     for child in [leftChild[node], rightChild[node]]:
+        #         if child != -1:
+        #             if child in seen:
+        #                 return False
+        #             stack.append(child)
+        #             seen.add(child)
+        # return len(seen) == n
+
+        # # BFS - O(n)T, O(n)S
+        # def find_root():
+        #     children = set(leftChild) | set(rightChild)
+        #     for i in range(n):
+        #         if i not in children:
+        #             return i
+        #     return -1
+        # root = find_root()
+        # if root == -1:
+        #     return False
+        # seen = {root}
+        # queue = deque([root])
+        # while queue:
+        #     node = queue.popleft()
+        #     for child in [leftChild[node], rightChild[node]]:
+        #         if child != -1:
+        #             if child in seen:
+        #                 return False
+        #             queue.append(child)
+        #             seen.add(child)
+        # return len(seen) == n
+
+        # Union-Find - O(n)T, O(n)S
+        uf = UnionFind(n)
+        for node in range(n):
+            for child in [leftChild[node], rightChild[node]]:
+                if child == -1:
+                    continue
+                if not uf.union(node, child):
+                    return False
+        return uf.components == 1
+
+class UnionFind:
+    def __init__(self, n):
+        self.components = n
+        self.parents = list(range(n))
+
+    def union(self, parent, child):
+        parent_parent = self.find(parent)
+        child_parent = self.find(child)
+
+        if child_parent != child or parent_parent == child_parent:
+            return False
+
+        self.components -= 1
+        self.parents[child_parent] = parent_parent
+        return True
+
+    def find(self, node):
+        if self.parents[node] != node:
+            self.parents[node] = self.find(self.parents[node])
+
+        return self.parents[node]
