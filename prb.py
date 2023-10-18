@@ -2910,3 +2910,45 @@ class Solution:
                 if not uf.union(node, child):
                     return False
         return uf.components == 1
+
+    # LC 2050. Parallel Courses III (Hard)
+    # https://leetcode.com/problems/parallel-courses-iii/
+    def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
+        # # Kahn's algorithm (topological sort in a DAG) - O(n + e)TS
+        # graph = collections.defaultdict(list)
+        # indegree = [0] * n
+        # for (x, y) in relations:
+        #     graph[x - 1].append(y - 1)
+        #     indegree[y - 1] += 1
+        # queue = collections.deque()
+        # max_time = [0] * n
+        # for node in range(n):
+        #     if indegree[node] == 0:
+        #         queue.append(node)
+        #         max_time[node] = time[node]
+        # while queue:
+        #     node = queue.popleft()
+        #     for neighbor in graph[node]:
+        #         max_time[neighbor] = max(max_time[neighbor], max_time[node] + time[neighbor])
+        #         indegree[neighbor] -= 1
+        #         if indegree[neighbor] == 0:
+        #             queue.append(neighbor)
+        # return max(max_time)
+
+        # DFS + Memoization (Top-Down DP) - O(n + e)TS
+        @functools.lru_cache(n)
+        def dfs(node):
+            if not graph[node]:
+                return time[node]
+            res = 0
+            for neighbor in graph[node]:
+                res = max(res, dfs(neighbor))
+            return time[node] + res
+
+        graph = defaultdict(list)
+        for x, y in relations:
+            graph[x - 1].append(y - 1)
+        res = 0
+        for node in range(n):
+            res = max(res, dfs(node))
+        return res
