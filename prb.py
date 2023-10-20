@@ -81,6 +81,28 @@ class MountainArray:
         pass
 
 
+class NestedInteger:
+    def isInteger(self) -> bool:
+        """
+        @return True if this NestedInteger holds a single integer, rather than a nested list.
+        """
+        pass
+
+    def getInteger(self) -> int:
+        """
+        @return the single integer that this NestedInteger holds, if it holds a single integer
+        Return None if this NestedInteger holds a nested list
+        """
+        pass
+
+    def getList(self):
+        """
+        @return the nested list that this NestedInteger holds, if it holds a nested list
+        Return None if this NestedInteger holds a single integer
+        """
+        pass
+
+
 class Solution:
     # LC 268. Missing Number (Easy)
     # https://leetcode.com/problems/missing-number/
@@ -2952,3 +2974,71 @@ class Solution:
         for node in range(n):
             res = max(res, dfs(node))
         return res
+
+    # LC 844. Backspace String Compare (Easy)
+    # https://leetcode.com/problems/backspace-string-compare/
+    def backspaceCompare(self, s: str, t: str) -> bool:
+        # # Naive solution - O(m+n)TS
+        # ls, lt = [], []
+        # for c in s:
+        #     if c == "#":
+        #         if ls:
+        #             ls.pop()
+        #     else:
+        #         ls.append(c)
+        # for c in t:
+        #     if c == "#":
+        #         if lt:
+        #             lt.pop()
+        #     else:
+        #         lt.append(c)
+        # return ls == lt
+
+        # Double pointers - O(m+n)T, O(1)S
+        def F(S):
+            skip = 0
+            for x in reversed(S):
+                if x == "#":
+                    skip += 1
+                elif skip:
+                    skip -= 1
+                else:
+                    yield x
+
+        return all(x == y for x, y in itertools.izip_longest(F(s), F(t)))
+
+    # LC 341. Flatten Nested List Iterator (Medium)
+    # https://leetcode.com/problems/flatten-nested-list-iterator/
+    class NestedIterator:
+        # # Flattening solution
+        # def __init__(self, nestedList: [NestedInteger]):
+        #     def flatten(nested):
+        #         result = []
+        #         for ni in nested:
+        #             if ni.isInteger():
+        #                 result.append(ni.getInteger())
+        #             else:
+        #                 result.extend(flatten(ni.getList()))
+        #         return result
+        #     self.flattened = flatten(nestedList)
+        #     self.index = 0
+        # def next(self) -> int:
+        #     self.index += 1
+        #     return self.flattened[self.index - 1]
+        # def hasNext(self) -> bool:
+        #     return self.index < len(self.flattened)
+
+        # Stack solution
+        def __init__(self, nestedList: [NestedInteger]):
+            self.stack = nestedList[::-1]
+
+        def next(self) -> int:
+            return self.stack.pop().getInteger()
+
+        def hasNext(self) -> bool:
+            while self.stack:
+                top = self.stack[-1]
+                if top.isInteger():
+                    return True
+                self.stack = self.stack[:-1] + top.getList()[::-1]
+            return False
