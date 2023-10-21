@@ -11,7 +11,7 @@ from collections import Counter, defaultdict, deque
 from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from typing import List, Optional
-
+import sortedcontainers
 
 def manhattan_distance(p1: List[int], p2: List[int]) -> int:
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
@@ -3042,3 +3042,40 @@ class Solution:
                     return True
                 self.stack = self.stack[:-1] + top.getList()[::-1]
             return False
+
+    # LC 1425. Constrained Subsequence Sum (Hard)
+    # https://leetcode.com/problems/constrained-subsequence-sum/
+    def constrainedSubsetSum(self, nums: List[int], k: int) -> int:
+        # # Heap/Priority Queue - O(n logn)T, O(n)S
+        # heap = [(-nums[0], 0)]
+        # ans = nums[0]
+        # for i in range(1, len(nums)):
+        #     while i - heap[0][1] > k:
+        #         heapq.heappop(heap)
+        #     curr = max(0, -heap[0][0]) + nums[i]
+        #     ans = max(ans, curr)
+        #     heapq.heappush(heap, (-curr, i))
+        # return ans
+
+        # # TreeMap-Like Data Structure - O(n logk)T, O(n)S
+        # window = sortedcontainers.SortedList([0])
+        # dp = [0] * len(nums)
+        # for i in range(len(nums)):
+        #     dp[i] = nums[i] + window[-1]
+        #     window.add(dp[i])
+        #     if i >= k:
+        #         window.remove(dp[i - k])
+        # return max(dp)
+
+        # Monotonic Deque - O(n)TS
+        queue = deque()
+        dp = [0] * len(nums)
+        for i in range(len(nums)):
+            if queue and i - queue[0] > k:
+                queue.popleft()
+            dp[i] = (dp[queue[0]] if queue else 0) + nums[i]
+            while queue and dp[queue[-1]] < dp[i]:
+                queue.pop()
+            if dp[i] > 0:
+                queue.append(i)
+        return max(dp)
