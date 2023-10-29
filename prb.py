@@ -3079,3 +3079,26 @@ class Solution:
             if dp[i] > 0:
                 queue.append(i)
         return max(dp)
+
+    # LC 1793. Maximum Score of a Good Subarray (Hard)
+    # https://leetcode.com/problems/maximum-score-of-a-good-subarray/
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        # TODO
+        pass
+
+    # LC 342. Power of Four (Easy)
+    # https://leetcode.com/problems/power-of-four/
+    def isPowerOfFour(self, n: int) -> bool:
+        # # Loop - O(log(n))T, O(1)S
+        # x, res = 0, 1
+        # while res < n:
+        #     x += 1
+        #     res = 4 ** x
+        # return res == n
+
+        # # Power of Two check and masking - O(1)TS
+        # mask = 0x55555555
+        # return n > 0 and (n & (n - 1)) == 0 and (n & mask) == n
+
+        # Math - O(1)TS
+        return n > 0 and (math.log(n) / math.log(4)).is_integer()
