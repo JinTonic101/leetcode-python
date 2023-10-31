@@ -11,7 +11,9 @@ from collections import Counter, defaultdict, deque
 from itertools import combinations_with_replacement, permutations
 from math import comb, factorial, inf
 from typing import List, Optional
+
 import sortedcontainers
+
 
 def manhattan_distance(p1: List[int], p2: List[int]) -> int:
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
@@ -3102,3 +3104,17 @@ class Solution:
 
         # Math - O(1)TS
         return n > 0 and (math.log(n) / math.log(4)).is_integer()
+
+    # LC 2433. Find The Original Array of Prefix Xor (Medium)
+    # https://leetcode.com/problems/find-the-original-array-of-prefix-xor/
+    def findArray(self, pref: List[int]) -> List[int]:
+        # # XOR properties (symmetry) - O(n)TS
+        # arr = [pref[0]]
+        # for i in range(1, len(pref)):
+        #     arr.append(pref[i] ^ pref[i - 1])
+        # return arr
+
+        # XOR properties (symmetry) space optimized - O(n)T, O(1)S
+        for i in range(len(pref) - 1, 0, -1):
+            pref[i] = pref[i] ^ pref[i - 1]
+        return pref
